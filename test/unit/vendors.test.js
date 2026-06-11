@@ -74,3 +74,25 @@ test('resolveVendor uses local asset when it exists', () => {
     });
     assert.equal(hexo.warnings.length, 0);
 });
+
+test('resolveVendor merges custom URL objects with default metadata', () => {
+    const hexo = fakeHexo('/missing');
+
+    assert.deepEqual(resolveVendor(hexo, 'font', definition, {
+        url: '/assets/font.css'
+    }), {
+        type: 'style',
+        url: '/assets/font.css',
+        integrity: 'sha256-test'
+    });
+
+    assert.deepEqual(resolveVendor(hexo, 'font', definition, {
+        type: 'script',
+        url: '/assets/font.js',
+        integrity: 'sha256-custom'
+    }), {
+        type: 'script',
+        url: '/assets/font.js',
+        integrity: 'sha256-custom'
+    });
+});

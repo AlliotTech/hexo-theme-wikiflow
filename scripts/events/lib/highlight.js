@@ -168,6 +168,10 @@ function transformRules(rules) {
 
 function transformHighlightCss(content, file) {
     const ast = parseCss(content, file);
+    return transformHighlightAst(ast);
+}
+
+function transformHighlightAst(ast) {
     ast.stylesheet.rules = transformRules(ast.stylesheet.rules);
     return css.stringify(ast);
 }
@@ -194,7 +198,7 @@ function resolveHighlightTheme(hexo, name) {
         const source = fs.readFileSync(themeFile, 'utf8');
         const ast = parseCss(source, themeFile);
         const colors = extractThemeColors(ast);
-        const transformed = transformHighlightCss(source, themeFile);
+        const transformed = transformHighlightAst(ast);
         const generatedFile = writeGeneratedTheme(
             hexo,
             themeName,

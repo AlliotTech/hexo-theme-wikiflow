@@ -77,20 +77,20 @@
     }
 
     function parseKeywords(keywords) {
-        return keywords.split(' ').filter(Boolean).map(function (keyword) {
+        return String(keywords).trim().split(/\s+/).filter(Boolean).map(function (keyword) {
             return keyword.toUpperCase();
         });
     }
 
-    function sectionFactory(keywords, type, array) {
-        var keywordArray = parseKeywords(keywords);
+    function sectionFactory(keywordArray, type, array) {
         if (array.length === 0) return null;
 
         var resultSection = section(CONFIG.TRANSLATION[type]);
-        array.forEach(function (item) {
+        array.forEach(function (result) {
+            var item = result.item;
             var element;
             if (type === 'POSTS' || type === 'PAGES') {
-                var firstOccur = item.firstOccur > 20 ? item.firstOccur - 20 : 0;
+                var firstOccur = result.firstOccur > 20 ? result.firstOccur - 20 : 0;
                 var preview = item.text.slice(firstOccur, firstOccur + 80);
                 element = searchItem('file', item.title, null, preview, CONFIG.ROOT_URL + item.path, keywordArray);
             } else if (type === 'CATEGORIES' || type === 'TAGS') {
@@ -114,34 +114,33 @@
         });
     }
 
-    function filter(keywords, obj, fields) {
-        var keywordArray = parseKeywords(keywords);
-        var containKeywords = keywordArray.filter(function (keyword) {
+    function hasKeyword(obj, field, keyword) {
+        return Object.prototype.hasOwnProperty.call(obj, field) &&
+            String(obj[field]).toUpperCase().indexOf(keyword) > -1;
+    }
+
+    function matchesKeywords(keywordArray, obj, fields) {
+        return keywordArray.every(function (keyword) {
             return fields.some(function (field) {
-                if (!Object.prototype.hasOwnProperty.call(obj, field)) return false;
-                var firstOccur = String(obj[field]).toUpperCase().indexOf(keyword);
-                if (firstOccur > -1) {
-                    if (field === 'text') obj.firstOccur = firstOccur;
-                    return true;
-                }
-                return false;
+                return hasKeyword(obj, field, keyword);
             });
         });
-        return containKeywords.length === keywordArray.length;
     }
 
-    function filterFactory(keywords) {
-        return {
-            POST: function (obj) { return filter(keywords, obj, ['title', 'text']); },
-            PAGE: function (obj) { return filter(keywords, obj, ['title', 'text']); },
-            CATEGORY: function (obj) { return filter(keywords, obj, ['name', 'slug']); },
-            TAG: function (obj) { return filter(keywords, obj, ['name', 'slug']); }
-        };
+    function findFirstOccur(keywordArray, obj, field) {
+        if (!Object.prototype.hasOwnProperty.call(obj, field)) return -1;
+
+        var value = String(obj[field]).toUpperCase();
+        return keywordArray.reduce(function (firstOccur, keyword) {
+            var index = value.indexOf(keyword);
+            if (index === -1) return firstOccur;
+            return firstOccur === -1 ? index : Math.min(firstOccur, index);
+        }, -1);
     }
 
-    function weight(keywords, obj, fields, weights) {
+    function weight(keywordArray, obj, fields, weights) {
         var value = 0;
-        parseKeywords(keywords).forEach(function (keyword) {
+        keywordArray.forEach(function (keyword) {
             var pattern = new RegExp(escapeRegExp(keyword), 'img');
             fields.forEach(function (field, index) {
                 if (Object.prototype.hasOwnProperty.call(obj, field)) {
@@ -153,32 +152,34 @@
         return value;
     }
 
-    function weightFactory(keywords) {
-        return {
-            POST: function (obj) { return weight(keywords, obj, ['title', 'text'], [3, 1]); },
-            PAGE: function (obj) { return weight(keywords, obj, ['title', 'text'], [3, 1]); },
-            CATEGORY: function (obj) { return weight(keywords, obj, ['name', 'slug'], [1, 1]); },
-            TAG: function (obj) { return weight(keywords, obj, ['name', 'slug'], [1, 1]); }
-        };
+    function searchCollection(items, keywordArray, fields, weights) {
+        return items.map(function (item) {
+            if (!matchesKeywords(keywordArray, item, fields)) return null;
+            return {
+                item: item,
+                firstOccur: findFirstOccur(keywordArray, item, 'text'),
+                weight: weight(keywordArray, item, fields, weights)
+            };
+        }).filter(Boolean).sort(function (a, b) {
+            return b.weight - a.weight;
+        });
     }
 
-    function search(json, keywords) {
-        var weights = weightFactory(keywords);
-        var filters = filterFactory(keywords);
+    function search(json, keywordArray) {
         var tags = extractToSet(json, 'tags');
         var categories = extractToSet(json, 'categories');
         return {
-            posts: json.posts.filter(filters.POST).sort(function (a, b) { return weights.POST(b) - weights.POST(a); }),
-            pages: json.pages.filter(filters.PAGE).sort(function (a, b) { return weights.PAGE(b) - weights.PAGE(a); }),
-            categories: categories.filter(filters.CATEGORY).sort(function (a, b) { return weights.CATEGORY(b) - weights.CATEGORY(a); }),
-            tags: tags.filter(filters.TAG).sort(function (a, b) { return weights.TAG(b) - weights.TAG(a); })
+            posts: searchCollection(json.posts, keywordArray, ['title', 'text'], [3, 1]),
+            pages: searchCollection(json.pages, keywordArray, ['title', 'text'], [3, 1]),
+            categories: searchCollection(categories, keywordArray, ['name', 'slug'], [1, 1]),
+            tags: searchCollection(tags, keywordArray, ['name', 'slug'], [1, 1])
         };
     }
 
-    function searchResultToDOM(keywords, searchResult) {
+    function searchResultToDOM(keywordArray, searchResult) {
         while (container.firstChild) container.removeChild(container.firstChild);
         Object.keys(searchResult).forEach(function (key) {
-            var resultSection = sectionFactory(keywords, key.toUpperCase(), searchResult[key]);
+            var resultSection = sectionFactory(keywordArray, key.toUpperCase(), searchResult[key]);
             if (resultSection) container.appendChild(resultSection);
         });
     }
@@ -219,8 +220,8 @@
         .then(function (json) {
             if (window.location.hash.trim() === '#ins-search') openSearch();
             input.addEventListener('input', function () {
-                var keywords = input.value;
-                searchResultToDOM(keywords, search(json, keywords));
+                var keywordArray = parseKeywords(input.value);
+                searchResultToDOM(keywordArray, search(json, keywordArray));
             });
             input.dispatchEvent(new Event('input'));
         });

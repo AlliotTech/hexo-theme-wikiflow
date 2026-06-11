@@ -63,13 +63,14 @@ function configureInjects(hexo) {
         hexo.theme.config.injects[point] = [];
 
         injects[point].raws.forEach((injectObj, index) => {
+            const [locals, options, configuredOrder] = injectObj.args;
             const name = `inject/${point}/${injectObj.name}`;
             hexo.theme.setView(name, injectObj.raw);
             configs[name] = {
                 layout: name,
-                locals: injectObj.args[0],
-                options: injectObj.args[1],
-                order: injectObj.args[2] || index
+                locals,
+                options,
+                order: configuredOrder ?? index
             };
         });
 

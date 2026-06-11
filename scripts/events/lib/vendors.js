@@ -28,32 +28,31 @@ function hasLocalAsset(hexo, localPath) {
     return fs.existsSync(path.join(hexo.theme_dir, 'source', localPath));
 }
 
+function createVendor(hexo, definition, url, overrides = {}) {
+    return {
+        type: definition.type,
+        integrity: definition.integrity,
+        ...overrides,
+        url: normalizeUrl(hexo, url)
+    };
+}
+
 function resolveVendor(hexo, key, definition, configuredValue) {
     const value = configuredValue === undefined ? definition.default : configuredValue;
     if (isDisabled(value)) return false;
 
     if (isPlainObject(value) && value.url) {
-        return {
-            ...value,
-            url: normalizeUrl(hexo, value.url)
-        };
+        const { url, ...overrides } = value;
+        return createVendor(hexo, definition, url, overrides);
     }
 
     if (value === true || value === 'cdn' || value === 'cdnjs') {
-        return {
-            type: definition.type,
-            url: normalizeUrl(hexo, definition.cdn),
-            integrity: definition.integrity
-        };
+        return createVendor(hexo, definition, definition.cdn);
     }
 
     if (value === 'local') {
         if (hasLocalAsset(hexo, definition.local)) {
-            return {
-                type: definition.type,
-                url: normalizeUrl(hexo, definition.local),
-                integrity: definition.integrity
-            };
+            return createVendor(hexo, definition, definition.local);
         }
 
         if (!warnedLocalFallbacks.has(key)) {
@@ -61,19 +60,11 @@ function resolveVendor(hexo, key, definition, configuredValue) {
             warnedLocalFallbacks.add(key);
         }
 
-        return {
-            type: definition.type,
-            url: normalizeUrl(hexo, definition.cdn),
-            integrity: definition.integrity
-        };
+        return createVendor(hexo, definition, definition.cdn);
     }
 
     if (typeof value === 'string') {
-        return {
-            type: definition.type,
-            url: normalizeUrl(hexo, value),
-            integrity: definition.integrity
-        };
+        return createVendor(hexo, definition, value);
     }
 
     return false;
@@ -96,6 +87,7 @@ function configureVendors(hexo) {
 }
 
 module.exports = configureVendors;
+module.exports.createVendor = createVendor;
 module.exports.hasLocalAsset = hasLocalAsset;
 module.exports.normalizeUrl = normalizeUrl;
 module.exports.readDependencies = readDependencies;
