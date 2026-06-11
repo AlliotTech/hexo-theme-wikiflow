@@ -2,157 +2,92 @@
 
 [English Page](./README.md)
 
-### 一个面向知识管理和个人 wiki 的 Hexo 8 主题。
+一个面向知识管理和个人 wiki 的 Hexo 8 主题。
 
-一些特性：
-
-- 适用于个人 wiki 知识管理
-- 简洁，双栏，分类
-- 将知识多级分类整理，侧边分级展开，为思维跳转设计
-- 根据文件路径自动为文章添加分类 #4
+- 面向个人知识库的目录分类
+- 双栏布局，侧边栏支持分类分级展开
+- 可选 Insight 搜索、图片查看层、MathJax、评论、分享和历史版本入口
+- 支持 Hexo 8.1.0+ 和 Node.js 20.19.0+
 
 ![Site Preview](./docs/assets/SitePreview.png)
 
-
-
 ![mobile preview](./docs/assets/mobile1.png) ![mobile preview](./docs/assets/mobile2.png)
-
-
 
 ## 安装说明
 
 `hexo-theme-wikiflow` 由 [AlliotTech](https://github.com/AlliotTech) 维护。项目是 `hexo-theme-Wikitten` 的持续维护 fork，并保留原始 MIT 许可证声明。
 
-### 安装
+### 使用 npm 安装
 
-**注意：本主题需要 Hexo 8.1.0 及以上版本，并需要 Node.js 20.19.0 及以上版本。**
-
-1. 进入你的 Hexo 站点文件夹，安装主题包：
+1. 在 Hexo 站点目录中安装主题：
 
 ```bash
-$ cd your-hexo-directory
-$ npm install hexo-theme-wikiflow
+cd your-hexo-directory
+npm install hexo-theme-wikiflow
 ```
 
-2. 将主题提供的初始页面和脚手架复制到站点目录：
+2. 复制主题提供的初始页面和脚手架：
 
 ```bash
-$ cp -rf node_modules/hexo-theme-wikiflow/docs/starter/source/* source/
-$ cp -rf node_modules/hexo-theme-wikiflow/docs/starter/scaffolds/* scaffolds/
+cp -rf node_modules/hexo-theme-wikiflow/docs/starter/source/* source/
+cp -rf node_modules/hexo-theme-wikiflow/docs/starter/scaffolds/* scaffolds/
 ```
 
-3. 将主题配置复制到站点根目录：
+3. 复制并编辑主题配置：
 
 ```bash
-$ cp -f node_modules/hexo-theme-wikiflow/_config.yml.example _config.wikiflow.yml
-# 编辑配置文件，定制你的配置项
-$ vim _config.wikiflow.yml
+cp -f node_modules/hexo-theme-wikiflow/_config.yml.example _config.wikiflow.yml
 ```
 
-推荐的站点配置和主题配置见下方 [配置说明](#配置说明)。
-
-4. 可选站点插件如下。请只在 Hexo **站点**项目中安装你需要的功能。
-
-这里列出了这些插件的功能作用：
-
-```json
-hexo-directory-category // 根据文章文件目录自动为文章添加分类
-hexo-generator-feed	    // 生成 RSS 源
-hexo-generator-json-content	// 生成全站文章 json 内容，用于全文搜索
-hexo-generator-sitemap	// 生成全站站点地图 sitemap
-hexo-filter-nofollow    // 为外部链接添加 rel="nofollow"
-```
-
-你可以将这些插件合并到**站点**的 `package.json` 文件中通过 `npm install` 一次安装，
-
-或者在**站点目录**下，你可以通过以下命令安装他们：
-
-```bash
-$ npm i -S hexo-directory-category hexo-generator-feed hexo-generator-json-content hexo-generator-sitemap hexo-filter-nofollow
-```
-
-5. 配置mathjax渲染（可选）：
-
-如果你在博客中需要撰写数学公式，推荐进行以下配置：
-
-首先安装[pandoc](https://pandoc.org/installing.html)，同时在hexo站点下修改渲染引擎：
-
-```bash
-$ npm un hexo-renderer-marked --save
-$ npm i hexo-renderer-pandoc --save # or hexo-renderer-krammed
-```
-
-然后将以下配置加到站点`_config.yml`文件中：
-
-```bash
-math:
-  enable: true
-  engine: mathjax
-```
-
-
-### 源码安装
-
-如果你想直接基于仓库源码修改主题，可以克隆到 `themes/WikiFlow`：
-
-```bash
-$ cd your-hexo-directory
-$ git clone https://github.com/AlliotTech/hexo-theme-wikiflow.git themes/WikiFlow
-$ cp -rf themes/WikiFlow/docs/starter/source/* source/
-$ cp -rf themes/WikiFlow/docs/starter/scaffolds/* scaffolds/
-```
-
-### 启用
-
-修改站点 `_config.yml` 文件中的 `theme` 选项：
+4. 在站点 `_config.yml` 中启用主题：
 
 ```yaml
 theme: wikiflow
 ```
 
-如果使用源码安装路径 `themes/WikiFlow`，这里应设置为 `WikiFlow`。
+### 使用源码安装
+
+仅在需要直接修改主题源码时使用源码安装：
+
+```bash
+cd your-hexo-directory
+git clone https://github.com/AlliotTech/hexo-theme-wikiflow.git themes/WikiFlow
+cp -rf themes/WikiFlow/docs/starter/source/* source/
+cp -rf themes/WikiFlow/docs/starter/scaffolds/* scaffolds/
+```
+
+如果主题目录是 `themes/WikiFlow`，站点主题名也要与目录一致：
+
+```yaml
+theme: WikiFlow
+```
 
 ### 更新
 
-使用 npm 安装时：
-
 ```bash
-$ npm install hexo-theme-wikiflow@latest
+npm install hexo-theme-wikiflow@latest
 ```
 
-使用源码安装时：
+源码安装时：
 
 ```bash
-$ cd themes/WikiFlow
-$ git pull origin main
+cd themes/WikiFlow
+git pull origin main
 ```
 
+## 站点配置
 
-
-## 配置说明
-
-在站点配置文件 `_config.yml` 中， **推荐配置为**：
+推荐的站点 `_config.yml` 配置：
 
 ```yaml
-# Hexo Configuration
-# URL
 permalink: wiki/:title/
 
-# Directory
 skip_render:
   - README.md
   - '_posts/**/embed_page/**'
 
-# Writing
-new_post_name: :title.md # File name of new posts
+new_post_name: :title.md
 
-## Markdown
-## https://github.com/hexojs/hexo-renderer-marked
-marked:
-  gfm: true
-  
-## Plugins: https://hexo.io/plugins/
-### JsonContent
 jsonContent:
   meta: false
   pages:
@@ -169,106 +104,83 @@ jsonContent:
     categories: true
   ignore:
     - 404.html
-    
-### Creat sitemap
+
 sitemap:
   path: sitemap.xml
-
-### 为外部链接添加 nofollow 属性。使用前请先安装 `hexo-filter-nofollow`。
-nofollow:
-  enable: true
-  exclude:
-    - <your site url domain> # eg: example.com
 ```
 
-在**主题**配置文件 `WikiFlow/_config.yml` 中，你能阅读到各个选项更多的细节配置。
+只安装你实际使用的站点插件：
 
-**发布站点前，请将 `profile`、`social_links`、`history_control` 等主题选项中的示例个人信息改成你自己的信息。**
+```bash
+npm install --save hexo-directory-category hexo-generator-json-content
+```
 
-### `profile`、`comment`、`Share`、`history_control` 和 `miscellaneous` 项都是 **默认关闭的**！
+可选站点插件：
 
-内置评论集成使用 Disqus。
+```bash
+npm install --save hexo-generator-feed hexo-generator-sitemap hexo-filter-nofollow
+```
 
-内置图库使用轻量的原生 JavaScript 图片查看层。
+`hexo-directory-category` 用于根据文章目录生成分类。启用 `search.insight` 时需要安装 `hexo-generator-json-content`。Sitemap、Feed 和 nofollow 属于站点级选择，不是主题必需依赖。
 
-## 可选功能
+## 主题配置
 
-WikiFlow 将 wiki 导航、文章布局和搜索界面作为主题核心体验。浏览器侧增强功能通过主题配置控制，站点项目可以避免在生成页面中输出未使用的功能：
+编辑站点根目录中的 `_config.wikiflow.yml`。本仓库的 `_config.yml.example` 是带注释的标准示例。
+
+发布站点前，请替换 `customize.profile`、`customize.social_links`、`history_control` 等个人信息配置中的示例值。
+
+常用主题选项：
 
 ```yaml
+customize:
+  sidebar: left
+  category_perExpand: false
+  default_index_file: index.md
+
 codeblock:
-    theme:
-        light: github
-        dark: github-dark
+  theme:
+    light: github
+    dark: github-dark
+
+widgets:
+  - category
+
+search:
+  insight: true
 
 vendors:
-    fontawesome: cdn
-    open_sans: false
-    source_code_pro: false
-    mathjax: https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML
+  fontawesome: cdn
+  open_sans: false
+  source_code_pro: false
+  mathjax: https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML
 
 plugins:
-    gallery: true
-    mathjax: true
-    google_analytics:
-    google_site_verification:
+  gallery: true
+  mathjax: true
+  google_analytics:
+  google_site_verification:
 
 comment:
-    disqus:
+  disqus:
 ```
 
 代码高亮主题名来自 `highlight.js/styles/*.css`，填写时不带 `.css` 后缀。未设置 `codeblock.theme.light` 时，主题仍会兼容旧的 `customize.highlight` 配置。
 
-设置 `plugins.gallery: false` 可关闭内置图片查看层。设置 `plugins.mathjax: false` 可关闭数学公式渲染，也可以通过 `vendors.mathjax` 指定脚本地址。样式类 vendor 可以使用 `cdn`、`false` 或外部样式表 URL。`local` 只适用于你明确在 `source/libs` 下提供了对应文件的情况；文件不存在时 WikiFlow 会回退到 `_vendors.yml` 中的 CDN 地址。
+设置 `plugins.gallery: false` 可关闭内置图片查看层。设置 `plugins.mathjax: false` 可关闭 MathJax 输出，也可以通过 `vendors.mathjax` 指定脚本地址。样式类 vendor 可以使用 `cdn`、`false` 或外部样式表 URL。`local` 只适用于你明确在 `source/libs` 下提供了对应文件的情况；文件不存在时 WikiFlow 会回退到 `_vendors.yml` 中的 CDN 地址。
 
 ## 工程化
 
-npm 包通过 `files` 白名单控制发布内容，只发布主题运行文件、文档资源和 starter 文件。发布前可以运行 `npm pack --dry-run` 检查 tarball 中包含的文件。
+npm 包通过 `files` 白名单控制发布内容，只发布主题运行文件、文档资源和 starter 文件。
 
 修改共享主题行为前建议运行：
 
 ```bash
-$ npm run lint
-$ npm test
-$ npm run test:browser
+npm run lint
+npm test
+npm run test:package
 ```
 
-可选的浏览器侧资源统一记录在 `_vendors.yml` 中。除非明确决定内置并写清楚授权，否则不要把第三方构建产物提交到 `source/libs`。
-
-其他的 **推荐设置为**：
-
-```yaml
-# Customize
-customize: # 首先修改这项里面的信息为你自己的各项信息
-    sidebar: left # 侧边栏的所在位置，默认左边
-    category_perExpand: false # 侧边栏里的各个分类是否默认全部展开
-    default_index_file: index.md # 是否指定一篇文章作为首页来代替默认的多篇文章的首页，没有此项的话就会显示默认的按时间顺序排列的文章
-
-# 代码块
-codeblock:
-    theme:
-        light: github
-        dark: github-dark
-    
-# Widgets
-widgets: # 挂件，默认指开启了分类这一栏
-    - category
-    # - recent_posts
-    # - archive
-    # - tag
-    # - tagcloud
-    # - links
-    
-# History version 
-history_control: # 启用这一项使得 wiki 能有历史版本的功能（查看源码、在线编辑、对比历史变动）
-    enable: false # 填写你自己的仓库信息后再改为 true
-    server_link: https://github.com # 版本控制服务器，推荐使用 GitHub https://github.com
-    user: <your GitHub name>
-    repertory: <your repertory name of this wiki source code>
-    branch: <branch name of this wiki site source code>
-```
-
-
+影响浏览器运行时行为的改动还应运行 `npm run test:browser`。除非明确决定内置并写清楚授权，否则不要把第三方构建产物提交到 `source/libs`。
 
 ## 版权协议
 

@@ -6,14 +6,12 @@ const path = require('path');
 const { execFileSync } = require('child_process');
 
 const repoRoot = path.resolve(__dirname, '..');
-const forbiddenVendorPaths = [
+const forbiddenRepositoryPaths = [
   'source/libs',
-  'source/libs/jquery',
-  'source/libs/lightgallery',
-  'source/libs/justified-gallery',
   'source/images/SitePreview.png',
   'source/images/mobile1.png',
-  'source/images/mobile2.png'
+  'source/images/mobile2.png',
+  'docs/starter/source/robots.txt'
 ];
 const forbiddenPackagePrefixes = [
   'test/',
@@ -48,8 +46,8 @@ function assert(condition, message) {
   }
 }
 
-for (const relativePath of forbiddenVendorPaths) {
-  assert(!fs.existsSync(path.join(repoRoot, relativePath)), `Forbidden vendored asset path exists: ${relativePath}`);
+for (const relativePath of forbiddenRepositoryPaths) {
+  assert(!fs.existsSync(path.join(repoRoot, relativePath)), `Forbidden repository path exists: ${relativePath}`);
 }
 
 const packOutput = execFileSync('npm', ['pack', '--json', '--dry-run'], {
