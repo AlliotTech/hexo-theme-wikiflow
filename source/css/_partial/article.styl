@@ -245,55 +245,57 @@ div .article-more-link
         margin-right: 5px
 
 #article-nav
-    clearfix()
-    position: relative
+    display: grid
+    gap: 16px
+    grid-template-columns: 1fr
+    margin: block-margin 0 0
+    padding-top: 20px
+    border-top: 1px solid color-border
     @media mq-normal
-        margin: block-margin 0
-        &:before
-            absolute-center(8px)
-            content: ""
-            border-radius: 50%
-            background: color-default + #222
+        grid-template-columns: repeat(2, minmax(0, 1fr))
 
 .article-nav-link-wrap
+    display: block
+    box-sizing: border-box
+    min-width: 0
+    padding: 0
     text-decoration: none
     color: color-grey
-    box-sizing: border-box
-    margin-top: block-margin
-    text-align: center
-    display: block
     &:hover
-        color: color-default
-    @media mq-normal
-        width: 50%
-        margin-top: 0
+        color: color-link
+        text-decoration: none
+        .article-nav-title
+            color: color-link
+    &:only-child
+        @media mq-normal
+            grid-column: 1 / -1
 
 #article-nav-newer
-    @media mq-normal
-        float: left
-        text-align: right
-        padding-right: 20px
+    text-align: left
 
 #article-nav-older
+    text-align: left
     @media mq-normal
-        float: right
-        text-align: left
-        padding-left: 20px
+        text-align: right
 
 .article-nav-caption
-    letter-spacing: 2px
-    line-height: 1em
+    display: block
+    margin-bottom: 6px
+    letter-spacing: 0
+    line-height: 1.2
     font-weight: bold
-    color: color-default
-    text-transform: uppercase
-    #article-nav-newer &
-        margin-right: -2px
+    color: color-grey
+    text-transform: none
 
 .article-nav-title
-    font-size: 0.85em
-    margin-top: 0.5em
+    display: -webkit-box
+    overflow: hidden
+    margin-top: 0
     color: color-default
-    line-height: line-height
+    font-size: 0.9em
+    line-height: 1.5
+    -webkit-box-orient: vertical
+    -webkit-line-clamp: 2
 
 .article-share-box
     position: absolute

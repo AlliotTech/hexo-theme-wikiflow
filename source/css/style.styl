@@ -12,8 +12,8 @@ input, button
         border: 0
         padding: 0
 
-html, body, #container
-    height: 100%
+html, body
+    min-height: 100%
 
 body
     color: color-default
@@ -61,8 +61,12 @@ code
     background-size: logo-width logo-height
 
 #container
+    display: flex
+    min-height: 100vh
+    flex-direction: column
     position: relative
     & > .outer
+        flex: 1
         margin-bottom: 30px
 
 #main
