@@ -11,11 +11,11 @@
 - 将知识多级分类整理，侧边分级展开，为思维跳转设计
 - 根据文件路径自动为文章添加分类 #4
 
-![Site Preview](./source/images/SitePreview.png)
+![Site Preview](./docs/assets/SitePreview.png)
 
 
 
-![mobile preview](./source/images/mobile1.png) ![mobile preview](./source/images/mobile2.png)
+![mobile preview](./docs/assets/mobile1.png) ![mobile preview](./docs/assets/mobile2.png)
 
 
 
@@ -37,8 +37,8 @@ $ npm install hexo-theme-wikiflow
 2. 将主题提供的初始页面和脚手架复制到站点目录：
 
 ```bash
-$ cp -rf node_modules/hexo-theme-wikiflow/_source/* source/
-$ cp -rf node_modules/hexo-theme-wikiflow/_scaffolds/* scaffolds/
+$ cp -rf node_modules/hexo-theme-wikiflow/docs/starter/source/* source/
+$ cp -rf node_modules/hexo-theme-wikiflow/docs/starter/scaffolds/* scaffolds/
 ```
 
 3. 将主题配置复制到站点根目录：
@@ -98,9 +98,8 @@ math:
 ```bash
 $ cd your-hexo-directory
 $ git clone https://github.com/AlliotTech/hexo-theme-wikiflow.git themes/WikiFlow
-$ cp -rf themes/WikiFlow/_source/* source/
-$ cp -rf themes/WikiFlow/_scaffolds/* scaffolds/
-$ cp -f themes/WikiFlow/_config.yml.example themes/WikiFlow/_config.yml
+$ cp -rf themes/WikiFlow/docs/starter/source/* source/
+$ cp -rf themes/WikiFlow/docs/starter/scaffolds/* scaffolds/
 ```
 
 ### 启用
@@ -203,9 +202,9 @@ codeblock:
         dark: github-dark
 
 vendors:
-    fontawesome: local
-    open_sans: local
-    source_code_pro: local
+    fontawesome: cdn
+    open_sans: false
+    source_code_pro: false
     mathjax: https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML
 
 plugins:
@@ -220,11 +219,11 @@ comment:
 
 代码高亮主题名来自 `highlight.js/styles/*.css`，填写时不带 `.css` 后缀。未设置 `codeblock.theme.light` 时，主题仍会兼容旧的 `customize.highlight` 配置。
 
-设置 `plugins.gallery: false` 可关闭内置图片查看层。设置 `plugins.mathjax: false` 可关闭数学公式渲染，也可以通过 `vendors.mathjax` 指定脚本地址。样式类 vendor 可以使用 `local` 加载主题内置资源，使用 `false` 不输出 link 标签，或填写外部样式表 URL。
+设置 `plugins.gallery: false` 可关闭内置图片查看层。设置 `plugins.mathjax: false` 可关闭数学公式渲染，也可以通过 `vendors.mathjax` 指定脚本地址。样式类 vendor 可以使用 `cdn`、`false` 或外部样式表 URL。`local` 只适用于你明确在 `source/libs` 下提供了对应文件的情况；文件不存在时 WikiFlow 会回退到 `_vendors.yml` 中的 CDN 地址。
 
 ## 工程化
 
-npm 包通过 `files` 白名单控制发布内容。发布前可以运行 `npm pack --dry-run` 检查 tarball 中包含的文件。
+npm 包通过 `files` 白名单控制发布内容，只发布主题运行文件、文档资源和 starter 文件。发布前可以运行 `npm pack --dry-run` 检查 tarball 中包含的文件。
 
 修改共享主题行为前建议运行：
 

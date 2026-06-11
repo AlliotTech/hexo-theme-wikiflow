@@ -31,12 +31,12 @@
         <div class="timeline-row">
             <span class="node"></span>
             <div class="content">
-                <%- partial('common/post/title', { post: post, index: true, class_name: 'timeline-article-title' }) %>
+                <%- partial('_partials/post/title', { post: post, index: true, class_name: 'timeline-article-title' }) %>
                 <% if (count_per_month.length == 1) { %>
                 <div class="article-meta">
-                    <%- partial('common/post/date', { post: post, class_name: 'article-date', date_format: null }) %>
-                    <%- partial('common/post/category', { post: post }) %>
-                    <%- partial('common/post/tag', { post: post }) %>
+                    <%- partial('_partials/post/date', { post: post, class_name: 'article-date', date_format: null }) %>
+                    <%- partial('_partials/post/category', { post: post }) %>
+                    <%- partial('_partials/post/tag', { post: post }) %>
                 </div>
                 <% } %>
             </div>

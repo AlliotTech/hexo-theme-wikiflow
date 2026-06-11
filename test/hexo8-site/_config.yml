@@ -113,9 +113,9 @@ theme_config:
     disqus:
   share: default
   vendors:
-    fontawesome: local
-    open_sans: local
-    source_code_pro: local
+    fontawesome: https://cdn.example.com/font-awesome.css
+    open_sans: false
+    source_code_pro: false
     mathjax: https://cdn.example.com/mathjax.js
   plugins:
     gallery: true

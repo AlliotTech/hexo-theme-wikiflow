@@ -1,0 +1,106 @@
+# Theme core
+cache:
+    enable: true
+
+# Custom file injection.
+# Paths are resolved by Hexo during Stylus rendering, so site-level files should
+# usually live in source/_data.
+custom_file_path:
+    # variable: source/_data/wikiflow-variables.styl
+    # mixin: source/_data/wikiflow-mixins.styl
+    # style: source/_data/wikiflow-styles.styl
+
+injects:
+    variable: []
+    mixin: []
+    style: []
+
+# Menus
+menu:
+    Home: /
+    Archives: /archives
+    Categories: /categories
+    Tags: /tags
+    About: /about
+
+# Customize
+customize:
+    logo:
+        enabled: true
+        width: 40
+        height: 40
+        url: /logo.png
+    profile:
+        enabled: false
+        avatar:
+        gravatar:
+        author: WikiFlow User
+        author_title: Knowledge Base Maintainer
+        location: Your Location
+        follow: https://github.com/AlliotTech/
+    highlight: monokai
+    sidebar: left
+    category_perExpand: false
+    thumbnail: true
+    favicon: /favicon.ico
+    default_index_file: index.md
+    social_links:
+        github: https://github.com/AlliotTech/hexo-theme-wikiflow
+        rss: /atom.xml
+    social_link_tooltip: true
+
+# Code blocks
+codeblock:
+    theme:
+        light: monokai
+        dark: monokai
+
+# Widgets
+widgets:
+    - category
+
+# Excerpt
+auto_excerpt:
+    enable: true
+    lines: 5
+
+# Search
+search:
+    insight: true
+
+# History version
+history_control:
+    enable: true
+    server_link: https://github.com
+    user: AlliotTech
+    repertory: hexo-theme-wikiflow
+    branch: main
+
+# Comment
+comment:
+    disqus:
+
+# Share
+share: default
+
+# Vendor assets. Values can be "cdn", "local", false, or a custom URL.
+vendors:
+    fontawesome: cdn
+    open_sans: false
+    source_code_pro: false
+    mathjax: https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML
+
+# Plugins
+plugins:
+    gallery: true
+    mathjax: true
+    google_analytics:
+    google_site_verification:
+
+# Miscellaneous
+miscellaneous:
+    open_graph:
+        fb_app_id:
+        fb_admins:
+        twitter_id:
+    links:

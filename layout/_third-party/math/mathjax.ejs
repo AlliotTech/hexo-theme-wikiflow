@@ -1,0 +1,26 @@
+<%
+var mathjaxVendor = theme.vendors && Object.prototype.hasOwnProperty.call(theme.vendors, 'mathjax') ? theme.vendors.mathjax : null;
+var mathjaxSrc = mathjaxVendor && mathjaxVendor.url ? mathjaxVendor.url : mathjaxVendor;
+%>
+<% if (mathjaxSrc && mathjaxSrc !== false && mathjaxSrc !== 'false' && mathjaxSrc !== 'off') { %>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true,
+            TeX: {
+                equationNumbers: {
+                  autoNumber: 'AMS'
+                }
+            }
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script async src="<%- mathjaxSrc %>"></script>
+<% } %>

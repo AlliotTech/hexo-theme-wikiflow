@@ -1,5 +1,3 @@
-_config.yml
-!test/hexo8-site/_config.yml
 *.iml
 .idea
 node_modules/

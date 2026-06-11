@@ -15,10 +15,13 @@ const scenarios = [
     name: 'default',
     expectHtml: {
       includes: [
+        'https://cdn.example.com/font-awesome.css',
+        'https://cdn.example.com/mathjax.js'
+      ],
+      excludes: [
         '/libs/font-awesome/css/font-awesome.min.css',
         '/libs/open-sans/styles.css',
-        '/libs/source-code-pro/styles.css',
-        'https://cdn.example.com/mathjax.js'
+        '/libs/source-code-pro/styles.css'
       ]
     },
     browser: {
@@ -35,12 +38,11 @@ const scenarios = [
   {
     name: 'vendors-disabled',
     configPatch: config => config
-      .replace('    fontawesome: local', '    fontawesome: false')
-      .replace('    open_sans: local', '    open_sans: false')
-      .replace('    source_code_pro: local', '    source_code_pro: false')
+      .replace('    fontawesome: https://cdn.example.com/font-awesome.css', '    fontawesome: false')
       .replace('    mathjax: https://cdn.example.com/mathjax.js', '    mathjax: false'),
     expectHtml: {
       excludes: [
+        'https://cdn.example.com/font-awesome.css',
         '/libs/font-awesome/css/font-awesome.min.css',
         '/libs/open-sans/styles.css',
         '/libs/source-code-pro/styles.css',
@@ -54,13 +56,9 @@ const scenarios = [
   },
   {
     name: 'customize-highlight-compat',
-    configPatch: config => config.replace([
-      '  codeblock:',
-      '    theme:',
-      '      light: github',
-      '      dark: github-dark',
-      ''
-    ].join('\n'), ''),
+    configPatch: config => config
+      .replace('      light: github', '      light:')
+      .replace('      dark: github-dark', '      dark:'),
     expectCss: {
       includes: [
         'Generated from highlight.js/styles/monokai.css',
@@ -98,7 +96,7 @@ async function copyFixture(scenario) {
   await fs.promises.rm(themePath, { recursive: true, force: true });
   await fs.promises.mkdir(themePath, { recursive: true });
 
-  for (const entry of ['layout', 'source', 'scripts', 'languages', '_config.yml.example']) {
+  for (const entry of ['layout', 'source', 'scripts', 'languages', '_config.yml', '_config.yml.example', '_vendors.yml']) {
     await fs.promises.cp(path.join(repoRoot, entry), path.join(themePath, entry), { recursive: true });
   }
 

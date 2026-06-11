@@ -1,3 +1,20 @@
+# Theme core
+cache:
+    enable: true
+
+# Custom file injection.
+# Paths are resolved by Hexo during Stylus rendering, so site-level files should
+# usually live in source/_data.
+custom_file_path:
+    # variable: source/_data/wikiflow-variables.styl
+    # mixin: source/_data/wikiflow-mixins.styl
+    # style: source/_data/wikiflow-styles.styl
+
+injects:
+    variable: []
+    mixin: []
+    style: []
+
 # Menus
 menu:
   首页: /
@@ -77,10 +94,10 @@ share: default
 
 # Vendor assets
 vendors:
-    fontawesome: local # options: local, false, or a custom stylesheet URL
-    open_sans: local # options: local, false, or a custom stylesheet URL
-    source_code_pro: local # options: local, false, or a custom stylesheet URL
-    mathjax: https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML
+    fontawesome: cdn # options: cdn, local, false, or a custom stylesheet URL
+    open_sans: false # options: cdn, local, false, or a custom stylesheet URL
+    source_code_pro: false # options: cdn, local, false, or a custom stylesheet URL
+    mathjax: https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML # options: cdn, false, or a custom script URL
 
 # Plugins
 plugins:

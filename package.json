@@ -17,10 +17,10 @@
     "url": "git+https://github.com/AlliotTech/hexo-theme-wikiflow.git"
   },
   "files": [
+    "_config.yml",
     "_config.yml.example",
-    "_scaffolds",
-    "_source",
     "_vendors.yml",
+    "docs",
     "languages",
     "layout",
     "scripts",
@@ -73,6 +73,7 @@
   },
   "dependencies": {
     "css": "^3.0.0",
-    "highlight.js": "^11.11.1"
+    "highlight.js": "^11.11.1",
+    "js-yaml": "^4.1.0"
   }
 }

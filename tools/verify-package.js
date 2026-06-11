@@ -7,9 +7,13 @@ const { execFileSync } = require('child_process');
 
 const repoRoot = path.resolve(__dirname, '..');
 const forbiddenVendorPaths = [
+  'source/libs',
   'source/libs/jquery',
   'source/libs/lightgallery',
-  'source/libs/justified-gallery'
+  'source/libs/justified-gallery',
+  'source/images/SitePreview.png',
+  'source/images/mobile1.png',
+  'source/images/mobile2.png'
 ];
 const forbiddenPackagePrefixes = [
   'test/',
@@ -28,8 +32,11 @@ const requiredPackageFiles = [
   'LICENSE',
   'README.md',
   'README_zh-CN.md',
+  '_config.yml',
   '_config.yml.example',
   '_vendors.yml',
+  'docs/starter/source/about/index.md',
+  'docs/starter/scaffolds/post.md',
   'layout/layout.ejs',
   'source/js/main.js',
   'source/css/style.styl'

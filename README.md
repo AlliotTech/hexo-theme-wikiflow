@@ -11,11 +11,11 @@ some features:
 - The knowledge of multi-level sorting, the side can be expand at all levels of classification, easy to jump
 - Categorize article according to file directory  #4
 
-![Site Preview](./source/images/SitePreview.png)
+![Site Preview](./docs/assets/SitePreview.png)
 
 
 
-![mobile preview](./source/images/mobile1.png) ![mobile preview](./source/images/mobile2.png)
+![mobile preview](./docs/assets/mobile1.png) ![mobile preview](./docs/assets/mobile2.png)
 
 
 
@@ -37,8 +37,8 @@ $ npm install hexo-theme-wikiflow
 2. Copy the starter pages and scaffolds into your site:
 
 ```bash
-$ cp -rf node_modules/hexo-theme-wikiflow/_source/* source/
-$ cp -rf node_modules/hexo-theme-wikiflow/_scaffolds/* scaffolds/
+$ cp -rf node_modules/hexo-theme-wikiflow/docs/starter/source/* source/
+$ cp -rf node_modules/hexo-theme-wikiflow/docs/starter/scaffolds/* scaffolds/
 ```
 
 3. Copy the theme config into the site root:
@@ -97,9 +97,8 @@ If you want to work directly from the repository, clone the theme into `themes/W
 ```bash
 $ cd your-hexo-directory
 $ git clone https://github.com/AlliotTech/hexo-theme-wikiflow.git themes/WikiFlow
-$ cp -rf themes/WikiFlow/_source/* source/
-$ cp -rf themes/WikiFlow/_scaffolds/* scaffolds/
-$ cp -f themes/WikiFlow/_config.yml.example themes/WikiFlow/_config.yml
+$ cp -rf themes/WikiFlow/docs/starter/source/* source/
+$ cp -rf themes/WikiFlow/docs/starter/scaffolds/* scaffolds/
 ```
 
 ### Enable
@@ -200,9 +199,9 @@ codeblock:
         dark: github-dark
 
 vendors:
-    fontawesome: local
-    open_sans: local
-    source_code_pro: local
+    fontawesome: cdn
+    open_sans: false
+    source_code_pro: false
     mathjax: https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML
 
 plugins:
@@ -217,11 +216,11 @@ comment:
 
 Code block theme names come from `highlight.js/styles/*.css` without the `.css` suffix. `customize.highlight` is still read for configuration compatibility when `codeblock.theme.light` is not set.
 
-Set `plugins.gallery: false` to disable the built-in image lightbox. Set `plugins.mathjax: false` to disable math rendering, or set `vendors.mathjax` to a script URL to choose the loader. For stylesheet vendors, use `local` for bundled assets, `false` to omit the link tag, or an external stylesheet URL.
+Set `plugins.gallery: false` to disable the built-in image lightbox. Set `plugins.mathjax: false` to disable math rendering, or set `vendors.mathjax` to a script URL to choose the loader. For stylesheet vendors, use `cdn`, `false`, or an external stylesheet URL. `local` only works when you intentionally provide matching files under `source/libs`; otherwise WikiFlow falls back to the CDN entry in `_vendors.yml`.
 
 ## Engineering
 
-The npm package uses a `files` allowlist so only theme runtime files are published. Run `npm pack --dry-run` before publishing to inspect the tarball.
+The npm package uses a `files` allowlist so only theme runtime files, documentation assets, and starter files are published. Run `npm pack --dry-run` before publishing to inspect the tarball.
 
 Run quality checks before changing shared theme behavior:
 

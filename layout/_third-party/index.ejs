@@ -1,0 +1,12 @@
+<% if (typeof(isHead) !== 'undefined' && isHead) { %>
+    <% if (theme.plugins && theme.plugins.google_analytics) { %>
+        <%- partial('_third-party/analytics/google-analytics') %>
+    <% } %>
+    <% if (theme.plugins && theme.plugins.google_site_verification) { %>
+        <meta name="google-site-verification" content="<%= theme.plugins.google_site_verification %>" />
+    <% } %>
+<% } else { %>
+    <% if (theme.plugins && theme.plugins.mathjax) { %>
+        <%- partial('_third-party/math/mathjax') %>
+    <% } %>
+<% } %>

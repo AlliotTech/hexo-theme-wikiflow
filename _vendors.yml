@@ -1,35 +1,36 @@
 # Optional third-party frontend assets.
 #
-# WikiFlow keeps the default browser runtime dependency-free. When a feature
-# needs an external browser asset, define its metadata here and load it from a
-# small partial instead of committing generated vendor builds to source/libs.
+# Values in theme config can be false, "cdn", "local", or a custom URL.
+# "local" is only used when the corresponding file exists in source/libs;
+# otherwise the resolver falls back to the CDN URL.
 
-assets:
-  fontawesome:
-    enabled: true
-    bundled: true
-    license: "Font Awesome Free License"
-    config_key: "vendors.fontawesome"
-    values: ["local", false, "stylesheet URL"]
-    path: "source/libs/font-awesome"
-  open_sans:
-    enabled: true
-    bundled: true
-    license: "Apache-2.0"
-    config_key: "vendors.open_sans"
-    values: ["local", false, "stylesheet URL"]
-    path: "source/libs/open-sans"
-  source_code_pro:
-    enabled: true
-    bundled: true
-    license: "OFL-1.1"
-    config_key: "vendors.source_code_pro"
-    values: ["local", false, "stylesheet URL"]
-    path: "source/libs/source-code-pro"
-  mathjax:
-    enabled: false
-    bundled: false
-    license: "Apache-2.0"
-    config_key: "vendors.mathjax"
-    feature_key: "plugins.mathjax"
-    values: [false, "script URL"]
+fontawesome:
+  type: style
+  name: font-awesome
+  version: 4.7.0
+  default: cdn
+  cdn: https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css
+  local: libs/font-awesome/css/font-awesome.min.css
+
+open_sans:
+  type: style
+  name: open-sans
+  version: 1
+  default: false
+  cdn: https://fonts.googleapis.com/css?family=Open+Sans:400,600,700
+  local: libs/open-sans/styles.css
+
+source_code_pro:
+  type: style
+  name: source-code-pro
+  version: 1
+  default: false
+  cdn: https://fonts.googleapis.com/css?family=Source+Code+Pro:400,600
+  local: libs/source-code-pro/styles.css
+
+mathjax:
+  type: script
+  name: mathjax
+  version: 2.7.1
+  default: https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML
+  cdn: https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML

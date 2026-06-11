@@ -1,18 +1,18 @@
-<%- partial('common/head') %>
+<%- partial('_partials/head/head') %>
 <body>
     <div id="container">
-        <%- partial('common/header') %>
+        <%- partial('_partials/header') %>
         <div class="outer">
             <% if (theme.customize && theme.customize.profile && theme.customize.profile.enabled) { %>
-                <%- partial('common/profile', null, {cache: !config.relative_link}) %>
+                <%- partial('_partials/profile', null, {cache: !config.relative_link}) %>
             <% } %>
             <% if (theme.customize && theme.customize.sidebar) { %>
-                <%- partial('common/sidebar') %>
+                <%- partial('_partials/sidebar') %>
             <% } %>
             <section id="main"><%- body %></section>
         </div>
-        <%- partial('common/footer', null, {cache: !config.relative_link}) %>
-        <%- partial('common/scripts') %>
+        <%- partial('_partials/footer', null, {cache: !config.relative_link}) %>
+        <%- partial('_scripts/index') %>
     </div>
 </body>
 </html>
