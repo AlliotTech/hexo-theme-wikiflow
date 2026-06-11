@@ -14,22 +14,24 @@
 
 .profile-block
     padding: 15px 20px
-    border-bottom: 1px solid color-border
+    border-bottom: 1px solid var(--color-border)
     &:last-child
         border-bottom: none
 
 #profile
+    grid-area: unquote("profile")
     max-width: 287px
-    column(profile-column)
+    min-width: 0
+    width: 100%
     display: none
     @media mq-normal
         display: block
     .inner
         @extend $block
-        margin-top: block-margin
-        background: white
-        border: 4px solid color-border-stretch
-        border-radius: 4px
+        margin-top: var(--space-block)
+        background: var(--color-surface)
+        border: 4px solid var(--color-border-stretch)
+        border-radius: var(--radius-default)
         .base-info
             #avatar
                 display: block
@@ -49,7 +51,7 @@
                 .fa
                     margin-right: 5px
             #follow
-                color: white
+                color: var(--color-text-inverse)
                 width: 150px
                 height: 40px
                 display: block
@@ -57,17 +59,17 @@
                 line-height: 40px
                 text-align: center
                 margin: 20px auto 10px
-                background: color-link
-                border-radius: 20px
+                background: var(--color-link)
+                border-radius: var(--radius-pill)
                 transition: 0.2s ease
                 &:hover
                     background: color-link + #111
         .article-info
-            clearfix()
+            display: flex
             padding: 0px
             .article-info-block
+                flex: 1 1 0
                 width: 50%
-                float: left
                 padding: 20px 15px
                 text-align: center
                 box-sizing: border-box
@@ -77,7 +79,7 @@
                     font-size: font-size
                     text-transform: uppercase
                 &:first-child
-                    border-right: 1px solid color-border
+                    border-right: 1px solid var(--color-border)
         .social-links
             & > table
                 width: 100%
@@ -94,15 +96,15 @@
                             &:after
                                 right: -50%
                                 top: -41px
-                                color: white
-                                background: #333
+                                color: var(--color-text-inverse)
+                                background: var(--color-sidebar-text-dark)
                                 font-size: 14px
                                 content: attr(title)
                                 display: block
                                 padding: 5px 15px
                                 position: absolute
                                 white-space: nowrap
-                                border-radius: 2px
+                                border-radius: var(--radius-small)
                                 text-transform: uppercase
                                 box-shadow: 0 0 2px rgba(0, 0, 0, 0.2)
                                 z-index: 1
@@ -110,7 +112,7 @@
                                 top: -12px
                                 right: 8px
                                 border: solid
-                                border-color: #333 transparent
+                                border-color: var(--color-sidebar-text-dark) transparent
                                 border-width: 5px 5px 0 5px
                                 content: ""
                                 display: block
@@ -134,7 +136,7 @@
                 position: absolute
                 border-width: 10px
                 border-style: solid
-                border-color: transparent transparent white transparent
+                border-color: transparent transparent var(--color-surface) transparent
             &:after
                 z-index: 0
                 border-color: transparent transparent color-border - #111 transparent

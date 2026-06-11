@@ -202,12 +202,17 @@ async function verifyScenario(scenario) {
 }
 
 async function verifyGeneratedHtml(scenario, tmpRoot) {
-  if (!scenario.expectHtml) return;
-
   const htmlPath = path.join(tmpRoot, 'public', 'wiki', 'guide', 'first-note', 'index.html');
   const html = await fs.promises.readFile(htmlPath, 'utf8');
-  const includes = scenario.expectHtml.includes || [];
-  const excludes = scenario.expectHtml.excludes || [];
+  const genericIncludes = [
+    '<button id="profile-anchor" type="button" aria-controls="profile" aria-expanded="false"',
+    '<img id="avatar" src="/css/images/logo.png" alt="WikiFlow" />'
+  ];
+  const genericExcludes = [
+    'href="javascript:;"'
+  ];
+  const includes = genericIncludes.concat(scenario.expectHtml?.includes || []);
+  const excludes = genericExcludes.concat(scenario.expectHtml?.excludes || []);
   const missing = includes.filter(fragment => !html.includes(fragment));
   const unexpected = excludes.filter(fragment => html.includes(fragment));
 
@@ -223,6 +228,17 @@ async function verifyGeneratedCss(scenario, tmpRoot) {
   const cssPath = path.join(tmpRoot, 'public', 'css', 'style.css');
   const css = await fs.promises.readFile(cssPath, 'utf8');
   const expectation = scenario.expectCss || {};
+  const genericIncludes = [
+    '--color-surface: #fff;',
+    'grid-template-areas: "sidebar main profile";',
+    'grid-area: profile;',
+    'grid-area: sidebar;'
+  ];
+  const genericExcludes = [
+    'grid-area: true',
+    "grid-area: 'left'",
+    'grid-area: "left"'
+  ];
   const includes = expectation.includes || [
     'Generated from highlight.js/styles/github.css',
     '--highlight-background: #ffffff;',
@@ -235,8 +251,8 @@ async function verifyGeneratedCss(scenario, tmpRoot) {
     '.hljs-variable',
     'code.hljs'
   ];
-  const missing = includes.filter(fragment => !css.includes(fragment));
-  const unexpected = excludes.filter(fragment => css.includes(fragment));
+  const missing = genericIncludes.concat(includes).filter(fragment => !css.includes(fragment));
+  const unexpected = genericExcludes.concat(excludes).filter(fragment => css.includes(fragment));
 
   if (css.length < 1000 || missing.length || unexpected.length) {
     throw new Error(`CSS expectation failed for ${scenario.name}:\n${JSON.stringify({

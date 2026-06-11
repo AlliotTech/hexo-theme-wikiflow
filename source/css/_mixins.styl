@@ -43,6 +43,15 @@ column(x, _columns = columns)
     width: total-width * ((((gutter-width + column-width) * x) - gutter-width) / gridsystem-width(_columns))
     margin: 0 total-width * ((gutter-width * 0.5) / gridsystem-width(_columns))
 
+grid-column-width(x, _columns = columns)
+    total-width * ((((gutter-width + column-width) * x) - gutter-width) / gridsystem-width(_columns))
+
+grid-edge-gap(_columns = columns)
+    total-width * ((gutter-width * 0.5) / gridsystem-width(_columns))
+
+grid-column-gap(_columns = columns)
+    grid-edge-gap(_columns) * 2
+
 push(offset = 1)
     margin-left: total-width * (((gutter-width + column-width) * offset) / gridsystem-width(columns))
 

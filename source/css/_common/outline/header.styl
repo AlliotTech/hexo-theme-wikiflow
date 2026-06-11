@@ -1,16 +1,16 @@
 #header
     @extend $block
-    background: white
+    background: var(--color-surface)
     position: relative
     a, a:visited,
     button
         white-space: nowrap
         transition: 0.2s ease
-        color: color-default
+        color: var(--color-default)
     a:hover,
     button:hover,
     button:focus
-        color: color-link
+        color: var(--color-link)
 
 header-block-padding = (header-height - logo-height) / 2
 if header-block-padding < 0
@@ -51,7 +51,7 @@ if header-block-padding < 0
     margin-top: logo-height * -0.5
 
 .header-sub
-    border-top: 1px solid color-border
+    border-top: 1px solid var(--color-border)
 
 .header-actions
     display: flex
@@ -117,6 +117,10 @@ $nav-link
         #profile-anchor
             display: inline-flex
             align-items: center
+            border: none
+            background: none
+            cursor: pointer
+            font: font-size font-sans
             height: logo-height
             line-height: logo-height
         .avatar
@@ -140,7 +144,7 @@ $nav-link
     border-radius: 50%
     background: none
     font: font-size font-sans
-    color: color-default
+    color: var(--color-default)
     &:before
         content: '\f002'
         font-family: 'FontAwesome'
@@ -158,7 +162,7 @@ $nav-link
     padding: 0
     width: 200px
     box-shadow: none
-    color: color-default
+    color: var(--color-default)
     transition: 0.2s ease
     box-sizing: border-box
     height: auto !important
@@ -166,9 +170,9 @@ $nav-link
     outline: none !important
     background: none !important
     font: font-size font-sans
-    border: 1px solid color-border !important
+    border: 1px solid var(--color-border) !important
     &:focus
-        border-color: color-link !important
+        border-color: var(--color-link) !important
     &::-webkit-search-results-decoration
     &::-webkit-search-cancel-button
         -webkit-appearance: none

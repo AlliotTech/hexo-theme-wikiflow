@@ -1,36 +1,36 @@
 article
     padding: 3px
-    border-radius: 4px
-    background-color: color-border-stretch
+    border-radius: var(--radius-default)
+    background-color: var(--color-border-stretch)
 .article
-    margin: block-margin 0
+    margin: var(--space-block) 0
 
 .article-inner
     @extend $block
     overflow: hidden
-    background: white
-    border-radius: 4px
-    border: 1px solid #BBB
+    background: var(--color-surface)
+    border-radius: var(--radius-default)
+    border: 1px solid var(--color-article-border)
 
 .article-banner
     width:100%
     height:auto
 
 .article-header
-    padding: 0 article-padding 0
+    padding: 0 var(--space-article) 0
     .article-title
         display: block
         margin-bottom: 14px
 
 .article-title
     font-size: 2em
-    color: color-default
+    color: var(--color-default)
     text-decoration: none
     line-height: line-height-title
     a&:visited
-        color: color-default
+        color: var(--color-default)
     a&:hover
-        color: color-link
+        color: var(--color-link)
     @media mq-mini
         font-size: 1.6em
     @media mq-mobile
@@ -47,9 +47,9 @@ article
         .fa
             margin-right: 3px
     a
-        color: color-default
+        color: var(--color-default)
         &:hover
-            color: color-link
+            color: var(--color-link)
 div.article-meta-button
     float: right
     margin-right: 0
@@ -58,23 +58,23 @@ div.article-meta-button
         padding: 4px 8px
         margin: 2px 0
         font-size: 85%
-        background: #555
+        background: var(--color-action-background)
         border-radius: 3px
         text-transform: none
         &:hover
-            background: #333
+            background: var(--color-action-background-hover)
             
 .article-inner .article-meta
         line-height: 20px
-        background: color-meta-head
+        background: var(--color-meta-head)
         margin: 0px -21px 20px -21px
         padding: 0 20px;
         line-height: 30px
-        border: 1px solid #666
-        border-radius: 4px 4px 0 0
-        color: #fff
+        border: 1px solid var(--color-panel-border)
+        border-radius: var(--radius-default) var(--radius-default) 0 0
+        color: var(--color-text-inverse)
         a
-            color: #fff 
+            color: var(--color-text-inverse)
             
 .article-category
     .fa-angle-right
@@ -88,8 +88,8 @@ div.article-meta-button
 .article-entry
     @extend $base-style
     clearfix()
-    color: color-default
-    padding: 0 article-padding
+    color: var(--color-default)
+    padding: 0 var(--space-article)
     line-height: line-height
     p, table
         line-height: line-height
@@ -111,7 +111,7 @@ div.article-meta-button
             &::before
                 visibility: visible
     a
-        color: color-link
+        color: var(--color-link)
         text-decoration: none
         &:hover
             text-decoration: underline
@@ -134,10 +134,10 @@ div.article-meta-button
         border-spacing: 0
     th
         font-weight: bold
-        border-bottom: 3px solid color-border
+        border-bottom: 3px solid var(--color-border)
         padding-bottom: 0.5em
     td
-        border-bottom: 1px solid color-border
+        border-bottom: 1px solid var(--color-border)
         padding: 10px 0
     blockquote
         position: static
@@ -145,14 +145,14 @@ div.article-meta-button
         font-size: 1.1em
         margin: 0 -20px
         padding: 10px 20px 10px 54px
-        background: #fcfcfc
-        border-left: 4px solid #eee
+        background: var(--color-quote-background)
+        border-left: 4px solid var(--color-quote-border)
         &:before
             top: 20px
             left: -40px
             float: left
             content: "\f10d"
-            color: #e2e2e2
+            color: var(--color-quote-icon)
             font-size: 32px
             font-family: FontAwesome
             text-align: center
@@ -176,7 +176,7 @@ div.article-meta-button
             margin-right: 0.5em
             margin-left: 1em
     .caption
-        color: color-grey
+        color: var(--color-grey)
         display: block
         font-size: 0.9em
         margin-top: 0.5em
@@ -203,14 +203,14 @@ div .article-more-link
     display: inline-block
     line-height: 1em
     padding: 6px 15px
-    border-radius: 15px
-    background: color-background
-    color: color-grey
+    border-radius: var(--radius-pill)
+    background: var(--color-background)
+    color: var(--color-grey)
     text-shadow: 0 1px #fff
     text-decoration: none
     &:hover
-        background: color-link
-        color: #fff
+        background: var(--color-link)
+        color: var(--color-text-inverse)
         text-decoration: none
         text-shadow: 0 1px darken(color-link, 20%)
 
@@ -218,14 +218,14 @@ div .article-more-link
     clearfix()
     font-size: 0.85em
     line-height: line-height
-    border-top: 1px solid color-border
+    border-top: 1px solid var(--color-border)
     padding-top: line-height
-    margin: 0 article-padding article-padding
+    margin: 0 var(--space-article) var(--space-article)
     a
-        color: color-grey
+        color: var(--color-grey)
         text-decoration: none
         &:hover
-            color: color-default
+            color: var(--color-default)
 
 .article-comment-link
     float: right
@@ -247,7 +247,7 @@ div .article-more-link
 .article-share-box
     position: absolute
     display: none
-    background: #fff
+    background: var(--color-surface)
     box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.1)
     border-radius: 3px
     margin-left: -145px
@@ -262,16 +262,16 @@ div .article-more-link
     box-sizing: border-box
     font: 14px font-sans
     padding: 0 10px
-    color: color-default
+    color: var(--color-default)
     outline: none
-    border: 1px solid color-border
+    border: 1px solid var(--color-border)
     border-radius: 3px 3px 0 0
     height: 36px
     line-height: 36px
 
 .article-share-links
     clearfix()
-    background: color-background
+    background: var(--color-background)
 
 $article-share-link
     width: 50px

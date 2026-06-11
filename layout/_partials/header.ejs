@@ -20,10 +20,10 @@
                     <% var profile = customize.profile; %>
                     <nav id="sub-nav">
                         <div class="profile" id="profile-nav">
-                            <a id="profile-anchor" href="javascript:;">
-                                <img class="avatar" src="<%= ( profile.gravatar ? gravatar(profile.gravatar) : url_for(profile.avatar)) %>" />
+                            <button id="profile-anchor" type="button" aria-controls="profile" aria-expanded="false" aria-label="<%= profile.author || config.title %>">
+                                <img class="avatar" src="<%= ( profile.gravatar ? gravatar(profile.gravatar) : url_for(profile.avatar)) %>" alt="" />
                                 <i class="fa fa-caret-down"></i>
-                            </a>
+                            </button>
                         </div>
                     </nav>
                 <% } %>

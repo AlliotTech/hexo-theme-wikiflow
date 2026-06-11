@@ -1,8 +1,7 @@
 .outer
-    clearfix()
     max-width: (column-width + gutter-width) * columns * 2
     margin: 0 auto
-    padding: 0 gutter-width
+    padding: 0 var(--layout-gutter)
     @media mq-mini
         padding: 0
 
@@ -23,15 +22,57 @@
         flex: 1
         margin-bottom: 30px
         width: 100%
+        @media mq-tablet
+            if sidebar
+                display: grid
+                align-items: start
+                justify-content: center
+                column-gap: grid-column-gap()
+                if sidebar is left
+                    grid-template-areas: "sidebar main"
+                    grid-template-columns: grid-column-width(sidebar-column-tablet) grid-column-width(main-column-tablet)
+                else
+                    grid-template-areas: "main sidebar"
+                    grid-template-columns: grid-column-width(main-column-tablet) grid-column-width(sidebar-column-tablet)
+        @media mq-normal
+            if sidebar and profile
+                display: grid
+                align-items: start
+                justify-content: center
+                column-gap: grid-column-gap()
+                if sidebar is left
+                    grid-template-areas: "sidebar main profile"
+                    grid-template-columns: grid-column-width(sidebar-column) grid-column-width(main-column) grid-column-width(profile-column)
+                else
+                    grid-template-areas: "profile main sidebar"
+                    grid-template-columns: grid-column-width(profile-column) grid-column-width(main-column) grid-column-width(sidebar-column)
+            else if sidebar
+                display: grid
+                align-items: start
+                justify-content: center
+                column-gap: grid-column-gap()
+                if sidebar is left
+                    grid-template-areas: "sidebar main"
+                    grid-template-columns: grid-column-width(sidebar-column) grid-column-width(main-column)
+                else
+                    grid-template-areas: "main sidebar"
+                    grid-template-columns: grid-column-width(main-column) grid-column-width(sidebar-column)
+            else if profile
+                display: grid
+                align-items: start
+                justify-content: center
+                column-gap: grid-column-gap()
+                grid-template-areas: "profile main"
+                grid-template-columns: grid-column-width(profile-column) grid-column-width(main-column)
 
 #main
+    grid-area: unquote("main")
+    min-width: 0
+    width: 100%
     @media mq-normal
-        column(main-column)
+        width: 100%
     @media mq-tablet
-        if sidebar
-            column(main-column-tablet)
-        else
-            width: 100%
+        width: 100%
     @media mq-mobile
         width: 100%
     @media mq-mini

@@ -111,12 +111,17 @@
         var anchor = document.getElementById('profile-anchor');
         if (!profile || !anchor) return;
 
+        function setExpanded(expanded) {
+            profile.classList.toggle('card', expanded);
+            anchor.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+        }
+
         document.addEventListener('click', function () {
-            profile.classList.remove('card');
+            setExpanded(false);
         });
         anchor.addEventListener('click', function (event) {
             event.stopPropagation();
-            profile.classList.toggle('card');
+            setExpanded(!profile.classList.contains('card'));
         });
         var inner = profile.querySelector('.profile-inner');
         if (inner) {

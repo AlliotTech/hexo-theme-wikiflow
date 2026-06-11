@@ -1,11 +1,11 @@
 $link-dark
     &,
     &:visited
-        color: color-default
+        color: var(--color-default)
         transition: 0.2s ease
     &:hover,
     &:visited:hover
-        color: color-link
+        color: var(--color-link)
 
 $block-caption
     line-height: 1em
@@ -14,8 +14,8 @@ $block-caption
     text-transform: uppercase
 
 $block
-    background: #fff
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05)
+    background: var(--color-surface)
+    box-shadow: var(--shadow-block)
 
 $base-style
     h1
@@ -30,9 +30,9 @@ $base-style
         font-size: 1em
     h6
         font-size: 1em
-        color: color-grey
+        color: var(--color-grey)
     hr
-        border: 1px dashed color-border
+        border: 1px dashed var(--color-border)
     strong
         font-weight: bold
     em, cite
