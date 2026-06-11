@@ -1,0 +1,8 @@
+<% var search = theme.search || {}; %>
+<% if (search.insight) { %>
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="<%= __('index.search') %>" />
+    </div>
+<% } else { %>
+    <%- search_form({text: __('index.search')}) %>
+<% } %>

@@ -1,0 +1,35 @@
+# Optional third-party frontend assets.
+#
+# WikiFlow keeps the default browser runtime dependency-free. When a feature
+# needs an external browser asset, define its metadata here and load it from a
+# small partial instead of committing generated vendor builds to source/libs.
+
+assets:
+  fontawesome:
+    enabled: true
+    bundled: true
+    license: "Font Awesome Free License"
+    config_key: "vendors.fontawesome"
+    values: ["local", false, "stylesheet URL"]
+    path: "source/libs/font-awesome"
+  open_sans:
+    enabled: true
+    bundled: true
+    license: "Apache-2.0"
+    config_key: "vendors.open_sans"
+    values: ["local", false, "stylesheet URL"]
+    path: "source/libs/open-sans"
+  source_code_pro:
+    enabled: true
+    bundled: true
+    license: "OFL-1.1"
+    config_key: "vendors.source_code_pro"
+    values: ["local", false, "stylesheet URL"]
+    path: "source/libs/source-code-pro"
+  mathjax:
+    enabled: false
+    bundled: false
+    license: "Apache-2.0"
+    config_key: "vendors.mathjax"
+    feature_key: "plugins.mathjax"
+    values: [false, "script URL"]

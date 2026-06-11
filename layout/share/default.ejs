@@ -1,0 +1,69 @@
+<a data-url="<%- post.permalink %>" data-id="<%= post._id %>" class="article-share-link"><i class="fa fa-share"></i><%=__('article.share')%></a>
+<script>
+    (function () {
+        if (window.__SHARE_BUTTON_BINDED__) return;
+        window.__SHARE_BUTTON_BINDED__ = true;
+
+        function closeShareBoxes() {
+            document.querySelectorAll('.article-share-box.on').forEach(function (box) {
+                box.classList.remove('on');
+                box.style.display = '';
+            });
+        }
+
+        document.body.addEventListener('click', function (event) {
+            var shareLink = event.target.closest('.article-share-link');
+            var shareBox = event.target.closest('.article-share-box');
+            var shareInput = event.target.closest('.article-share-input');
+            var shareBoxLink = event.target.closest('.article-share-links a');
+
+            if (shareLink) {
+                event.stopPropagation();
+
+                var url = shareLink.getAttribute('data-url');
+                var encodedUrl = encodeURIComponent(url);
+                var id = 'article-share-box-' + shareLink.getAttribute('data-id');
+                var offset = shareLink.getBoundingClientRect();
+                var box = document.getElementById(id);
+
+                if (box && box.classList.contains('on')) {
+                    box.classList.remove('on');
+                    return;
+                }
+
+                if (!box) {
+                    box = document.createElement('div');
+                    box.id = id;
+                    box.className = 'article-share-box';
+                    box.innerHTML = [
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" rel="noopener noreferrer" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" rel="noopener noreferrer" title="Facebook"></a>',
+                            '<a href="https://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" rel="noopener noreferrer" title="Pinterest"></a>',
+                        '</div>'
+                    ].join('');
+                    document.body.appendChild(box);
+                }
+
+                closeShareBoxes();
+                box.style.top = window.scrollY + offset.top + 25 + 'px';
+                box.style.left = window.scrollX + offset.left + 'px';
+                box.classList.add('on');
+                return;
+            }
+
+            if (shareBox) {
+                event.stopPropagation();
+                if (shareInput) shareInput.select();
+                if (shareBoxLink) {
+                    event.preventDefault();
+                    window.open(shareBoxLink.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+                }
+                return;
+            }
+
+            closeShareBoxes();
+        });
+    })();
+</script>

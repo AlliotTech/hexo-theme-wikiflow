@@ -1,0 +1,10 @@
+_config.yml
+!test/hexo8-site/_config.yml
+*.iml
+.idea
+node_modules/
+public/
+db.json
+.deploy_git/
+.DS_Store
+.tmp/

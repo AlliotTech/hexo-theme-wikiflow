@@ -1,0 +1,175 @@
+<% if (site.categories.length) { %>
+    <% var categoryPerExpand = !!(theme.customize && theme.customize.category_perExpand); %>
+    <div class="widget-wrap" id='categories'>
+        <h3 class="widget-title">
+            <span><%= __('widget.categories') %></span>
+            &nbsp;
+            <a id='allExpand' href="#">
+                <i class="fa fa-angle-double-<%- categoryPerExpand ? 'up' : 'down' %> fa-2x"></i>
+            </a>
+        </h3>
+        
+        <% 
+            function listCategories(categories, posts) {
+                function layArticles(posts) {
+                    var classifiedArticles = {'_root': []};
+                    posts.forEach(function(post,i){
+                            var last_post_cat;
+                            var post_info = {
+                            "title": post.title,
+                            "date": post.date,
+                            "path": url_for(post.path),
+                            "_id": post._id
+                        };
+                        if(post.categories.length) {
+                            last_cat_id = post.categories.data.slice(-1)[0]['_id'];
+                            if(!classifiedArticles[last_cat_id]) classifiedArticles[last_cat_id] = [];
+                            classifiedArticles[last_cat_id].push(post_info);
+                        } else {
+                            classifiedArticles['_root'].push(post_info);
+                        }
+                    });
+                    return classifiedArticles;
+                }
+                function prepareQuery(categories, parent) {
+                    var query = {};
+                    if (parent) {
+                        query.parent = parent;
+                    } else {
+                        query.parent = {$exists: false};
+                    }
+                    return categories.find(query).sort('name', 1).filter(function(cat) {
+                        return cat.length;
+                    });
+                }
+                function hierarchicalList(tree, parent, classifiedArticles) {
+                  if(!tree.name) tree = {"name": "_root", "_id": "_root", "children": [], "articles": classifiedArticles['_root']};
+                  prepareQuery(categories, parent).forEach(function(cat, i) {
+                      var now_category = {
+                          "_id": cat._id, 
+                          "name": cat.name, 
+                          "children": [],
+                          "articles": classifiedArticles[cat._id]
+                      };
+                      if(is_post() && now_category.articles) {
+                          now_category.articles.forEach(function(post, i) {
+                              if(page._id == post._id) now_category["selected"] = true;
+                          });
+                      }
+                      var childTree = hierarchicalList(now_category, cat._id, classifiedArticles);
+                      if(childTree.selected) {tree["selected"] = true};
+                      tree.children.push(childTree);
+                  });
+                  return tree;
+                }
+                var classifiedArticles = layArticles(posts);
+                var categoriesTree = hierarchicalList({}, null, classifiedArticles);
+                return categoriesTree;
+            }
+        %>
+        <% 
+            function visitTreePosts(branch, perExpand) {
+             %> <ul class="unstyled" id="tree" <% if(perExpand) { %>style="display: block;"<% } %>> <%
+                if(branch.children && branch.children.length) {
+                    branch.children.forEach(function(category){
+                    %>
+                    <li class="directory<%- category.selected ? ' open' : '' %>">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder<%- (perExpand || category.selected) ? '-open' : '' %>"></i>
+                            &nbsp;
+                            <%- category.name %>
+                        </a>
+                        <% visitTreePosts(category, perExpand) %>
+                    </li> 
+                    <%  
+                    });
+                } 
+                if(branch.articles && branch.articles.length) {
+                    branch.articles.sort(function(post0, post1) {
+                        return new Date(post0.date) - new Date(post1.date)
+                    }).forEach(function(post){
+                        %> <li class="file<%- (is_post() && post._id == page._id) ? ' active' : '' %>"><a href="<%- post.path %>"><%- post.title %></a></li> <%
+                    });
+                }
+             %> </ul> <%
+            }
+        %>
+        <%
+            var categoriesTree = listCategories(site.categories, site.posts);
+            visitTreePosts(categoriesTree, categoryPerExpand);
+        %>
+    </div>
+    <script>
+        (function() {
+            var iconFolderOpenClass  = 'fa-folder-open';
+            var iconFolderCloseClass = 'fa-folder';
+            var iconAllExpandClass = 'fa-angle-double-down';
+            var iconAllPackClass = 'fa-angle-double-up';
+
+            function setVisible(list, visible) {
+                if (list) list.style.display = visible ? 'block' : 'none';
+            }
+
+            function setFolderIcon(icon, expanded) {
+                if (!icon) return;
+                icon.classList.remove(iconFolderOpenClass, iconFolderCloseClass);
+                icon.classList.add(expanded ? iconFolderOpenClass : iconFolderCloseClass);
+            }
+
+            function setAllIcon(icon, expanded) {
+                if (!icon) return;
+                icon.classList.remove(iconAllExpandClass, iconAllPackClass);
+                icon.classList.add(expanded ? iconAllPackClass : iconAllExpandClass);
+            }
+
+            function setBranch(directoryLink, expanded, includeChildren) {
+                var directory = directoryLink.closest('li');
+                var icon = directoryLink.querySelector('.fa');
+                var lists = includeChildren ? directory.querySelectorAll('ul') : [directory.querySelector(':scope > ul')];
+                var icons = includeChildren ? directory.querySelectorAll('a[data-role="directory"] > .fa') : [icon];
+
+                lists.forEach(function(list) {
+                    setVisible(list, expanded);
+                });
+                icons.forEach(function(folderIcon) {
+                    setFolderIcon(folderIcon, expanded);
+                });
+            }
+
+            document.addEventListener('click', function (event) {
+                var directoryLink = event.target.closest('#categories a[data-role="directory"]');
+                var allExpandLink = event.target.closest('#allExpand');
+
+                if (directoryLink) {
+                    event.preventDefault();
+                    var icon = directoryLink.querySelector('.fa');
+                    var expanded = icon && icon.classList.contains(iconFolderOpenClass);
+                    setBranch(directoryLink, !expanded, false);
+                    return;
+                }
+
+                if (!allExpandLink) return;
+                event.preventDefault();
+                var allIcon = allExpandLink.querySelector('.fa');
+                var expandAll = allIcon && allIcon.classList.contains(iconAllExpandClass);
+
+                document.querySelectorAll('#categories li ul').forEach(function(list) {
+                    setVisible(list, expandAll);
+                });
+                document.querySelectorAll('#sidebar .fa.fa-folder, #sidebar .fa.fa-folder-open').forEach(function(icon) {
+                    setFolderIcon(icon, expandAll);
+                });
+                setAllIcon(allIcon, expandAll);
+            });
+
+            document.querySelectorAll('#categories a[data-role="directory"]').forEach(function(directoryLink) {
+                directoryLink.addEventListener('contextmenu', function(event) {
+                    event.preventDefault();
+                    var icon = directoryLink.querySelector('.fa');
+                    var expanded = icon && icon.classList.contains(iconFolderOpenClass);
+                    setBranch(directoryLink, !expanded, true);
+                });
+            });
+        })();
+    </script>
+<% } %>

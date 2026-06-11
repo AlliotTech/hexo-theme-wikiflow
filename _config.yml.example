@@ -1,0 +1,92 @@
+# Menus
+menu:
+  首页: /
+  归档: /archives
+  分类: /categories
+  标签: /tags
+  关于: /about
+
+# Customize
+customize:
+    logo:
+        enabled: true
+        width: 40
+        height: 40
+        url: /logo.png
+    profile:
+        enabled: false # Whether to show profile bar
+        avatar: # css/images/avatar.png
+        gravatar: # Gravatar email address, if you enable Gravatar, your avatar config will be overriden
+        author: WikiFlow User
+        author_title: Knowledge Base Maintainer
+        location: Your Location
+        follow: https://github.com/AlliotTech/
+    highlight: monokai
+    sidebar: left # sidebar position, options: left, right
+    category_perExpand: false # enable article categories list per expanding
+    thumbnail: true # enable posts thumbnail, options: true, false
+    favicon: /favicon.ico # path to favicon
+    default_index_file: index.md # if this, it will display at site index instead of default index page
+    social_links:
+        github: https://github.com/AlliotTech/hexo-theme-wikiflow
+        stack-overflow:
+        codepen:
+        rss: /atom.xml
+    social_link_tooltip: true # enable the social link tooltip, options: true, false
+
+# Widgets
+widgets: # default use category only
+    - category
+    # - recent_posts
+    # - archive
+    # - tag
+    # - tagcloud
+    # - links
+    
+# Excerpt 
+## Auto creat excerpt with not <!--more-->
+## Enable will truncate auto_excerpt.lines rows in post head to replace excerpt.
+auto_excerpt:
+    enable: true
+    lines: 5
+
+# Search
+search:
+    insight: true # you need to install `hexo-generator-json-content` before using Insight Search
+
+# History version 
+history_control: # make you wiki has history version control in page
+    enable: true
+    server_link: https://github.com # recommend use GitHub https://github.com
+    user: AlliotTech
+    repertory: hexo-theme-wikiflow
+    branch: main
+
+# Comment
+comment:
+    disqus: # enter disqus shortname here
+
+# Share
+share: default
+
+# Vendor assets
+vendors:
+    fontawesome: local # options: local, false, or a custom stylesheet URL
+    open_sans: local # options: local, false, or a custom stylesheet URL
+    source_code_pro: local # options: local, false, or a custom stylesheet URL
+    mathjax: https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML
+
+# Plugins
+plugins:
+    gallery: true # options: true, false - enables the built-in image lightbox
+    mathjax: true # options: true, false - to enable use Mathjax in your article
+    google_analytics: # enter the tracking ID for your Google Analytics
+    google_site_verification: # enter Google site verification code
+
+# Miscellaneous
+miscellaneous:
+    open_graph: # see https://ogp.me
+        fb_app_id:
+        fb_admins:
+        twitter_id:
+    links:
