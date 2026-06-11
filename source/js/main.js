@@ -45,13 +45,22 @@
 
     function createLightbox() {
         var lightbox = document.createElement('div');
+        var closeButton = document.createElement('button');
+        var image = document.createElement('img');
+        var caption = document.createElement('div');
+
         lightbox.className = 'wikiflow-lightbox';
         lightbox.setAttribute('aria-hidden', 'true');
-        lightbox.innerHTML = [
-            '<button type="button" class="wikiflow-lightbox-close" aria-label="Close image">&times;</button>',
-            '<img class="wikiflow-lightbox-image" alt="">',
-            '<div class="wikiflow-lightbox-caption"></div>'
-        ].join('');
+        closeButton.type = 'button';
+        closeButton.className = 'wikiflow-lightbox-close';
+        closeButton.setAttribute('aria-label', 'Close image');
+        closeButton.textContent = String.fromCharCode(215);
+        image.className = 'wikiflow-lightbox-image';
+        image.alt = '';
+        caption.className = 'wikiflow-lightbox-caption';
+        lightbox.appendChild(closeButton);
+        lightbox.appendChild(image);
+        lightbox.appendChild(caption);
         document.body.appendChild(lightbox);
         return lightbox;
     }
@@ -144,14 +153,95 @@
 
     function setupTaskLists() {
         document.querySelectorAll('.article-entry ul > li').forEach(function (item) {
-            var html = item.innerHTML.trim();
-            var checked = /^\[x\]/i.test(item.textContent.trim());
-            var unchecked = /^\[ \]/.test(item.textContent.trim());
+            var text = item.textContent.trim();
+            var checked = /^\[x\]/i.test(text);
+            var unchecked = /^\[ \]/.test(text);
+            var checkbox;
             if (!checked && !unchecked) return;
 
             item.classList.add('task-list');
             if (checked) item.classList.add('check');
-            item.innerHTML = html.replace(/^\[(?: |x)\]/i, '<input type="checkbox" disabled ' + (checked ? 'checked' : '') + '>');
+            checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.disabled = true;
+            checkbox.checked = checked;
+
+            if (item.firstChild && item.firstChild.nodeType === Node.TEXT_NODE) {
+                item.firstChild.nodeValue = item.firstChild.nodeValue.replace(/^\s*\[(?: |x)\]\s*/i, '');
+            }
+            item.insertBefore(checkbox, item.firstChild);
+        });
+    }
+
+    function setupCategoryTree() {
+        var categories = document.getElementById('categories');
+        var iconFolderOpenClass = 'fa-folder-open';
+        var iconFolderCloseClass = 'fa-folder';
+        var iconAllExpandClass = 'fa-angle-double-down';
+        var iconAllPackClass = 'fa-angle-double-up';
+
+        if (!categories) return;
+
+        function setFolderIcon(icon, expanded) {
+            if (!icon) return;
+            icon.classList.remove(iconFolderOpenClass, iconFolderCloseClass);
+            icon.classList.add(expanded ? iconFolderOpenClass : iconFolderCloseClass);
+        }
+
+        function setAllIcon(icon, expanded) {
+            if (!icon) return;
+            icon.classList.remove(iconAllExpandClass, iconAllPackClass);
+            icon.classList.add(expanded ? iconAllPackClass : iconAllExpandClass);
+        }
+
+        function setDirectory(directory, expanded) {
+            var link = directory.querySelector(':scope > a[data-role="directory"]');
+            var icon = link && link.querySelector('.fa');
+
+            directory.classList.toggle('open', expanded);
+            if (link) link.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+            setFolderIcon(icon, expanded);
+        }
+
+        function setBranch(directoryLink, expanded, includeChildren) {
+            var directory = directoryLink.closest('li.directory');
+            var branches;
+
+            if (!directory) return;
+            branches = includeChildren ? directory.querySelectorAll('li.directory') : [];
+            setDirectory(directory, expanded);
+            branches.forEach(function (branch) {
+                setDirectory(branch, expanded);
+            });
+        }
+
+        categories.addEventListener('click', function (event) {
+            var directoryLink = event.target.closest('a[data-role="directory"]');
+            var allExpandLink = event.target.closest('#allExpand');
+            var allIcon;
+            var shouldExpandAll;
+
+            if (directoryLink) {
+                event.preventDefault();
+                setBranch(directoryLink, !directoryLink.closest('li.directory').classList.contains('open'), false);
+                return;
+            }
+
+            if (!allExpandLink) return;
+            event.preventDefault();
+            allIcon = allExpandLink.querySelector('.fa');
+            shouldExpandAll = allIcon && allIcon.classList.contains(iconAllExpandClass);
+            categories.querySelectorAll('li.directory').forEach(function (directory) {
+                setDirectory(directory, shouldExpandAll);
+            });
+            setAllIcon(allIcon, shouldExpandAll);
+        });
+
+        categories.querySelectorAll('a[data-role="directory"]').forEach(function (directoryLink) {
+            directoryLink.addEventListener('contextmenu', function (event) {
+                event.preventDefault();
+                setBranch(directoryLink, !directoryLink.closest('li.directory').classList.contains('open'), true);
+            });
         });
     }
 
@@ -161,5 +251,6 @@
         setupProfileCard();
         setupToTop();
         setupTaskLists();
+        setupCategoryTree();
     });
 })();

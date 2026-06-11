@@ -2,17 +2,21 @@
 <body>
     <div id="container">
         <%- partial('_partials/header') %>
+        <%- wikiflow_inject('header') %>
         <div class="outer">
             <% if (theme.customize && theme.customize.profile && theme.customize.profile.enabled) { %>
                 <%- partial('_partials/profile', null, {cache: !config.relative_link}) %>
             <% } %>
             <% if (theme.customize && theme.customize.sidebar) { %>
                 <%- partial('_partials/sidebar') %>
+                <%- wikiflow_inject('sidebar') %>
             <% } %>
             <section id="main"><%- body %></section>
         </div>
+        <%- wikiflow_inject('footer') %>
         <%- partial('_partials/footer', null, {cache: !config.relative_link}) %>
         <%- partial('_scripts/index') %>
     </div>
+    <%- wikiflow_inject('bodyEnd') %>
 </body>
 </html>

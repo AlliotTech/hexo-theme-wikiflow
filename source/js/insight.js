@@ -28,7 +28,7 @@
         return element;
     }
 
-    function searchItem(icon, title, slug, preview, url) {
+    function searchItem(icon, title, slug, preview, url, keywords) {
         var item = createElement('div', 'ins-selectable ins-search-item');
         var header = createElement('header');
         header.appendChild(createElement('i', 'fa fa-' + icon));
@@ -37,11 +37,39 @@
         item.appendChild(header);
         if (preview) {
             var previewElement = createElement('p', 'ins-search-preview');
-            previewElement.innerHTML = preview;
+            appendHighlightedText(previewElement, preview, keywords || []);
             item.appendChild(previewElement);
         }
         item.setAttribute('data-url', url);
         return item;
+    }
+
+    function appendHighlightedText(element, text, keywords) {
+        var keywordArray = keywords.filter(Boolean);
+        var pattern;
+        var lastIndex = 0;
+
+        if (!keywordArray.length) {
+            element.textContent = text;
+            return;
+        }
+
+        pattern = new RegExp(keywordArray.map(escapeRegExp).join('|'), 'gi');
+        text.replace(pattern, function (match, offset) {
+            var marker;
+
+            if (offset > lastIndex) {
+                element.appendChild(document.createTextNode(text.slice(lastIndex, offset)));
+            }
+            marker = createElement('em', 'search-keyword', match);
+            element.appendChild(marker);
+            lastIndex = offset + match.length;
+            return match;
+        });
+
+        if (lastIndex < text.length) {
+            element.appendChild(document.createTextNode(text.slice(lastIndex)));
+        }
     }
 
     function escapeRegExp(text) {
@@ -63,13 +91,8 @@
             var element;
             if (type === 'POSTS' || type === 'PAGES') {
                 var firstOccur = item.firstOccur > 20 ? item.firstOccur - 20 : 0;
-                var preview = '';
-                keywordArray.forEach(function (keyword) {
-                    var regS = new RegExp(escapeRegExp(keyword), 'gi');
-                    preview = item.text.replace(regS, '<em class="search-keyword"> ' + keyword + ' </em>');
-                });
-                preview = preview ? preview.slice(firstOccur, firstOccur + 80) : item.text.slice(0, 80);
-                element = searchItem('file', item.title, null, preview, CONFIG.ROOT_URL + item.path);
+                var preview = item.text.slice(firstOccur, firstOccur + 80);
+                element = searchItem('file', item.title, null, preview, CONFIG.ROOT_URL + item.path, keywordArray);
             } else if (type === 'CATEGORIES' || type === 'TAGS') {
                 element = searchItem(type === 'CATEGORIES' ? 'folder' : 'tag', item.name, item.slug, null, item.permalink);
             }
@@ -153,7 +176,7 @@
     }
 
     function searchResultToDOM(keywords, searchResult) {
-        container.innerHTML = '';
+        while (container.firstChild) container.removeChild(container.firstChild);
         Object.keys(searchResult).forEach(function (key) {
             var resultSection = sectionFactory(keywords, key.toUpperCase(), searchResult[key]);
             if (resultSection) container.appendChild(resultSection);

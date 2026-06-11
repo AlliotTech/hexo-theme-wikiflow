@@ -1,14 +1,13 @@
 'use strict';
 
-const { asArray, mergeConfig } = require('./utils');
+const { asArray, mergeConfig, points } = require('./utils');
 
 function normalizeInjects(themeConfig) {
     const injects = themeConfig.injects || {};
 
     themeConfig.injects = {
-        variable: asArray(injects.variable),
-        mixin: asArray(injects.mixin),
-        style: asArray(injects.style)
+        ...Object.fromEntries(points.views.map(point => [point, asArray(injects[point])])),
+        ...Object.fromEntries(points.styles.map(point => [point, asArray(injects[point])]))
     };
 }
 

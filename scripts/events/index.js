@@ -33,5 +33,3 @@ WikiFlow version ${version}
 Documentation: https://github.com/AlliotTech/hexo-theme-wikiflow#readme
 ========================================`);
 });
-
-run();

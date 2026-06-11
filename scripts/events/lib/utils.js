@@ -36,10 +36,30 @@ function isExternalUrl(value) {
         value.startsWith('data:');
 }
 
+const points = {
+    views: [
+        'head',
+        'header',
+        'sidebar',
+        'postMeta',
+        'postBodyStart',
+        'postBodyEnd',
+        'footer',
+        'bodyEnd',
+        'comment'
+    ],
+    styles: [
+        'variable',
+        'mixin',
+        'style'
+    ]
+};
+
 module.exports = {
     asArray,
     isDisabled,
     isExternalUrl,
     isPlainObject,
-    mergeConfig
+    mergeConfig,
+    points
 };

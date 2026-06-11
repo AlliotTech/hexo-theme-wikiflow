@@ -79,7 +79,7 @@ function resolveVendor(hexo, key, definition, configuredValue) {
     return false;
 }
 
-module.exports = hexo => {
+function configureVendors(hexo) {
     const themeConfig = hexo.theme.config || {};
     const configuredVendors = themeConfig.vendors || {};
     const dependencies = readDependencies(hexo);
@@ -93,4 +93,10 @@ module.exports = hexo => {
         ...configuredVendors,
         ...resolvedVendors
     };
-};
+}
+
+module.exports = configureVendors;
+module.exports.hasLocalAsset = hasLocalAsset;
+module.exports.normalizeUrl = normalizeUrl;
+module.exports.readDependencies = readDependencies;
+module.exports.resolveVendor = resolveVendor;

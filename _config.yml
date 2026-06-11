@@ -6,6 +6,15 @@ cache:
 # Paths are resolved by Hexo during Stylus rendering, so site-level files should
 # usually live in source/_data.
 custom_file_path:
+    # head: source/_data/wikiflow-head.ejs
+    # header: source/_data/wikiflow-header.ejs
+    # sidebar: source/_data/wikiflow-sidebar.ejs
+    # postMeta: source/_data/wikiflow-post-meta.ejs
+    # postBodyStart: source/_data/wikiflow-post-body-start.ejs
+    # postBodyEnd: source/_data/wikiflow-post-body-end.ejs
+    # footer: source/_data/wikiflow-footer.ejs
+    # bodyEnd: source/_data/wikiflow-body-end.ejs
+    # comment: source/_data/wikiflow-comment.ejs
     # variable: source/_data/wikiflow-variables.styl
     # mixin: source/_data/wikiflow-mixins.styl
     # style: source/_data/wikiflow-styles.styl
@@ -70,7 +79,7 @@ search:
 
 # History version
 history_control:
-    enable: true
+    enable: false
     server_link: https://github.com
     user: AlliotTech
     repertory: hexo-theme-wikiflow

@@ -182,7 +182,7 @@ In **theme** config file `WikiFlow/_config.yml`, you can read more detailed comm
 
 **Before publishing your site, change the example personal info in `profile`, `social_links`, `history_control`, and related theme options.**
 
-### `profile`, `comment`, `Share` and `miscellaneous` are **DEFAULT DISABLE**! 
+### `profile`, `comment`, `Share`, `history_control` and `miscellaneous` are **DEFAULT DISABLE**!
 
 The built-in comment integration is Disqus.
 
@@ -258,7 +258,7 @@ widgets: # default use category only
     
 # History version 
 history_control: # make you wiki has history version control in page (view source code, edit online, compare historical changes)
-    enable: true
+    enable: false # set true after filling in your own repository information
     server_link: https://github.com # recommend use GitHub - https://github.com
     user: <your GitHub name>
     repertory: <your repertory name of this wiki source code>

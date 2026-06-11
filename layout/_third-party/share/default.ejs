@@ -11,6 +11,37 @@
             });
         }
 
+        function createShareLink(href, className, title) {
+            var link = document.createElement('a');
+            link.href = href;
+            link.className = className;
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+            link.title = title;
+            return link;
+        }
+
+        function createShareBox(id, url) {
+            var encodedUrl = encodeURIComponent(url);
+            var box = document.createElement('div');
+            var input = document.createElement('input');
+            var links = document.createElement('div');
+
+            box.id = id;
+            box.className = 'article-share-box';
+            input.className = 'article-share-input';
+            input.value = url;
+            links.className = 'article-share-links';
+            links.appendChild(createShareLink('https://twitter.com/intent/tweet?url=' + encodedUrl, 'fa fa-twitter article-share-twitter', 'Twitter'));
+            links.appendChild(createShareLink('https://www.facebook.com/sharer.php?u=' + encodedUrl, 'fa fa-facebook article-share-facebook', 'Facebook'));
+            links.appendChild(createShareLink('https://pinterest.com/pin/create/button/?url=' + encodedUrl, 'fa fa-pinterest article-share-pinterest', 'Pinterest'));
+            box.appendChild(input);
+            box.appendChild(links);
+            document.body.appendChild(box);
+
+            return box;
+        }
+
         document.body.addEventListener('click', function (event) {
             var shareLink = event.target.closest('.article-share-link');
             var shareBox = event.target.closest('.article-share-box');
@@ -21,7 +52,6 @@
                 event.stopPropagation();
 
                 var url = shareLink.getAttribute('data-url');
-                var encodedUrl = encodeURIComponent(url);
                 var id = 'article-share-box-' + shareLink.getAttribute('data-id');
                 var offset = shareLink.getBoundingClientRect();
                 var box = document.getElementById(id);
@@ -32,18 +62,7 @@
                 }
 
                 if (!box) {
-                    box = document.createElement('div');
-                    box.id = id;
-                    box.className = 'article-share-box';
-                    box.innerHTML = [
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" rel="noopener noreferrer" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" rel="noopener noreferrer" title="Facebook"></a>',
-                            '<a href="https://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" rel="noopener noreferrer" title="Pinterest"></a>',
-                        '</div>'
-                    ].join('');
-                    document.body.appendChild(box);
+                    box = createShareBox(id, url);
                 }
 
                 closeShareBoxes();

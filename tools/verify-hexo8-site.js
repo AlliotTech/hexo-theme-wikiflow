@@ -75,6 +75,51 @@ const scenarios = [
     browser: {
       galleryEnabled: true
     }
+  },
+  {
+    name: 'custom-injects',
+    configPatch: config => config.replace(
+      'theme_config:\n',
+      [
+        'theme_config:',
+        '  custom_file_path:',
+        '    head: source/_data/wikiflow-head.ejs',
+        '    comment: source/_data/wikiflow-comment.ejs',
+        '    style: source/_data/wikiflow-style.styl',
+        ''
+      ].join('\n')
+    ),
+    prepare: async tmpRoot => {
+      const dataDir = path.join(tmpRoot, 'source', '_data');
+      await fs.promises.mkdir(dataDir, { recursive: true });
+      await fs.promises.writeFile(
+        path.join(dataDir, 'wikiflow-head.ejs'),
+        '<meta name="wikiflow-inject" content="head">\n'
+      );
+      await fs.promises.writeFile(
+        path.join(dataDir, 'wikiflow-comment.ejs'),
+        '<div id="wikiflow-comment-inject">Injected comment</div>\n'
+      );
+      await fs.promises.writeFile(
+        path.join(dataDir, 'wikiflow-style.styl'),
+        '.wikiflow-inject-test\n  color: #123456\n'
+      );
+    },
+    expectHtml: {
+      includes: [
+        '<meta name="wikiflow-inject" content="head">',
+        'id="wikiflow-comment-inject"'
+      ]
+    },
+    expectCss: {
+      includes: [
+        '.wikiflow-inject-test',
+        '#123456'
+      ]
+    },
+    browser: {
+      galleryEnabled: true
+    }
   }
 ];
 
@@ -90,13 +135,17 @@ async function copyFixture(scenario) {
     await fs.promises.writeFile(configPath, scenario.configPatch(config));
   }
 
+  if (scenario.prepare) {
+    await scenario.prepare(tmpRoot);
+  }
+
   const themesDir = path.join(tmpRoot, 'themes');
   const themePath = path.join(themesDir, themeName);
   await fs.promises.mkdir(themesDir, { recursive: true });
   await fs.promises.rm(themePath, { recursive: true, force: true });
   await fs.promises.mkdir(themePath, { recursive: true });
 
-  for (const entry of ['layout', 'source', 'scripts', 'languages', '_config.yml', '_config.yml.example', '_vendors.yml']) {
+  for (const entry of ['layout', 'source', 'scripts', 'languages', 'package.json', '_config.yml', '_config.yml.example', '_vendors.yml']) {
     await fs.promises.cp(path.join(repoRoot, entry), path.join(themePath, entry), { recursive: true });
   }
 

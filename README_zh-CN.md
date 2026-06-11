@@ -185,7 +185,7 @@ nofollow:
 
 **发布站点前，请将 `profile`、`social_links`、`history_control` 等主题选项中的示例个人信息改成你自己的信息。**
 
-### `profile`、`comment`、`Share` 和 `miscellaneous` 项都是 **默认关闭的**！ 
+### `profile`、`comment`、`Share`、`history_control` 和 `miscellaneous` 项都是 **默认关闭的**！
 
 内置评论集成使用 Disqus。
 
@@ -261,7 +261,7 @@ widgets: # 挂件，默认指开启了分类这一栏
     
 # History version 
 history_control: # 启用这一项使得 wiki 能有历史版本的功能（查看源码、在线编辑、对比历史变动）
-    enable: true
+    enable: false # 填写你自己的仓库信息后再改为 true
     server_link: https://github.com # 版本控制服务器，推荐使用 GitHub https://github.com
     user: <your GitHub name>
     repertory: <your repertory name of this wiki source code>

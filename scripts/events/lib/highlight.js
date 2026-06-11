@@ -2,7 +2,13 @@
 
 const fs = require('fs');
 const path = require('path');
-const css = require('css');
+let css;
+
+try {
+    css = require('@adobe/css-tools');
+} catch {
+    css = require('css');
+}
 
 const DEFAULT_THEME = 'monokai';
 const DEFAULT_BACKGROUND = '#f8f8f8';
@@ -247,3 +253,7 @@ function configureHighlight(hexo) {
 }
 
 module.exports = configureHighlight;
+module.exports.completeThemeColors = completeThemeColors;
+module.exports.extractThemeColors = extractThemeColors;
+module.exports.parseColor = parseColor;
+module.exports.transformHighlightCss = transformHighlightCss;

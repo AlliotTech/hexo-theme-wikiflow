@@ -1,38 +1,59 @@
-/**
-* Meta Helper
-* @description Generate meta tags for HTML header
-* @example
-*     <%- meta(post) %>
-*/
-function trim (str) {
-    return str.trim().replace(/^"(.*)"$/, '$1').replace(/^'(.*)'$/, '$1');
+/* global hexo */
+
+'use strict';
+
+const { htmlTag } = require('hexo-util');
+
+function trim(value) {
+    return String(value).trim().replace(/^"(.*)"$/, '$1').replace(/^'(.*)'$/, '$1');
 }
 
-function split (str, sep) {
-    var result = [];
-    var matched = null;
-    while (matched = sep.exec(str)) {
+function split(value, separator) {
+    const result = [];
+    let matched;
+
+    while ((matched = separator.exec(value))) {
         result.push(matched[0]);
     }
+
     return result;
 }
 
-hexo.extend.helper.register('meta', function (post) {
-    var metas = post.meta || [];
-    var metaDOMArray = metas.map(function (meta) {
-        var entities = split(meta, /(?:[^\\;]+|\\.)+/g);
-        var entityArray = entities.map(function (entity) {
-            var keyValue = split(entity, /(?:[^\\=]+|\\.)+/g);
-            if (keyValue.length < 2) {
-                return null;
-            }
-            var key = trim(keyValue[0]);
-            var value = trim(keyValue[1]);
-            return key + '="' + value + '"';
-        }).filter(function (entity) {
-            return entity;
-        });
-        return '<meta ' + entityArray.join(' ') + ' />';
+function clean(value) {
+    return trim(value).replace(/\\([;=])/g, '$1');
+}
+
+function parseMeta(meta) {
+    const attrs = {};
+    const entities = split(String(meta), /(?:[^\\;]+|\\.)+/g);
+
+    entities.forEach(entity => {
+        const keyValue = split(entity, /(?:[^\\=]+|\\.)+/g);
+        if (keyValue.length < 2) return;
+
+        const key = clean(keyValue[0]);
+        const value = clean(keyValue[1]);
+        if (key) attrs[key] = value;
     });
-    return metaDOMArray.join('\n');
-});
+
+    return attrs;
+}
+
+function renderMeta(post) {
+    const metas = post.meta || [];
+
+    return metas
+        .map(parseMeta)
+        .filter(attrs => Object.keys(attrs).length)
+        .map(attrs => htmlTag('meta', attrs))
+        .join('\n');
+}
+
+if (typeof hexo !== 'undefined') {
+    hexo.extend.helper.register('meta', renderMeta);
+}
+
+module.exports = {
+    parseMeta,
+    renderMeta
+};

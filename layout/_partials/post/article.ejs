@@ -23,6 +23,7 @@
                                 <a href='<%= `${repertory_address}/commits/${file_path}` %>'> History </a>
                             </div>
                         <% } %>
+                        <%- wikiflow_inject('postMeta') %>
                     </div>
                 <% } %>
                 <%- partial('_partials/post/title', { post: post, index: index, class_name: 'article-title' }) %>
@@ -54,10 +55,13 @@
                 </div>
             <% } %>
         <% } %>
+        <%- wikiflow_inject('postBodyStart') %>
         <% if (show_all_content) { %>
             <%- post.content %>
+            <%- wikiflow_inject('postBodyEnd') %>
             </div>
         <% } else { %>
+            <%- wikiflow_inject('postBodyEnd') %>
             </div>   
             <div class="article-more-link">
                 <a href="<%- url_for(post.path) %>#more"><%= __('article.more') %></a>

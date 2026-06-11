@@ -1,4 +1,5 @@
 <% if (post.comments) { %>
+    <%- wikiflow_inject('comment') %>
     <% if (theme.comment && theme.comment.disqus) { %>
         <section id="comments"> <%- partial('_third-party/comments/disqus') %> </section>
     <% } %>
