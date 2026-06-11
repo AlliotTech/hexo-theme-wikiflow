@@ -1,0 +1,45 @@
+:root
+    --color-default: s('%s', color-default)
+    --color-link: s('%s', color-link)
+    --color-border: s('%s', color-border)
+    --color-background: s('%s', color-background)
+
+html
+    box-sizing: border-box
+
+*, *::before, *::after
+    box-sizing: inherit
+
+html, body
+    min-height: 100%
+
+body
+    width: 100%
+    color: color-default
+    background: color-background
+    font: font-size font-sans
+    -webkit-text-size-adjust: 100%
+
+a
+    color: color-link
+    text-decoration: none
+    &:visited
+        color: color-link
+
+code
+    margin: 0 2px
+    color: #e96900
+    padding: 3px 5px
+    font-size: 0.8em
+    border-radius: 2px
+    font-family: font-mono
+    background-color: #f8f8f8
+
+.left, .alignleft
+    float: left
+
+.right, .alignright
+    float: right
+
+.clear
+    clear: both

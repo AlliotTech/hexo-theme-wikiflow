@@ -244,59 +244,6 @@ div .article-more-link
     .fa-share
         margin-right: 5px
 
-#article-nav
-    display: grid
-    gap: 16px
-    grid-template-columns: 1fr
-    margin: block-margin 0 0
-    padding-top: 20px
-    border-top: 1px solid color-border
-    @media mq-normal
-        grid-template-columns: repeat(2, minmax(0, 1fr))
-
-.article-nav-link-wrap
-    display: block
-    box-sizing: border-box
-    min-width: 0
-    padding: 0
-    text-decoration: none
-    color: color-grey
-    &:hover
-        color: color-link
-        text-decoration: none
-        .article-nav-title
-            color: color-link
-    &:only-child
-        @media mq-normal
-            grid-column: 1 / -1
-
-#article-nav-newer
-    text-align: left
-
-#article-nav-older
-    text-align: left
-    @media mq-normal
-        text-align: right
-
-.article-nav-caption
-    display: block
-    margin-bottom: 6px
-    letter-spacing: 0
-    line-height: 1.2
-    font-weight: bold
-    color: color-grey
-    text-transform: none
-
-.article-nav-title
-    display: -webkit-box
-    overflow: hidden
-    margin-top: 0
-    color: color-default
-    font-size: 0.9em
-    line-height: 1.5
-    -webkit-box-orient: vertical
-    -webkit-line-clamp: 2
-
 .article-share-box
     position: absolute
     display: none
