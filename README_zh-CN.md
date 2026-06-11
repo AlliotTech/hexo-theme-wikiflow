@@ -197,6 +197,11 @@ nofollow:
 WikiFlow 将 wiki 导航、文章布局和搜索界面作为主题核心体验。浏览器侧增强功能通过主题配置控制，站点项目可以避免在生成页面中输出未使用的功能：
 
 ```yaml
+codeblock:
+    theme:
+        light: github
+        dark: github-dark
+
 vendors:
     fontawesome: local
     open_sans: local
@@ -212,6 +217,8 @@ plugins:
 comment:
     disqus:
 ```
+
+代码高亮主题名来自 `highlight.js/styles/*.css`，填写时不带 `.css` 后缀。未设置 `codeblock.theme.light` 时，主题仍会兼容旧的 `customize.highlight` 配置。
 
 设置 `plugins.gallery: false` 可关闭内置图片查看层。设置 `plugins.mathjax: false` 可关闭数学公式渲染，也可以通过 `vendors.mathjax` 指定脚本地址。样式类 vendor 可以使用 `local` 加载主题内置资源，使用 `false` 不输出 link 标签，或填写外部样式表 URL。
 
@@ -237,6 +244,12 @@ customize: # 首先修改这项里面的信息为你自己的各项信息
     sidebar: left # 侧边栏的所在位置，默认左边
     category_perExpand: false # 侧边栏里的各个分类是否默认全部展开
     default_index_file: index.md # 是否指定一篇文章作为首页来代替默认的多篇文章的首页，没有此项的话就会显示默认的按时间顺序排列的文章
+
+# 代码块
+codeblock:
+    theme:
+        light: github
+        dark: github-dark
     
 # Widgets
 widgets: # 挂件，默认指开启了分类这一栏

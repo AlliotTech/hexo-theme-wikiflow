@@ -87,6 +87,10 @@ theme_config:
       github: https://example.com/github
       rss: /atom.xml
     social_link_tooltip: true
+  codeblock:
+    theme:
+      light: github
+      dark: github-dark
   widgets:
     - category
     - recent_posts

@@ -1,11 +1,55 @@
+highlight-light-file = hexo-config("highlight.light.file")
+highlight-dark-file = hexo-config("highlight.dark.file")
+highlight-background-value = hexo-config("highlight.light.background")
+highlight-foreground-value = hexo-config("highlight.light.foreground")
+highlight-gutter-background-value = hexo-config("highlight.light.gutter_background")
+highlight-gutter-foreground-value = hexo-config("highlight.light.gutter_foreground")
+highlight-background-dark-value = hexo-config("highlight.dark.background")
+highlight-foreground-dark-value = hexo-config("highlight.dark.foreground")
+highlight-gutter-background-dark-value = hexo-config("highlight.dark.gutter_background")
+highlight-gutter-foreground-dark-value = hexo-config("highlight.dark.gutter_foreground")
+
+if !highlight-background-value
+    highlight-background-value = "#f8f8f8"
+
+if !highlight-foreground-value
+    highlight-foreground-value = "#333"
+
+if !highlight-gutter-background-value
+    highlight-gutter-background-value = highlight-background-value
+
+if !highlight-gutter-foreground-value
+    highlight-gutter-foreground-value = highlight-foreground-value
+
+if !highlight-background-dark-value
+    highlight-background-dark-value = highlight-background-value
+
+if !highlight-foreground-dark-value
+    highlight-foreground-dark-value = highlight-foreground-value
+
+if !highlight-gutter-background-dark-value
+    highlight-gutter-background-dark-value = highlight-background-dark-value
+
+if !highlight-gutter-foreground-dark-value
+    highlight-gutter-foreground-dark-value = highlight-foreground-dark-value
+
+:root
+    --highlight-background: s('%s', unquote(highlight-background-value))
+    --highlight-foreground: s('%s', unquote(highlight-foreground-value))
+    --highlight-gutter-background: s('%s', unquote(highlight-gutter-background-value))
+    --highlight-gutter-foreground: s('%s', unquote(highlight-gutter-foreground-value))
+
 .highlight
     margin: 0px
     display: block
     overflow-x: auto
     padding: 15px 20px
+    color: var(--highlight-foreground)
+    background: var(--highlight-background)
     font-size: font-size
     font-family: font-mono
     line-height: font-size * line-height
+    color-scheme: light
     table
         margin: 0
         width: auto
@@ -14,8 +58,9 @@
         td.code
             padding-right: 20px
     .gutter
+        background: var(--highlight-gutter-background)
         pre
-            color: #666
+            color: var(--highlight-gutter-foreground)
             text-align: right
             padding-right: 20px
 
@@ -25,4 +70,17 @@
         .line
             height: 1.6em;
 
-@import "_highlight/" + highlight
+@require highlight-light-file if highlight-light-file
+
+if highlight-dark-file
+    @media (prefers-color-scheme: dark)
+        :root
+            --highlight-background: s('%s', unquote(highlight-background-dark-value))
+            --highlight-foreground: s('%s', unquote(highlight-foreground-dark-value))
+            --highlight-gutter-background: s('%s', unquote(highlight-gutter-background-dark-value))
+            --highlight-gutter-foreground: s('%s', unquote(highlight-gutter-foreground-dark-value))
+
+        .highlight
+            color-scheme: dark
+
+        @require highlight-dark-file

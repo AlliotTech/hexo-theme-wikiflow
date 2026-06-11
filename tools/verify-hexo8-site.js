@@ -51,6 +51,32 @@ const scenarios = [
     browser: {
       galleryEnabled: true
     }
+  },
+  {
+    name: 'customize-highlight-compat',
+    configPatch: config => config.replace([
+      '  codeblock:',
+      '    theme:',
+      '      light: github',
+      '      dark: github-dark',
+      ''
+    ].join('\n'), ''),
+    expectCss: {
+      includes: [
+        'Generated from highlight.js/styles/monokai.css',
+        '--highlight-background: #272822;',
+        '.highlight .code .string'
+      ],
+      excludes: [
+        'Generated from highlight.js/styles/github.css',
+        '@media (prefers-color-scheme: dark)',
+        '.hljs-string',
+        'code.hljs'
+      ]
+    },
+    browser: {
+      galleryEnabled: true
+    }
   }
 ];
 
@@ -121,6 +147,7 @@ async function verifyScenario(scenario) {
   }
 
   await verifyGeneratedHtml(scenario, tmpRoot);
+  await verifyGeneratedCss(scenario, tmpRoot);
 
   if (browserMode) {
     await verifyBrowserRuntime(scenario);
@@ -139,6 +166,34 @@ async function verifyGeneratedHtml(scenario, tmpRoot) {
 
   if (missing.length || unexpected.length) {
     throw new Error(`HTML expectation failed for ${scenario.name}:\n${JSON.stringify({
+      missing,
+      unexpected
+    }, null, 2)}`);
+  }
+}
+
+async function verifyGeneratedCss(scenario, tmpRoot) {
+  const cssPath = path.join(tmpRoot, 'public', 'css', 'style.css');
+  const css = await fs.promises.readFile(cssPath, 'utf8');
+  const expectation = scenario.expectCss || {};
+  const includes = expectation.includes || [
+    'Generated from highlight.js/styles/github.css',
+    '--highlight-background: #ffffff;',
+    '.highlight .code .variable.language_',
+    '.highlight .code .title.function_',
+    '@media (prefers-color-scheme: dark)',
+    'Generated from highlight.js/styles/github-dark.css'
+  ];
+  const excludes = expectation.excludes || [
+    '.hljs-variable',
+    'code.hljs'
+  ];
+  const missing = includes.filter(fragment => !css.includes(fragment));
+  const unexpected = excludes.filter(fragment => css.includes(fragment));
+
+  if (css.length < 1000 || missing.length || unexpected.length) {
+    throw new Error(`CSS expectation failed for ${scenario.name}:\n${JSON.stringify({
+      length: css.length,
       missing,
       unexpected
     }, null, 2)}`);

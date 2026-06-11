@@ -21,7 +21,7 @@ customize:
         author_title: Knowledge Base Maintainer
         location: Your Location
         follow: https://github.com/AlliotTech/
-    highlight: monokai
+    highlight: monokai # compatibility fallback; prefer codeblock.theme below for new sites
     sidebar: left # sidebar position, options: left, right
     category_perExpand: false # enable article categories list per expanding
     thumbnail: true # enable posts thumbnail, options: true, false
@@ -33,6 +33,12 @@ customize:
         codepen:
         rss: /atom.xml
     social_link_tooltip: true # enable the social link tooltip, options: true, false
+
+# Code blocks
+codeblock:
+    theme:
+        light: monokai # highlight.js theme name
+        dark: monokai # optional highlight.js theme for prefers-color-scheme: dark
 
 # Widgets
 widgets: # default use category only

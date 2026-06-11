@@ -194,6 +194,11 @@ The built-in gallery uses a small native JavaScript lightbox.
 WikiFlow keeps the wiki navigation, article layout, and search UI as the core theme experience. Browser-side enhancements are controlled by theme config so site projects can keep unused features out of the rendered pages:
 
 ```yaml
+codeblock:
+    theme:
+        light: github
+        dark: github-dark
+
 vendors:
     fontawesome: local
     open_sans: local
@@ -209,6 +214,8 @@ plugins:
 comment:
     disqus:
 ```
+
+Code block theme names come from `highlight.js/styles/*.css` without the `.css` suffix. `customize.highlight` is still read for configuration compatibility when `codeblock.theme.light` is not set.
 
 Set `plugins.gallery: false` to disable the built-in image lightbox. Set `plugins.mathjax: false` to disable math rendering, or set `vendors.mathjax` to a script URL to choose the loader. For stylesheet vendors, use `local` for bundled assets, `false` to omit the link tag, or an external stylesheet URL.
 
@@ -234,6 +241,12 @@ customize: # modify this information for yourself
     sidebar: left # sidebar position, options: left, right
     category_perExpand: false # enable article categories list per expanding
     default_index_file: index.md # enable this, it will display at site index instead of default index page, or disable that it will display more articles order by time 
+
+# Code blocks
+codeblock:
+    theme:
+        light: github
+        dark: github-dark
     
 # Widgets
 widgets: # default use category only
