@@ -209,10 +209,15 @@
         if (item) window.location.href = item.getAttribute('data-url');
     }
 
+    function openSearch() {
+        main.classList.add('show');
+        input.focus();
+    }
+
     fetch(CONFIG.CONTENT_URL)
         .then(function (response) { return response.json(); })
         .then(function (json) {
-            if (window.location.hash.trim() === '#ins-search') main.classList.add('show');
+            if (window.location.hash.trim() === '#ins-search') openSearch();
             input.addEventListener('input', function () {
                 var keywords = input.value;
                 searchResultToDOM(keywords, search(json, keywords));
@@ -222,12 +227,13 @@
 
     document.addEventListener('click', function (event) {
         var searchInput = event.target.closest('.search-form-input');
+        var searchTrigger = event.target.closest('.search-form-trigger');
         var searchItemElement = event.target.closest('.ins-search-item');
         var closeButton = event.target.closest('.ins-close');
 
-        if (searchInput) {
-            main.classList.add('show');
-            input.focus();
+        if (searchInput || searchTrigger) {
+            event.preventDefault();
+            openSearch();
         } else if (searchItemElement) {
             gotoLink(searchItemElement);
         } else if (closeButton) {

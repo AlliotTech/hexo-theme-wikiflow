@@ -12,9 +12,15 @@ function normalizeInjects(themeConfig) {
 }
 
 module.exports = hexo => {
-    hexo.theme.config = mergeConfig(hexo.theme.config || {}, hexo.config.theme_config || {});
+    const siteThemeConfig = hexo.config.theme_config || {};
+
+    hexo.theme.config = mergeConfig(hexo.theme.config || {}, siteThemeConfig);
 
     const themeConfig = hexo.theme.config;
+    if (Object.prototype.hasOwnProperty.call(siteThemeConfig, 'menu')) {
+        themeConfig.menu = siteThemeConfig.menu || {};
+    }
+
     themeConfig.cache = mergeConfig({ enable: true }, themeConfig.cache || {});
     themeConfig.custom_file_path = themeConfig.custom_file_path || {};
     themeConfig.vendors = themeConfig.vendors || {};

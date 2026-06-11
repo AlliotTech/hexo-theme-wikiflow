@@ -2,39 +2,45 @@
     @extend $block
     background: white
     position: relative
-    a, a:visited
+    a, a:visited,
+    button
         white-space: nowrap
         transition: 0.2s ease
         color: color-default
-    a:hover
+    a:hover,
+    button:hover,
+    button:focus
         color: color-link
 
-$header-block
-    height: logo-height
-    line-height: logo-height
-    padding: ((header-height - logo-height)/2) 15px
-
-$header-block-left
-    float: left
-
-$header-block-right
-    float: right
+header-block-padding = (header-height - logo-height) / 2
+if header-block-padding < 0
+    header-block-padding = 0
 
 .header-inner
-    height: 100%
     position: relative
-    #logo
-        @extend $header-block
-        @extend $header-block-left
+
+#header-main
+    .header-main-inner
+        display: flex
+        align-items: center
+        min-height: header-height
+
+#logo
+    display: inline-flex
+    align-items: center
+    flex: 0 0 auto
+    min-height: header-height
+    padding: header-block-padding 15px
+    line-height: logo-height
+    .logo
+        flex: 0 0 auto
+        margin-right: 8px
         display: inline-block
-        .logo
-            margin-right: 5px
-            display: inline-block
-        .site-title
-            font-size: 16px
-            display: inline-block
-            vertical-align: top
-            font-weight: 600
+    .site-title
+        font-size: 16px
+        display: inline-block
+        line-height: logo-height
+        font-weight: 600
 
 #header-title
     text-align: center
@@ -46,110 +52,102 @@ $header-block-right
 
 .header-sub
     border-top: 1px solid color-border
-    ul
-        clearfix()
-        margin: 0 15px
-        li
-            float: left
-            margin: 0 10px
-            a
-                display: inline-block
-                line-height: header-sub-height
-    .main-nav-link
-        display: inline-block
-        line-height: header-sub-height
 
-#header-sub
-    @media mq-mobile
-        display: none
-    @media mq-mini
-        display: none
+.header-actions
+    display: flex
+    align-items: center
+    flex: 0 0 auto
+    min-height: header-height
+    margin-left: auto
+
+$nav-link
+    display: inline-flex
+    align-items: center
+    min-height: header-height
+    padding: 0 15px
+
+.nav-icon
+    display: inline-flex
+    align-items: center
+    justify-content: center
+    width: logo-height
+    height: logo-height
+    font-size: font-size
+    position: relative
+    cursor: pointer
+
+.main-nav-link
+    @extend $nav-link
+    font-weight: 300
 
 #main-nav
-    @extend $header-block
-    @extend $header-block-left
+    display: flex
+    align-items: center
+    min-height: header-height
     @media mq-mobile
         display: none
     @media mq-mini
         display: none
 
 #main-nav-mobile
+    overflow-y: hidden
+    overflow-x: auto
     @media mq-tablet
         display: none
     @media mq-normal
         display: none
-
-
-$nav-link
-    float: left
-    display: block
-    padding: 0 15px
-
-.nav-icon
-    @extend $nav-link
-    text-align: center
-    font-size: font-size
-    width: font-size
-    height: font-size
-    position: relative
-    cursor: pointer
-    height: logo-height !important
-    line-height: logo-height !important
-
-.main-nav-link
-    @extend $nav-link
-    font-weight: 300
+    .mobile-menu
+        display: flex
+        align-items: center
+        min-height: header-sub-height
+    .main-nav-link
+        flex: 0 0 auto
+        min-height: header-sub-height
+        line-height: header-sub-height
+        padding: 0 12px
 
 #sub-nav
     @media mq-normal
         display: none
-    @extend $header-block
-    @extend $header-block-right
+    display: flex
+    align-items: center
+    min-height: header-height
+    padding: 0 15px
     #profile-nav
         #profile-anchor
-            clearfix()
-            display: block
+            display: inline-flex
+            align-items: center
             height: logo-height
             line-height: logo-height
-        .avatar, .fa
-            float: left
         .avatar
             width: logo-height
             height: logo-height
             margin-right: 8px
         .fa
-            line-height: logo-height
+            line-height: 1
 
 #search-form-wrap
-    @media mq-mini
-        display: none
-    @extend $header-block
-    @extend $header-block-right
+    display: flex
+    align-items: center
+    min-height: header-height
+    padding: 0 15px
     .search-form
         position: relative
-        .search-form-input
-            width: 100%
-            padding: 0 30px 0 15px
-            line-height: logo-height
-            height: logo-height !important
-            border-radius: ((logo-height + 2)/2)
-            &::-webkit-search-results-decoration
-            &::-webkit-search-cancel-button
-                -webkit-appearance: none
-        .search-form-submit
-            top: 50%
-            right: 15px
-            border: none
-            cursor: pointer
-            margin-top: -7px
-            background: none
-            position: absolute
-            font: 13px font-icon
-            font-family: 'FontAwesome'
-            &:before
-                content: '\f002'
-            &:hover, &:focus
-                color: #777
+
+.search-form-trigger
+    @extend .nav-icon
+    border: none
+    border-radius: 50%
+    background: none
+    font: font-size font-sans
+    color: color-default
+    &:before
+        content: '\f002'
+        font-family: 'FontAwesome'
+    &:hover,
+    &:focus
+        outline: none
+        background: rgba(56, 183, 234, 0.08)
 
 .search-form-input,
 .search-form-input.ins-search-input,
@@ -174,23 +172,3 @@ $nav-link
     &::-webkit-search-results-decoration
     &::-webkit-search-cancel-button
         -webkit-appearance: none
-
-#main-nav-mobile
-    overflow-y: hidden
-    overflow-x: auto
-    .menu
-        clearfix()
-        margin: 0
-        height: header-sub-height
-        .search-form-input
-            display: none
-            @media mq-mini
-                display: block
-            padding: 0 10px
-            margin-right: 15px
-            height: header-sub-height - 6
-            line-height: header-sub-height - 6
-            border-radius: ((header-sub-height - 6)/2)
-            &::-webkit-search-results-decoration
-            &::-webkit-search-cancel-button
-                -webkit-appearance: none

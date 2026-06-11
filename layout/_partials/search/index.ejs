@@ -1,12 +1,11 @@
 <div id="search-form-wrap">
 <% var search = theme.search || {}; %>
 <% if (search.insight) { %>
-    <form class="search-form">
-        <input type="text" class="ins-search-input search-form-input" placeholder="<%= __('index.search') %>" />
-        <button type="submit" class="search-form-submit"></button>
-    </form>
-    <%- partial('_partials/search/insight') %>
+    <button type="button" class="search-form-trigger" aria-label="<%= __('index.search') %>" title="<%= __('index.search') %>"></button>
 <% } else { %>
     <%- search_form({ button: ' ', text: __('index.search') }) %>
 <% } %>
 </div>
+<% if (search.insight) { %>
+    <%- partial('_partials/search/insight') %>
+<% } %>

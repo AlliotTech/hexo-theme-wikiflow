@@ -1,8 +1,6 @@
 <% var search = theme.search || {}; %>
 <% if (search.insight) { %>
-    <div class="search-form">
-        <input type="text" class="ins-search-input search-form-input" placeholder="<%= __('index.search') %>" />
-    </div>
+    <button type="button" class="search-form-trigger mobile-search-trigger" aria-label="<%= __('index.search') %>" title="<%= __('index.search') %>"></button>
 <% } else { %>
     <%- search_form({text: __('index.search')}) %>
 <% } %>
