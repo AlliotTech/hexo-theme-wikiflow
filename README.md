@@ -27,26 +27,26 @@ some features:
 
 **Note: This theme requires Hexo 8.1.0 or later, and Node.js 20.19.0 or later.**
 
-1. Go to your Hexo folder, then clone this theme into `themes/WikiFlow`
+1. Go to your Hexo site folder and install the theme package:
 
 ```bash
 $ cd your-hexo-directory
-$ git clone https://github.com/AlliotTech/hexo-theme-wikiflow.git themes/WikiFlow
+$ npm install hexo-theme-wikiflow
 ```
 
-2. Rewrite to cover some default page template in site folder
+2. Copy the starter pages and scaffolds into your site:
 
 ```bash
-$ cp -rf themes/WikiFlow/_source/* source/
-$ cp -rf themes/WikiFlow/_scaffolds/* scaffolds/
+$ cp -rf node_modules/hexo-theme-wikiflow/_source/* source/
+$ cp -rf node_modules/hexo-theme-wikiflow/_scaffolds/* scaffolds/
 ```
 
-3. Rename the `_config.yml.example` to `_config.yml` so you can config theme
+3. Copy the theme config into the site root:
 
 ```bash
-$ cp -f themes/WikiFlow/_config.yml.example themes/WikiFlow/_config.yml
+$ cp -f node_modules/hexo-theme-wikiflow/_config.yml.example _config.wikiflow.yml
 # edit and customize it
-$ vim themes/WikiFlow/_config.yml
+$ vim _config.wikiflow.yml
 ```
 
 Recommended site and theme options are listed below in [Configuration](#configuration).
@@ -90,11 +90,37 @@ math:
   engine: mathjax
 ```
 
+### Source Install
+
+If you want to work directly from the repository, clone the theme into `themes/WikiFlow` instead:
+
+```bash
+$ cd your-hexo-directory
+$ git clone https://github.com/AlliotTech/hexo-theme-wikiflow.git themes/WikiFlow
+$ cp -rf themes/WikiFlow/_source/* source/
+$ cp -rf themes/WikiFlow/_scaffolds/* scaffolds/
+$ cp -f themes/WikiFlow/_config.yml.example themes/WikiFlow/_config.yml
+```
+
 ### Enable
 
-Modify `theme` setting in site config file `_config.yml` to **`WikiFlow`**.
+Modify `theme` in the site config file `_config.yml`:
+
+```yaml
+theme: wikiflow
+```
+
+When using the source install path `themes/WikiFlow`, set it to `WikiFlow` instead.
 
 ### Update
+
+For npm installation:
+
+```bash
+$ npm install hexo-theme-wikiflow@latest
+```
+
+For source installation:
 
 ```bash
 $ cd themes/WikiFlow

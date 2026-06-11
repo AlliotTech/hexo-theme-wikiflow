@@ -27,26 +27,26 @@
 
 **注意：本主题需要 Hexo 8.1.0 及以上版本，并需要 Node.js 20.19.0 及以上版本。**
 
-1. 进入你的 Hexo 站点文件夹，克隆主题到 `themes/WikiFlow` 路径下
+1. 进入你的 Hexo 站点文件夹，安装主题包：
 
 ```bash
 $ cd your-hexo-directory
-$ git clone https://github.com/AlliotTech/hexo-theme-wikiflow.git themes/WikiFlow
+$ npm install hexo-theme-wikiflow
 ```
 
-2. 覆盖站点目录中一些默认页面模板
+2. 将主题提供的初始页面和脚手架复制到站点目录：
 
 ```bash
-$ cp -rf themes/WikiFlow/_source/* source/
-$ cp -rf themes/WikiFlow/_scaffolds/* scaffolds/
+$ cp -rf node_modules/hexo-theme-wikiflow/_source/* source/
+$ cp -rf node_modules/hexo-theme-wikiflow/_scaffolds/* scaffolds/
 ```
 
-3. 重命名主题中的 `_config.yml.example` 到 `_config.yml`，然后可以使用配置文件配置主题
+3. 将主题配置复制到站点根目录：
 
 ```bash
-$ cp -f themes/WikiFlow/_config.yml.example themes/WikiFlow/_config.yml
+$ cp -f node_modules/hexo-theme-wikiflow/_config.yml.example _config.wikiflow.yml
 # 编辑配置文件，定制你的配置项
-$ vim themes/WikiFlow/_config.yml
+$ vim _config.wikiflow.yml
 ```
 
 推荐的站点配置和主题配置见下方 [配置说明](#配置说明)。
@@ -91,12 +91,37 @@ math:
 ```
 
 
+### 源码安装
+
+如果你想直接基于仓库源码修改主题，可以克隆到 `themes/WikiFlow`：
+
+```bash
+$ cd your-hexo-directory
+$ git clone https://github.com/AlliotTech/hexo-theme-wikiflow.git themes/WikiFlow
+$ cp -rf themes/WikiFlow/_source/* source/
+$ cp -rf themes/WikiFlow/_scaffolds/* scaffolds/
+$ cp -f themes/WikiFlow/_config.yml.example themes/WikiFlow/_config.yml
+```
 
 ### 启用
 
-修改站点 `_config.yml` 文件中的 `theme` 选项为 **`WikiFlow`**。
+修改站点 `_config.yml` 文件中的 `theme` 选项：
+
+```yaml
+theme: wikiflow
+```
+
+如果使用源码安装路径 `themes/WikiFlow`，这里应设置为 `WikiFlow`。
 
 ### 更新
+
+使用 npm 安装时：
+
+```bash
+$ npm install hexo-theme-wikiflow@latest
+```
+
+使用源码安装时：
 
 ```bash
 $ cd themes/WikiFlow
