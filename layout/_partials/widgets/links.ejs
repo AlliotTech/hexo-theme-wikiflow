@@ -3,11 +3,12 @@
         <h3 class="widget-title"><span><%= __('widget.links') %></span></h3>
         <div class="widget">
             <ul>
-                <% for (var i in ((theme.miscellaneous && theme.miscellaneous.links) || {})) { %>
+                <% var links = theme.links || {}; %>
+                <% for (var i in links) { if (links[i]) { %>
                     <li>
-                        <a href="<%- theme.miscellaneous.links[i] %>"><%= i %></a>
+                        <a href="<%- links[i] %>"><%= i %></a>
                     </li>
-                <% } %>
+                <% }} %>
             </ul>
         </div>
     </div>

@@ -55,7 +55,7 @@ const scenarios = [
     }
   },
   {
-    name: 'customize-highlight-compat',
+    name: 'codeblock-default-theme',
     configPatch: config => config
       .replace('      light: github', '      light:')
       .replace('      dark: github-dark', '      dark:'),

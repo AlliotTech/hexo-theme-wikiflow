@@ -127,15 +127,26 @@ npm install --save hexo-generator-feed hexo-generator-sitemap hexo-filter-nofoll
 
 Edit `_config.wikiflow.yml` in the site root. `_config.yml.example` in this repository is the canonical commented example.
 
-Before publishing a site, replace the example values under `customize.profile`, `customize.social_links`, `history_control`, and related personal options.
+Before publishing a site, replace the example values under `profile`, `social`, `post_history`, and related personal options.
 
 Frequently used theme options:
 
 ```yaml
-customize:
-  sidebar: left
-  category_perExpand: false
-  default_index_file: index.md
+sidebar:
+  position: left
+
+home:
+  index_file: index.md
+
+category:
+  expand_all: false
+
+recent_posts:
+  thumbnail: true
+
+post_meta:
+  updated_at:
+    enable: true
 
 codeblock:
   theme:
@@ -164,7 +175,7 @@ comment:
   disqus:
 ```
 
-Code block theme names come from `highlight.js/styles/*.css` without the `.css` suffix. `customize.highlight` is still read for compatibility when `codeblock.theme.light` is not set.
+Code block theme names come from `highlight.js/styles/*.css` without the `.css` suffix. When `codeblock.theme.light` is not set, WikiFlow uses `monokai`.
 
 Set `plugins.gallery: false` to disable the built-in image lightbox. Set `plugins.mathjax: false` to disable MathJax output, or set `vendors.mathjax` to choose a script URL. Stylesheet vendors accept `cdn`, `false`, or an external stylesheet URL. `local` only works when matching files are intentionally provided under `source/libs`; otherwise WikiFlow falls back to the CDN entries in `_vendors.yml`.
 

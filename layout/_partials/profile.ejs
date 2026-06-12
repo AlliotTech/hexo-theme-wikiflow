@@ -1,4 +1,6 @@
-<% var profile = (theme.customize && theme.customize.profile) || {}; %>
+<% var profile = theme.profile || {}; %>
+<% var social = theme.social || {}; %>
+<% var socialKeys = Object.keys(social).filter(function(name) { return social[name]; }); %>
 <% var tagCount = site.tags.filter(function(tag) { return tag.length; }).length; %>
 <aside id="profile">
     <div class="inner profile-inner">
@@ -19,18 +21,18 @@
                 <span><%= (tagCount > 1 ? __('profile.tags') : __('profile.tag')) %></span>
             </div>
         </div>
-        <% if(theme.customize && theme.customize.social_links) { %>
+        <% if(socialKeys.length) { %>
         <div class="profile-block social-links">
             <table>
                 <tr>
-                    <% var tooltipClass = theme.customize.social_link_tooltip === false ? '' : 'class=tooltip'; %>
-                    <% for(var i in theme.customize.social_links) { %>
+                    <% var tooltipClass = theme.social_icons && theme.social_icons.tooltip === false ? '' : 'class=tooltip'; %>
+                    <% socialKeys.forEach(function(i) { %>
                     <td>
-                        <a href="<%- url_for(theme.customize.social_links[i]) %>" target="_blank" rel="noopener noreferrer" title="<%= i %>" <%= tooltipClass %>>
+                        <a href="<%- url_for(social[i]) %>" target="_blank" rel="noopener noreferrer" title="<%= i %>" <%= tooltipClass %>>
                             <i class="fa fa-<%= i %>"></i>
                         </a>
                     </td>
-                    <% } %>
+                    <% }); %>
                 </tr>
             </table>
         </div>

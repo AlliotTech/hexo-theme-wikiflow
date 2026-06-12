@@ -7,18 +7,18 @@ const { asArray, mergeConfig, points } = require('../../scripts/events/lib/utils
 
 test('mergeConfig deeply merges plain objects and replaces scalars', () => {
     const target = {
-        cache: { enable: true },
+        profile: { enabled: true },
         vendors: { fontawesome: 'cdn' },
         widgets: ['category']
     };
     const source = {
-        cache: { enable: false },
+        profile: { avatar: '/avatar.png' },
         vendors: { mathjax: false },
         widgets: ['tag']
     };
 
     assert.deepEqual(mergeConfig(target, source), {
-        cache: { enable: false },
+        profile: { enabled: true, avatar: '/avatar.png' },
         vendors: { fontawesome: 'cdn', mathjax: false },
         widgets: ['tag']
     });

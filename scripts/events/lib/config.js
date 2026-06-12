@@ -21,7 +21,6 @@ module.exports = hexo => {
         themeConfig.menu = siteThemeConfig.menu || {};
     }
 
-    themeConfig.cache = mergeConfig({ enable: true }, themeConfig.cache || {});
     themeConfig.custom_file_path = themeConfig.custom_file_path || {};
     themeConfig.vendors = themeConfig.vendors || {};
     normalizeInjects(themeConfig);

@@ -10,6 +10,7 @@
                         <%- partial('_partials/post/category', { post: post }) %>
                         <%- partial('_partials/post/tag', { post: post }) %>
                         <%- partial('_partials/post/date', { post: post, class_name: 'article-date', date_format: null }) %>
+                        <%- partial('_partials/post/updated-date', { post: post, class_name: 'article-updated-date', date_format: null }) %>
                         <% wikiflow_history_links(post).forEach(function(link) { %>
                             <div class="article-meta-button">
                                 <a href="<%= link.url %>"><%= link.label %></a>

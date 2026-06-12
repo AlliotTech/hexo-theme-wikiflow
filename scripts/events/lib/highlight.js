@@ -228,11 +228,9 @@ function shouldUseHighlight(hexo) {
 
 function configureHighlight(hexo) {
     const themeConfig = hexo.theme.config || {};
-    const customize = themeConfig.customize || {};
     const codeblock = themeConfig.codeblock || {};
     const codeblockTheme = codeblock.theme || {};
-    const compatibleTheme = customize.highlight || DEFAULT_THEME;
-    const lightThemeName = codeblockTheme.light || compatibleTheme;
+    const lightThemeName = codeblockTheme.light || DEFAULT_THEME;
     const darkThemeName = codeblockTheme.dark || '';
     const lightTheme = resolveHighlightTheme(hexo, lightThemeName);
     const darkTheme = darkThemeName ? resolveHighlightTheme(hexo, darkThemeName) : {};

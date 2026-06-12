@@ -1,5 +1,5 @@
 <% if (site.posts.length) { %>
-    <% var thumbnailEnabled = !!(theme.customize && theme.customize.thumbnail); %>
+    <% var thumbnailEnabled = !!(theme.recent_posts && theme.recent_posts.thumbnail); %>
     <div class="widget-wrap">
         <h3 class="widget-title"><span><%= __('widget.recents') %></span></h3>
         <div class="widget">

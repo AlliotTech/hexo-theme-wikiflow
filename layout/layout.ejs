@@ -6,11 +6,11 @@
         <%- wikiflow_inject('header') %>
         <div class="outer">
             <section id="main" tabindex="-1"><%- body %></section>
-            <% if (theme.customize && theme.customize.sidebar) { %>
+            <% if (theme.sidebar && theme.sidebar.position) { %>
                 <%- partial('_partials/sidebar') %>
                 <%- wikiflow_inject('sidebar') %>
             <% } %>
-            <% if (theme.customize && theme.customize.profile && theme.customize.profile.enabled) { %>
+            <% if (theme.profile && theme.profile.enabled) { %>
                 <%- partial('_partials/profile', null, {cache: !config.relative_link}) %>
             <% } %>
         </div>

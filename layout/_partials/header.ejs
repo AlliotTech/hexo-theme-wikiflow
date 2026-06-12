@@ -1,5 +1,6 @@
 <header id="header">
-    <% var customize = theme.customize || {}; %>
+    <% var logo = theme.logo || {}; %>
+    <% var profile = theme.profile || {}; %>
     <% var menu = theme.menu || {}; %>
     <% var menuKeys = Object.keys(menu).filter(function (name) { return menu[name]; }); %>
     <% var coreMobilePaths = ['/', '/archives', '/archives/', '/categories', '/categories/', '/tags', '/tags/']; %>
@@ -18,7 +19,7 @@
     <div id="header-main" class="header-inner">
         <div class="outer header-main-inner">
             <a href="<%- url_for() %>" id="logo">
-                <%- (customize.logo && customize.logo.enabled ? '<i class="logo"></i>':'') %>
+                <%- (logo.enabled ? '<i class="logo"></i>':'') %>
                 <span class="site-title"><%= config.title %></span>
             </a>
             <% if (menuKeys.length) { %>
@@ -29,8 +30,7 @@
                 </nav>
             <% } %>
             <div class="header-actions">
-                <% if(customize.profile && customize.profile.enabled) { %>
-                    <% var profile = customize.profile; %>
+                <% if(profile.enabled) { %>
                     <nav id="sub-nav">
                         <div class="profile" id="profile-nav">
                             <button id="profile-anchor" type="button" aria-controls="profile" aria-expanded="false" aria-label="<%= profile.author || config.title %>">

@@ -1,5 +1,5 @@
 <% if (site.categories.length) { %>
-    <% var categoryPerExpand = !!(theme.customize && theme.customize.category_perExpand); %>
+    <% var categoryPerExpand = !!(theme.category && theme.category.expand_all); %>
     <% var categoriesTree = wikiflow_category_tree(); %>
     <div class="widget-wrap" id="categories">
         <h3 class="widget-title">

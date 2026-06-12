@@ -63,30 +63,36 @@ theme_config:
     Categories: /categories
     Tags: /tags
     About: /about
-  customize:
-    logo:
-      enabled: true
-      width: 40
-      height: 40
-      url: /css/images/logo.png
-    profile:
-      enabled: true
-      avatar: /css/images/logo.png
-      gravatar:
-      author: WikiFlow
-      author_title: Hexo 8 Fixture
-      location: Test
-      follow: https://example.com
-    highlight: monokai
-    sidebar: left
-    category_perExpand: false
+  favicon: /css/images/favicon.ico
+  logo:
+    enabled: true
+    width: 40
+    height: 40
+    url: /css/images/logo.png
+  sidebar:
+    position: left
+  profile:
+    enabled: true
+    avatar: /css/images/logo.png
+    gravatar:
+    author: WikiFlow
+    author_title: Hexo 8 Fixture
+    location: Test
+    follow: https://example.com
+  social:
+    github: https://example.com/github
+    rss: /atom.xml
+  social_icons:
+    tooltip: true
+  home:
+    index_file:
+  category:
+    expand_all: false
+  recent_posts:
     thumbnail: true
-    favicon: /css/images/favicon.ico
-    default_index_file:
-    social_links:
-      github: https://example.com/github
-      rss: /atom.xml
-    social_link_tooltip: true
+  post_meta:
+    updated_at:
+      enable: true
   codeblock:
     theme:
       light: github
@@ -103,15 +109,21 @@ theme_config:
     lines: 3
   search:
     insight: true
-  history_control:
+  post_history:
     enable: true
-    server_link: https://github.com
-    user: example
-    repertory: fixture
+    server_url: https://github.com
+    owner: example
+    repository: fixture
     branch: main
   comment:
     disqus:
   share: default
+  open_graph:
+    enable: true
+    options:
+      fb_app_id:
+      fb_admins:
+      twitter_id:
   vendors:
     fontawesome: https://cdn.example.com/font-awesome.css
     open_sans: false
@@ -122,14 +134,9 @@ theme_config:
     mathjax: true
     google_analytics:
     google_site_verification:
-  miscellaneous:
-    open_graph:
-      fb_app_id:
-      fb_admins:
-      twitter_id:
-    links:
-      Hexo: https://hexo.io
-      WikiFlow: https://github.com/AlliotTech/hexo-theme-wikiflow
+  links:
+    Hexo: https://hexo.io
+    WikiFlow: https://github.com/AlliotTech/hexo-theme-wikiflow
 
 archive_generator:
   per_page: 10

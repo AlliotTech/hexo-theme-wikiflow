@@ -127,15 +127,26 @@ npm install --save hexo-generator-feed hexo-generator-sitemap hexo-filter-nofoll
 
 编辑站点根目录中的 `_config.wikiflow.yml`。本仓库的 `_config.yml.example` 是带注释的标准示例。
 
-发布站点前，请替换 `customize.profile`、`customize.social_links`、`history_control` 等个人信息配置中的示例值。
+发布站点前，请替换 `profile`、`social`、`post_history` 等个人信息配置中的示例值。
 
 常用主题选项：
 
 ```yaml
-customize:
-  sidebar: left
-  category_perExpand: false
-  default_index_file: index.md
+sidebar:
+  position: left
+
+home:
+  index_file: index.md
+
+category:
+  expand_all: false
+
+recent_posts:
+  thumbnail: true
+
+post_meta:
+  updated_at:
+    enable: true
 
 codeblock:
   theme:
@@ -164,7 +175,7 @@ comment:
   disqus:
 ```
 
-代码高亮主题名来自 `highlight.js/styles/*.css`，填写时不带 `.css` 后缀。未设置 `codeblock.theme.light` 时，主题仍会兼容旧的 `customize.highlight` 配置。
+代码高亮主题名来自 `highlight.js/styles/*.css`，填写时不带 `.css` 后缀。未设置 `codeblock.theme.light` 时，WikiFlow 使用 `monokai`。
 
 设置 `plugins.gallery: false` 可关闭内置图片查看层。设置 `plugins.mathjax: false` 可关闭 MathJax 输出，也可以通过 `vendors.mathjax` 指定脚本地址。样式类 vendor 可以使用 `cdn`、`false` 或外部样式表 URL。`local` 只适用于你明确在 `source/libs` 下提供了对应文件的情况；文件不存在时 WikiFlow 会回退到 `_vendors.yml` 中的 CDN 地址。
 
