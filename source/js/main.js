@@ -197,27 +197,31 @@
     }
 
     function copyText(text) {
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            return navigator.clipboard.writeText(text);
+        function fallbackCopy() {
+            return new Promise(function (resolve, reject) {
+                var textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.setAttribute('readonly', '');
+                textarea.style.position = 'fixed';
+                textarea.style.top = '-9999px';
+                document.body.appendChild(textarea);
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                    resolve();
+                } catch (error) {
+                    reject(error);
+                } finally {
+                    document.body.removeChild(textarea);
+                }
+            });
         }
 
-        return new Promise(function (resolve, reject) {
-            var textarea = document.createElement('textarea');
-            textarea.value = text;
-            textarea.setAttribute('readonly', '');
-            textarea.style.position = 'fixed';
-            textarea.style.top = '-9999px';
-            document.body.appendChild(textarea);
-            textarea.select();
-            try {
-                document.execCommand('copy');
-                resolve();
-            } catch (error) {
-                reject(error);
-            } finally {
-                document.body.removeChild(textarea);
-            }
-        });
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            return navigator.clipboard.writeText(text).catch(fallbackCopy);
+        }
+
+        return fallbackCopy();
     }
 
     function codeTextFromBlock(block) {
@@ -229,40 +233,68 @@
         return code.innerText.replace(/\n$/, '');
     }
 
+    function wrapCodeBlock(block) {
+        var wrapper;
+        if (block.parentElement && block.parentElement.classList.contains('code-container')) {
+            return block.parentElement;
+        }
+
+        wrapper = document.createElement('div');
+        wrapper.className = 'code-container notranslate';
+        block.parentNode.insertBefore(wrapper, block);
+        wrapper.appendChild(block);
+        return wrapper;
+    }
+
+    function createCopyIcon(className) {
+        var icon = document.createElement('i');
+        icon.className = className;
+        icon.setAttribute('aria-hidden', 'true');
+        return icon;
+    }
+
+    function setCopyState(button, className) {
+        button.textContent = '';
+        button.appendChild(createCopyIcon(className));
+    }
+
     function setupCodeCopy() {
         document.querySelectorAll('.article-entry .highlight').forEach(function (block, index) {
             var button;
+            var icon;
             var status;
+            var wrapper;
             if (block.classList.contains('code-copy-ready')) return;
 
             block.classList.add('code-copy-ready');
+            wrapper = wrapCodeBlock(block);
             button = document.createElement('button');
             status = document.createElement('span');
+            icon = createCopyIcon('fa fa-copy fa-fw');
             button.type = 'button';
-            button.className = 'code-copy-button';
-            button.textContent = 'Copy';
+            button.className = 'copy-btn';
             button.setAttribute('aria-label', 'Copy code');
+            button.appendChild(icon);
             status.className = 'code-copy-status';
             status.id = 'code-copy-status-' + index;
             status.setAttribute('aria-live', 'polite');
             button.setAttribute('aria-describedby', status.id);
-            block.insertBefore(status, block.firstChild);
-            block.insertBefore(button, block.firstChild);
+            wrapper.appendChild(status);
+            wrapper.appendChild(button);
 
             button.addEventListener('click', function () {
-                var original = button.textContent;
                 copyText(codeTextFromBlock(block)).then(function () {
-                    button.textContent = 'Copied';
+                    setCopyState(button, 'fa fa-check-circle fa-fw');
                     status.textContent = 'Code copied';
                     window.setTimeout(function () {
-                        button.textContent = original;
+                        setCopyState(button, 'fa fa-copy fa-fw');
                         status.textContent = '';
                     }, 1800);
                 }).catch(function () {
-                    button.textContent = 'Failed';
+                    setCopyState(button, 'fa fa-times-circle fa-fw');
                     status.textContent = 'Copy failed';
                     window.setTimeout(function () {
-                        button.textContent = original;
+                        setCopyState(button, 'fa fa-copy fa-fw');
                         status.textContent = '';
                     }, 1800);
                 });
