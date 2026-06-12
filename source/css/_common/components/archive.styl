@@ -123,6 +123,100 @@
             &:before
                 content: '#'
 
+.category-index-grid
+    display: grid
+    grid-template-columns: repeat(2, minmax(0, 1fr))
+    gap: 24px 28px
+    @media mq-mini
+        grid-template-columns: 1fr
+    @media mq-mobile
+        grid-template-columns: 1fr
+
+.category-index-group
+    min-width: 0
+    padding: 0 0 18px
+    border-top: 1px solid var(--color-border)
+
+.category-index-header
+    display: flex
+    align-items: center
+    gap: 10px
+    padding-top: 14px
+    h2
+        flex: 1 1 auto
+        min-width: 0
+        margin: 0
+        font-size: 1.15em
+        line-height: 1.35
+        a
+            @extend $link-dark
+    .category-index-count
+        flex: 0 0 auto
+        min-width: 28px
+        padding: 2px 8px
+        color: var(--color-grey)
+        font-size: 0.85em
+        text-align: center
+        border: 1px solid var(--color-border)
+        border-radius: var(--radius-pill)
+
+.category-index-links,
+.category-index-posts,
+.tag-index-list
+    list-style: none
+    margin: 12px 0 0
+    padding: 0
+
+.category-index-links
+    display: flex
+    flex-wrap: wrap
+    gap: 8px 12px
+    li
+        min-width: 0
+    a
+        color: var(--color-sidebar-text-dark)
+
+.category-index-posts
+    li
+        margin-top: 8px
+        line-height: 1.5
+    a
+        color: var(--color-sidebar-text)
+        &:hover
+            color: var(--color-link)
+
+.tag-index-inner
+    max-width: 840px
+
+.tag-index-list
+    display: flex
+    flex-wrap: wrap
+    gap: 10px
+    li
+        min-width: 0
+    a
+        display: inline-flex
+        align-items: center
+        gap: 8px
+        min-height: 36px
+        padding: 0 12px
+        color: var(--color-default)
+        border: 1px solid var(--color-border)
+        border-radius: var(--radius-pill)
+        background: var(--color-surface)
+        &:hover
+            color: var(--color-link)
+            border-color: var(--color-link)
+            text-decoration: none
+
+.tag-index-count
+    color: var(--color-grey)
+    font-size: 0.85em
+
+.layout-empty
+    color: var(--color-grey)
+    line-height: 1.6
+
 #page-nav
     clearfix()
     margin: block-margin auto

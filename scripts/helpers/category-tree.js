@@ -34,6 +34,23 @@ function sortByDate(left, right) {
     return new Date(left.date) - new Date(right.date);
 }
 
+function sortByDateDesc(left, right) {
+    return new Date(right.date) - new Date(left.date);
+}
+
+function categoryPath(category) {
+    return category && (category.path || category.permalink || '');
+}
+
+function postSummary(post) {
+    return {
+        title: post.title,
+        date: post.date,
+        path: post.path,
+        _id: post._id
+    };
+}
+
 function buildCategoryTree(categories, posts, currentPostId) {
     const categoryList = toArray(categories)
         .filter(category => category && category.length)
@@ -100,16 +117,62 @@ function buildCategoryTree(categories, posts, currentPostId) {
     };
 }
 
+function buildCategoryGroups(categories, options = {}) {
+    const childLimit = options.childLimit || 6;
+    const postLimit = options.postLimit || 4;
+    const categoryList = toArray(categories)
+        .filter(category => category && category.length)
+        .sort(sortByName);
+    const childrenByParent = new Map();
+
+    categoryList.forEach(category => {
+        const parentId = getParentId(category);
+        if (!childrenByParent.has(parentId)) childrenByParent.set(parentId, []);
+        childrenByParent.get(parentId).push(category);
+    });
+
+    return (childrenByParent.get('_root') || []).map(category => {
+        const children = (childrenByParent.get(category._id) || [])
+            .sort(sortByName)
+            .slice(0, childLimit)
+            .map(child => ({
+                _id: child._id,
+                name: child.name,
+                length: child.length,
+                path: categoryPath(child)
+            }));
+        const posts = toArray(category.posts)
+            .filter(Boolean)
+            .sort(sortByDateDesc)
+            .slice(0, postLimit)
+            .map(postSummary);
+
+        return {
+            _id: category._id,
+            name: category.name,
+            length: category.length,
+            path: categoryPath(category),
+            children,
+            posts
+        };
+    });
+}
+
 function register(hexoInstance) {
     hexoInstance.extend.helper.register('wikiflow_category_tree', function() {
         const currentPostId = this.is_post && this.is_post() ? this.page._id : null;
         return buildCategoryTree(this.site.categories, this.site.posts, currentPostId);
+    });
+
+    hexoInstance.extend.helper.register('wikiflow_category_groups', function(options) {
+        return buildCategoryGroups(this.site.categories, options);
     });
 }
 
 if (typeof hexo !== 'undefined') register(hexo);
 
 module.exports = {
+    buildCategoryGroups,
     buildCategoryTree,
     getPostCategories,
     register,

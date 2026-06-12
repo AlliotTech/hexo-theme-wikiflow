@@ -45,12 +45,14 @@
                 <a href="<%- url_for(post.path) %>#more"><%= __('article.more') %></a>
             </div>
         <% } %>
+        <% if (typeof showNav !== 'undefined' && showNav) { %>
+            <%- partial('_partials/post/nav', { post: post }) %>
+        <% } %>
         <footer class="article-footer">
         </footer>
     </div>
 </article>
 
-<% if (!index) { %>
-    <%- partial('_partials/post/nav', { post: post }) %>
+<% if (typeof showComments !== 'undefined' && showComments) { %>
     <%- partial('_third-party/comments/index', { post: post }) %>
 <% } %>

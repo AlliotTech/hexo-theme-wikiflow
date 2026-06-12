@@ -8,7 +8,9 @@
             <a id="allExpand" href="#" aria-label="<%= __('widget.categories') %>">
                 <i class="fa fa-angle-double-<%- categoryPerExpand ? 'up' : 'down' %> fa-2x"></i>
             </a>
+            <button class="widget-mobile-toggle" type="button" aria-controls="categories-body" aria-expanded="false" aria-label="<%= __('widget.categories') %>"></button>
         </h3>
+        <div class="widget-body" id="categories-body">
 
         <%
             function visitTreePosts(branch, perExpand) {
@@ -40,5 +42,6 @@
 
             visitTreePosts(categoriesTree, categoryPerExpand);
         %>
+        </div>
     </div>
 <% } %>

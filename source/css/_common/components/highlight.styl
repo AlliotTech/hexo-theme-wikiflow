@@ -40,16 +40,37 @@ if !highlight-gutter-foreground-dark-value
     --highlight-gutter-foreground: s('%s', unquote(highlight-gutter-foreground-value))
 
 .highlight
+    position: relative
     margin: 0px
     display: block
     overflow-x: auto
-    padding: 15px 20px
+    padding: 16px 20px
     color: var(--highlight-foreground)
     background: var(--highlight-background)
-    font-size: font-size
+    font-size: 13px
     font-family: font-mono
-    line-height: font-size * line-height
+    line-height: 1.55
     color-scheme: light
+    scrollbar-color: var(--color-grey) var(--highlight-background)
+    scrollbar-width: thin
+    &:after
+        content: ''
+        pointer-events: none
+        position: sticky
+        right: 0
+        display: block
+        width: 28px
+        height: 1px
+        margin-top: -1px
+        margin-left: auto
+        background: linear-gradient(90deg, rgba(255,255,255,0), rgba(0,0,0,0.08))
+    &::-webkit-scrollbar
+        height: 10px
+    &::-webkit-scrollbar-thumb
+        background: var(--color-grey)
+        border-radius: var(--radius-pill)
+    &::-webkit-scrollbar-track
+        background: rgba(0,0,0,0.06)
     table
         margin: 0
         width: auto
@@ -63,12 +84,53 @@ if !highlight-gutter-foreground-dark-value
             color: var(--highlight-gutter-foreground)
             text-align: right
             padding-right: 20px
+            opacity: 0.85
 
 .article-entry
     .highlight
         margin: 1.6em 0
         .line
-            height: 1.6em;
+            min-height: 1.55em
+
+.code-copy-button
+    position: sticky
+    right: 0
+    top: 0
+    z-index: 2
+    float: right
+    min-width: 56px
+    height: 28px
+    margin: -6px 0 8px 12px
+    padding: 0 8px
+    border: 1px solid var(--color-border)
+    border-radius: var(--radius-default)
+    background: var(--color-surface)
+    color: var(--color-default)
+    cursor: pointer
+    font: 12px font-sans
+    line-height: 26px
+    text-align: center
+    &:hover,
+    &:focus
+        color: var(--color-link)
+        border-color: var(--color-link)
+
+.code-copy-status
+    position: absolute
+    width: 1px
+    height: 1px
+    overflow: hidden
+    clip: rect(0 0 0 0)
+
+@media mq-mini
+    .highlight
+        padding: 14px 16px
+        font-size: 12px
+        line-height: 1.55
+
+@media mq-mobile
+    .highlight
+        font-size: 12px
 
 @require highlight-light-file if highlight-light-file
 

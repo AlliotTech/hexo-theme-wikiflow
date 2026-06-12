@@ -1,9 +1,9 @@
 // Insight Search Styles
-ins-container-width = 540px
-ins-text-grey = #9a9a9a
-ins-border-grey = #e2e2e2
-ins-background-grey = #f7f7f7
-ins-background-blue = #006BDE
+ins-container-width = 760px
+ins-text-grey = #5f6b76
+ins-border-grey = #d7dee5
+ins-background-grey = #f6f8fa
+ins-background-blue = #0969da
 
 $ins-full-screen
     top: 0
@@ -30,7 +30,7 @@ $ins-full-screen
     width: 100%
     height: 100%
     z-index: 100
-    background: rgba(0,0,0,0.5)
+    background: rgba(15,23,42,0.42)
 
 .ins-input-wrapper
     position: relative
@@ -41,14 +41,14 @@ $ins-full-screen
     outline: none
     font-size: 16px
     box-shadow: none
-    font-weight: 200
+    font-weight: 400
     border-radius: 0
     background: var(--color-surface)
     line-height: 20px
     box-sizing: border-box
     padding: 12px 28px 12px 20px
     border-bottom: 1px solid ins-border-grey
-    font-family: "Microsoft Yahei Light", "Microsoft Yahei", Helvetica, Arial, sans-serif
+    font-family: font-sans
 
 .ins-close
     top: 50%
@@ -60,6 +60,10 @@ $ins-full-screen
     position: absolute
     text-align: center
     display: inline-block
+    border: none
+    background: none
+    color: var(--color-grey)
+    cursor: pointer
     &:hover
         color: ins-background-blue
 
@@ -69,8 +73,12 @@ $ins-full-screen
     z-index: 101
     bottom: 100px
     box-sizing: border-box
-    width: ins-container-width
-    margin-left: -(ins-container-width/2)
+    width: unquote('min(760px, calc(100vw - 32px))')
+    margin-left: unquote('calc(min(760px, calc(100vw - 32px)) / -2)')
+    overflow: hidden
+    border-radius: var(--radius-default)
+    background: ins-background-grey
+    box-shadow: 0 16px 40px rgba(15,23,42,0.18)
     @media screen and (max-width: 559px), screen and (max-height: 479px)
         top: 0
         left: 0
@@ -93,45 +101,66 @@ $ins-full-screen
 
 .ins-section
     font-size: 14px
-    line-height: 16px
+    line-height: 1.45
     .ins-section-header,
     .ins-search-item
         padding: 8px 15px
     .ins-section-header
         color: ins-text-grey
         border-bottom: 1px solid ins-border-grey
+        font-size: 12px
+        font-weight: 700
+        text-transform: uppercase
     .ins-slug
-        margin-left: 5px
+        display: block
+        margin: 3px 0 0 22px
         color: ins-text-grey
-        &:before
-            content: '('
-        &:after
-            content: ')'
+        font-size: 12px
+        overflow: hidden
+        text-overflow: ellipsis
+        white-space: nowrap
     .ins-search-item
+        border-bottom: 1px solid ins-border-grey
+        outline: none
         header,
         .ins-search-preview
             overflow: hidden
-            white-space: nowrap
             text-overflow: ellipsis
         header
+            color: var(--color-default)
+            font-weight: 600
             .fa
                 margin-right: 8px
         .ins-search-preview
-            height: 18px
+            display: -webkit-box
+            height: auto
+            max-height: 3em
             font-size: 12px
             color: ins-text-grey
-            margin: 5px 0 0 20px
+            line-height: 1.5
+            margin: 6px 0 0 22px
+            white-space: normal
+            -webkit-box-orient: vertical
+            -webkit-line-clamp: 2
         &:hover,
+        &:focus,
         &.active
             color: white
             background: ins-background-blue
+            header
+                color: white
             .ins-slug,
             .ins-search-preview
             .search-keyword
                 color: white
         .search-keyword
-            color: #555
+            color: var(--color-link)
             font-size: 14px
             border-bottom: 1px dashed #555
             font-weight: bold
             font-style: italic
+
+.ins-empty
+    padding: 18px 15px
+    color: ins-text-grey
+    border-bottom: 1px solid ins-border-grey

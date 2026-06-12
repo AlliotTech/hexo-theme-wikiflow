@@ -2,6 +2,19 @@
     <% var customize = theme.customize || {}; %>
     <% var menu = theme.menu || {}; %>
     <% var menuKeys = Object.keys(menu).filter(function (name) { return menu[name]; }); %>
+    <% var coreMobilePaths = ['/', '/archives', '/archives/', '/categories', '/categories/', '/tags', '/tags/']; %>
+    <% function normalizeMenuPath(path) {
+        var value = String(path || '').split('#')[0].split('?')[0];
+        if (value !== '/' && value.slice(-1) === '/') value = value.slice(0, -1);
+        return value || '/';
+    } %>
+    <% var mobilePrimaryKeys = menuKeys.filter(function (name) {
+        return coreMobilePaths.indexOf(normalizeMenuPath(menu[name])) !== -1;
+    }); %>
+    <% if (!mobilePrimaryKeys.length) mobilePrimaryKeys = menuKeys.slice(0, 4); %>
+    <% function navClass(name) {
+        return 'main-nav-link' + (is_current(menu[name]) ? ' is-active' : '');
+    } %>
     <div id="header-main" class="header-inner">
         <div class="outer header-main-inner">
             <a href="<%- url_for() %>" id="logo">
@@ -9,9 +22,9 @@
                 <span class="site-title"><%= config.title %></span>
             </a>
             <% if (menuKeys.length) { %>
-                <nav id="main-nav">
+                <nav id="main-nav" aria-label="Primary">
                     <% menuKeys.forEach(function (name) { %>
-                        <a class="main-nav-link" href="<%- url_for(menu[name]) %>"><%= name %></a>
+                        <a class="<%= navClass(name) %>" href="<%- url_for(menu[name]) %>"><%= name %></a>
                     <% }); %>
                 </nav>
             <% } %>
@@ -28,15 +41,28 @@
                     </nav>
                 <% } %>
                 <%- partial('_partials/search/index') %>
+                <% if (menuKeys.length) { %>
+                    <button id="mobile-menu-trigger" class="mobile-menu-trigger" type="button" aria-controls="mobile-menu-panel" aria-expanded="false" aria-label="Menu" title="Menu"></button>
+                <% } %>
             </div>
         </div>
     </div>
     <% if (menuKeys.length) { %>
         <div id="main-nav-mobile" class="header-sub header-inner">
-            <nav class="outer mobile-menu">
-                <% menuKeys.forEach(function (name) { %>
-                    <a class="main-nav-link" href="<%- url_for(menu[name]) %>"><%= name %></a>
+            <nav class="outer mobile-menu mobile-menu-primary" aria-label="Mobile primary">
+                <% mobilePrimaryKeys.forEach(function (name) { %>
+                    <a class="<%= navClass(name) %>" href="<%- url_for(menu[name]) %>"><%= name %></a>
                 <% }); %>
+            </nav>
+        </div>
+        <div id="mobile-menu-panel" class="mobile-menu-panel" hidden>
+            <nav class="outer mobile-menu-drawer" aria-label="Mobile menu">
+                <span class="mobile-menu-heading">Topics</span>
+                <div class="mobile-menu-list">
+                    <% menuKeys.forEach(function (name) { %>
+                        <a class="<%= navClass(name) %>" href="<%- url_for(menu[name]) %>"><%= name %></a>
+                    <% }); %>
+                </div>
             </nav>
         </div>
     <% } %>

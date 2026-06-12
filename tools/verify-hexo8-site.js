@@ -194,10 +194,36 @@ async function verifyScenario(scenario) {
   }
 
   await verifyGeneratedHtml(scenario, tmpRoot);
+  await verifySmokeHtml(scenario, tmpRoot);
   await verifyGeneratedCss(scenario, tmpRoot);
 
   if (browserMode) {
     await verifyBrowserRuntime(scenario);
+  }
+}
+
+async function verifySmokeHtml(scenario, tmpRoot) {
+  const smokeFiles = [
+    'index.html',
+    'categories/index.html',
+    'tags/index.html',
+    'wiki/guide/first-note/index.html'
+  ];
+
+  const failures = [];
+  for (const file of smokeFiles) {
+    const html = await fs.promises.readFile(path.join(tmpRoot, 'public', file), 'utf8');
+    if (html.length < 500 || !html.includes('id="container"')) {
+      failures.push({
+        file,
+        length: html.length,
+        hasContainer: html.includes('id="container"')
+      });
+    }
+  }
+
+  if (failures.length) {
+    throw new Error(`Smoke HTML expectation failed for ${scenario.name}:\n${JSON.stringify(failures, null, 2)}`);
   }
 }
 

@@ -1,17 +1,18 @@
 <%- partial('_partials/head/head') %>
 <body>
     <div id="container">
+        <a class="skip-link" href="#main">Skip to content</a>
         <%- partial('_partials/header') %>
         <%- wikiflow_inject('header') %>
         <div class="outer">
-            <% if (theme.customize && theme.customize.profile && theme.customize.profile.enabled) { %>
-                <%- partial('_partials/profile', null, {cache: !config.relative_link}) %>
-            <% } %>
+            <section id="main" tabindex="-1"><%- body %></section>
             <% if (theme.customize && theme.customize.sidebar) { %>
                 <%- partial('_partials/sidebar') %>
                 <%- wikiflow_inject('sidebar') %>
             <% } %>
-            <section id="main"><%- body %></section>
+            <% if (theme.customize && theme.customize.profile && theme.customize.profile.enabled) { %>
+                <%- partial('_partials/profile', null, {cache: !config.relative_link}) %>
+            <% } %>
         </div>
         <%- wikiflow_inject('footer') %>
         <%- partial('_partials/footer', null, {cache: !config.relative_link}) %>

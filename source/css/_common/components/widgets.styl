@@ -48,6 +48,10 @@
         a
             margin-top: 5px
             float: right
+            @media mq-mini
+                display: none
+            @media mq-mobile
+                display: none
         a,
         span
             border-radius: var(--radius-default) var(--radius-default) 0 0
@@ -225,3 +229,37 @@
             margin-left: -13px
             font-weight: bold
             color: var(--color-sidebar-text-dark)
+
+.widget-mobile-toggle
+    display: none
+    align-items: center
+    justify-content: center
+    width: 32px
+    height: 32px
+    float: right
+    margin: -1px 0 0 8px
+    border: 1px solid var(--color-border)
+    border-radius: var(--radius-default)
+    background: var(--color-surface)
+    color: var(--color-sidebar-text-dark)
+    cursor: pointer
+    &:before
+        content: '\f107'
+        font-family: 'FontAwesome'
+    &[aria-expanded="true"]:before
+        content: '\f106'
+    @media mq-mini
+        display: inline-flex
+    @media mq-mobile
+        display: inline-flex
+
+.widget-body
+    display: block
+
+@media mq-mini
+    .widget-wrap.is-collapsed .widget-body
+        display: none
+
+@media mq-mobile
+    .widget-wrap.is-collapsed .widget-body
+        display: none

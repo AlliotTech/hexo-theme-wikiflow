@@ -2,7 +2,7 @@
 
 const assert = require('node:assert/strict');
 const test = require('node:test');
-const { buildCategoryTree, toArray } = require('../../scripts/helpers/category-tree');
+const { buildCategoryGroups, buildCategoryTree, toArray } = require('../../scripts/helpers/category-tree');
 
 test('toArray supports Hexo-style query objects', () => {
     assert.deepEqual(toArray({ toArray: () => ['a', 'b'] }), ['a', 'b']);
@@ -39,4 +39,20 @@ test('buildCategoryTree groups posts under their deepest category', () => {
     assert.deepEqual(jsBranch.articles.map(post => post.title), ['JS Note']);
     assert.equal(tree.children[0]._id, 'dev');
     assert.equal(tree.children[1]._id, 'ops');
+});
+
+test('buildCategoryGroups returns top-level browsing groups', () => {
+    const dev = { _id: 'dev', name: 'Dev', length: 2, path: 'categories/dev/' };
+    const js = { _id: 'js', name: 'JavaScript', parent: 'dev', length: 1, path: 'categories/dev/js/' };
+    const css = { _id: 'css', name: 'CSS', parent: 'dev', length: 1, path: 'categories/dev/css/' };
+    const postA = { _id: 'post-a', title: 'A', date: '2020-01-01', path: 'a/' };
+    const postB = { _id: 'post-b', title: 'B', date: '2020-01-03', path: 'b/' };
+    dev.posts = [postA, postB];
+
+    const groups = buildCategoryGroups([js, dev, css], { childLimit: 1, postLimit: 1 });
+
+    assert.equal(groups.length, 1);
+    assert.equal(groups[0].name, 'Dev');
+    assert.deepEqual(groups[0].children.map(category => category.name), ['CSS']);
+    assert.deepEqual(groups[0].posts.map(post => post.title), ['B']);
 });

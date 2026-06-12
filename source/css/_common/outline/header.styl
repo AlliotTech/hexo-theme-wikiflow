@@ -1,7 +1,9 @@
 #header
     @extend $block
     background: var(--color-surface)
+    border-bottom: 1px solid var(--color-border)
     position: relative
+    z-index: 10
     a, a:visited,
     button
         white-space: nowrap
@@ -11,6 +13,7 @@
     button:hover,
     button:focus
         color: var(--color-link)
+        text-decoration: none
 
 header-block-padding = (header-height - logo-height) / 2
 if header-block-padding < 0
@@ -59,6 +62,7 @@ if header-block-padding < 0
     flex: 0 0 auto
     min-height: header-height
     margin-left: auto
+    gap: 4px
 
 $nav-link
     display: inline-flex
@@ -78,7 +82,11 @@ $nav-link
 
 .main-nav-link
     @extend $nav-link
-    font-weight: 300
+    font-weight: 500
+    border-bottom: 2px solid transparent
+    &.is-active
+        color: var(--color-link)
+        border-bottom-color: var(--color-link)
 
 #main-nav
     display: flex
@@ -90,8 +98,7 @@ $nav-link
         display: none
 
 #main-nav-mobile
-    overflow-y: hidden
-    overflow-x: auto
+    overflow: hidden
     @media mq-tablet
         display: none
     @media mq-normal
@@ -99,12 +106,20 @@ $nav-link
     .mobile-menu
         display: flex
         align-items: center
+        flex-wrap: wrap
         min-height: header-sub-height
+        gap: 2px
     .main-nav-link
         flex: 0 0 auto
         min-height: header-sub-height
         line-height: header-sub-height
-        padding: 0 12px
+        padding: 0 10px
+        border-bottom-width: 2px
+        @media mq-mini
+            flex: 1 1 auto
+            justify-content: center
+            min-width: 68px
+            padding: 0 6px
 
 #sub-nav
     @media mq-normal
@@ -134,7 +149,7 @@ $nav-link
     display: flex
     align-items: center
     min-height: header-height
-    padding: 0 15px
+    padding: 0 8px
     .search-form
         position: relative
 
@@ -152,6 +167,71 @@ $nav-link
     &:focus
         outline: none
         background: rgba(56, 183, 234, 0.08)
+
+.mobile-menu-trigger
+    @extend .nav-icon
+    display: none
+    border: none
+    border-radius: 50%
+    background: none
+    font: font-size font-sans
+    &:before
+        content: '\f0c9'
+        font-family: 'FontAwesome'
+    &[aria-expanded="true"]:before
+        content: '\f00d'
+    &:hover,
+    &:focus
+        background: rgba(9, 105, 218, 0.08)
+    @media mq-mini
+        display: inline-flex
+    @media mq-mobile
+        display: inline-flex
+
+.mobile-menu-panel
+    display: none
+    border-top: 1px solid var(--color-border)
+    background: var(--color-surface)
+    box-shadow: 0 8px 18px rgba(16, 24, 40, 0.08)
+    &[hidden]
+        display: none !important
+    @media mq-mini
+        display: block
+    @media mq-mobile
+        display: block
+    @media mq-tablet
+        display: none
+    @media mq-normal
+        display: none
+
+.mobile-menu-drawer
+    padding-top: 12px
+    padding-bottom: 14px
+
+.mobile-menu-heading
+    display: block
+    margin: 0 0 8px
+    color: var(--color-grey)
+    font-size: 12px
+    font-weight: 700
+    text-transform: uppercase
+
+.mobile-menu-list
+    display: grid
+    grid-template-columns: repeat(2, minmax(0, 1fr))
+    gap: 4px
+    .main-nav-link
+        min-height: 40px
+        padding: 0 10px
+        border: 1px solid transparent
+        border-radius: var(--radius-default)
+        justify-content: flex-start
+        overflow: hidden
+        text-overflow: ellipsis
+        &:hover,
+        &.is-active
+            border-color: var(--color-border)
+            background: var(--color-background)
 
 .search-form-input,
 .search-form-input.ins-search-input,

@@ -1,9 +1,9 @@
 <div class="ins-search">
     <div class="ins-search-mask"></div>
-    <div class="ins-search-container">
+    <div class="ins-search-container" role="dialog" aria-modal="true" aria-label="<%= __('index.search') %>">
         <div class="ins-input-wrapper">
-            <input type="text" class="ins-search-input" placeholder="<%= __('insight.hint') %>" />
-            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+            <input type="text" class="ins-search-input" placeholder="<%= __('insight.hint') %>" aria-label="<%= __('index.search') %>" />
+            <button type="button" class="ins-close ins-selectable" aria-label="Close search"><i class="fa fa-times-circle"></i></button>
         </div>
         <div class="ins-section-wrapper">
             <div class="ins-section-container"></div>

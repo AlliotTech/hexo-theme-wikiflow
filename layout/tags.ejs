@@ -1,10 +1,30 @@
-<section class="layout-wrap">
+<%
+var tagSource = site.tags && site.tags.toArray ? site.tags.toArray() : [];
+var tags = tagSource.filter(function(tag) { return tag.length; }).sort(function(left, right) {
+    return String(left.name).localeCompare(String(right.name));
+});
+%>
+<section class="layout-wrap tag-index">
     <div class="layout-title">
         <span><%= page.title %></span>
     </div>
-    <div class="layout-wrap-inner tag-cloud">
-        <% if(site.tags.length) { %>
-            <%- tagcloud({min_font: 14, max_font: 28}) %>
+    <div class="layout-wrap-inner tag-index-inner">
+        <% if (tags.length) { %>
+            <% if (tags.length < 3) { %>
+                <p class="layout-empty">Only <%= tags.length %> tag<%= tags.length === 1 ? '' : 's' %> available.</p>
+            <% } %>
+            <ul class="tag-index-list">
+                <% tags.forEach(function(tag) { %>
+                    <li>
+                        <a href="<%- url_for(tag.path) %>">
+                            <span class="tag-index-name">#<%= tag.name %></span>
+                            <span class="tag-index-count"><%= tag.length %></span>
+                        </a>
+                    </li>
+                <% }); %>
+            </ul>
+        <% } else { %>
+            <p class="layout-empty">No tags yet.</p>
         <% } %>
     </div>
 </section>

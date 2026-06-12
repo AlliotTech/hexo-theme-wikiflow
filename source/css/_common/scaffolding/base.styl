@@ -48,6 +48,31 @@ a
     text-decoration: none
     &:visited
         color: var(--color-link)
+    &:hover
+        text-decoration: underline
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible
+    outline: 2px solid var(--color-link)
+    outline-offset: 2px
+
+.skip-link
+    position: fixed
+    top: 10px
+    left: 10px
+    z-index: 1000
+    transform: translateY(-160%)
+    padding: 8px 12px
+    color: var(--color-surface)
+    background: var(--color-link)
+    border-radius: var(--radius-small)
+    transition: transform 0.2s ease
+    &:focus
+        transform: translateY(0)
+
+#main:focus
+    outline: none
 
 code
     margin: 0 2px
