@@ -1,0 +1,80 @@
+{
+  "name": "hexo-theme-wikiflow",
+  "version": "0.0.1",
+  "description": "A knowledge-focused wiki theme for Hexo 8",
+  "keywords": [
+    "hexo",
+    "theme",
+    "wiki",
+    "personal"
+  ],
+  "homepage": "https://github.com/AlliotTech/hexo-theme-wikiflow#readme",
+  "bugs": {
+    "url": "https://github.com/AlliotTech/hexo-theme-wikiflow/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlliotTech/hexo-theme-wikiflow.git"
+  },
+  "files": [
+    "_config.yml",
+    "_config.yml.example",
+    "_vendors.yml",
+    "docs",
+    "languages",
+    "layout",
+    "scripts",
+    "source",
+    "LICENSE",
+    "README.md",
+    "README_zh-CN.md"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "hexo": "hexo",
+    "clean": "hexo clean",
+    "build": "hexo generate",
+    "server": "hexo server",
+    "lint": "npm run lint:js && npm run lint:styles",
+    "lint:js": "eslint scripts source/js tools",
+    "lint:styles": "stylelint \"source/css/**/*.styl\"",
+    "test": "npm run test:unit && node tools/verify-hexo8-site.js",
+    "test:unit": "node --test test/unit/*.test.js",
+    "test:browser": "node tools/verify-hexo8-site.js --browser",
+    "test:package": "node tools/verify-package.js"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "hexo": {
+    "version": "8.1.2"
+  },
+  "peerDependencies": {
+    "hexo": ">=8.1.0 <9.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^10.4.1",
+    "globals": "^17.6.0",
+    "hexo": "^8.1.0",
+    "hexo-directory-category": "^1.1.4",
+    "hexo-generator-archive": "^2.0.0",
+    "hexo-generator-category": "^2.0.0",
+    "hexo-generator-feed": "^4.0.0",
+    "hexo-generator-index": "^4.0.0",
+    "hexo-generator-json-content": "^4.2.3",
+    "hexo-generator-sitemap": "^3.0.1",
+    "hexo-generator-tag": "^2.0.0",
+    "hexo-renderer-ejs": "^2.0.0",
+    "hexo-renderer-marked": "^7.0.1",
+    "hexo-renderer-stylus": "^3.0.1",
+    "playwright": "^1.60.0",
+    "stylelint": "^16.26.1",
+    "stylelint-config-standard": "^36.0.1",
+    "stylelint-stylus": "^1.0.0"
+  },
+  "dependencies": {
+    "@adobe/css-tools": "^4.5.0",
+    "highlight.js": "^11.11.1",
+    "js-yaml": "^4.1.0"
+  }
+}

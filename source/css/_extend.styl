@@ -1,0 +1,65 @@
+$link-dark
+    &,
+    &:visited
+        color: var(--color-default)
+        transition: 0.2s ease
+    &:hover,
+    &:visited:hover
+        color: var(--color-link)
+
+$block-caption
+    line-height: 1em
+    // color: color-grey
+    text-decoration: none
+    text-transform: uppercase
+
+$block
+    background: var(--color-surface)
+    box-shadow: var(--shadow-block)
+
+$base-style
+    h1
+        font-size: 2em
+    h2
+        font-size: 1.5em
+    h3
+        font-size: 1.3em
+    h4
+        font-size: 1.2em
+    h5
+        font-size: 1em
+    h6
+        font-size: 1em
+        color: var(--color-grey)
+    hr
+        border: 1px dashed var(--color-border)
+    strong
+        font-weight: bold
+    em, cite
+        font-style: italic
+    sup, sub
+        font-size: 0.75em
+        line-height: 0
+        position: relative
+        vertical-align: baseline
+    sup
+        top: -0.5em
+    sub
+        bottom: -0.2em
+    small
+        font-size: 0.85em
+    acronym, abbr
+        border-bottom: 1px dotted
+    ul, ol, dl
+        margin: 0 20px
+        line-height: line-height
+    ul, ol
+        ul, ol
+            margin-top: 0
+            margin-bottom: 0
+    ul
+        list-style: disc
+    ol
+        list-style: decimal
+    dt
+        font-weight: bold

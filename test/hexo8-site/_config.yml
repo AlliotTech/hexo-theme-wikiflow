@@ -1,0 +1,175 @@
+title: WikiFlow Hexo 8 Fixture
+subtitle:
+description: Fixture site for validating WikiFlow on Hexo 8.
+keywords:
+author: WikiFlow
+language: en
+timezone: UTC
+
+url: https://example.com
+root: /
+permalink: wiki/:title/
+permalink_defaults:
+pretty_urls:
+  trailing_index: true
+  trailing_html: true
+
+source_dir: source
+public_dir: public
+tag_dir: tags
+archive_dir: archives
+category_dir: categories
+code_dir: downloads/code
+i18n_dir: :lang
+skip_render:
+  - README.md
+  - '_posts/**/embed_page/**'
+
+new_post_name: :title.md
+default_layout: post
+titlecase: false
+external_link:
+  enable: true
+  field: site
+  exclude: ''
+filename_case: 0
+render_drafts: false
+post_asset_folder: false
+relative_link: false
+future: true
+syntax_highlighter: highlight.js
+
+index_generator:
+  path: ''
+  per_page: 10
+  order_by: -date
+
+default_category: uncategorized
+category_map:
+tag_map:
+
+date_format: YYYY-MM-DD
+time_format: HH:mm:ss
+updated_option: mtime
+per_page: 10
+pagination_dir: page
+
+theme: WikiFlow
+
+theme_config:
+  menu:
+    Home: /
+    Archives: /archives
+    Categories: /categories
+    Tags: /tags
+    About: /about
+  favicon: /css/images/favicon.ico
+  logo:
+    enabled: true
+    width: 40
+    height: 40
+    url: /css/images/logo.png
+  sidebar:
+    position: left
+  profile:
+    enabled: true
+    avatar: /css/images/logo.png
+    gravatar:
+    author: WikiFlow
+    author_title: Hexo 8 Fixture
+    location: Test
+    follow: https://example.com
+  social:
+    github: https://example.com/github
+    rss: /atom.xml
+  social_icons:
+    tooltip: true
+  home:
+    index_file:
+  category:
+    expand_all: false
+  recent_posts:
+    thumbnail: true
+  post_meta:
+    updated_at:
+      enable: true
+  codeblock:
+    theme:
+      light: github
+      dark: github-dark
+  widgets:
+    - category
+    - recent_posts
+    - archive
+    - tag
+    - tagcloud
+    - links
+  auto_excerpt:
+    enable: true
+    lines: 3
+  search:
+    insight: true
+  post_history:
+    enable: true
+    server_url: https://github.com
+    owner: example
+    repository: fixture
+    branch: main
+  comment:
+    disqus:
+  share: default
+  open_graph:
+    enable: true
+    options:
+      fb_app_id:
+      fb_admins:
+      twitter_id:
+  vendors:
+    fontawesome: https://cdn.example.com/fontawesome-free.css
+    open_sans: false
+    source_code_pro: false
+    mathjax: https://cdn.example.com/mathjax-v4.js
+  plugins:
+    gallery: true
+    mathjax: true
+    google_analytics:
+    google_site_verification:
+  links:
+    Hexo: https://hexo.io
+    WikiFlow: https://github.com/AlliotTech/hexo-theme-wikiflow
+
+archive_generator:
+  per_page: 10
+  yearly: true
+  monthly: true
+  daily: false
+
+feed:
+  type: atom
+  path: atom.xml
+  limit: 20
+
+jsonContent:
+  meta: false
+  pages:
+    title: true
+    date: true
+    path: true
+    text: true
+  posts:
+    title: true
+    date: true
+    path: true
+    text: true
+    tags: true
+    categories: true
+  ignore:
+    - 404.html
+
+sitemap:
+  path:
+    - sitemap.xml
+    - sitemap.txt
+
+marked:
+  gfm: true

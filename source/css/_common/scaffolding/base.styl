@@ -1,0 +1,93 @@
+:root
+    --color-default: s('%s', color-default)
+    --color-grey: s('%s', color-grey)
+    --color-link: s('%s', color-link)
+    --color-border: s('%s', color-border)
+    --color-border-stretch: s('%s', color-border-stretch)
+    --color-background: s('%s', color-background)
+    --color-surface: s('%s', color-surface)
+    --color-meta-head: s('%s', color-meta-head)
+    --color-sidebar-text: s('%s', color-sidebar-text)
+    --color-sidebar-text-dark: s('%s', color-sidebar-text-dark)
+    --color-widget-background: s('%s', color-widget-background)
+    --color-widget-border: s('%s', color-widget-border)
+    --color-text-inverse: s('%s', color-text-inverse)
+    --color-panel-border: s('%s', color-panel-border)
+    --color-article-border: s('%s', color-article-border)
+    --color-quote-background: s('%s', color-quote-background)
+    --color-quote-border: s('%s', color-quote-border)
+    --color-quote-icon: s('%s', color-quote-icon)
+    --color-action-background: s('%s', color-action-background)
+    --color-action-background-hover: s('%s', color-action-background-hover)
+    --radius-default: s('%s', radius-default)
+    --radius-small: s('%s', radius-small)
+    --radius-pill: s('%s', radius-pill)
+    --space-block: s('%s', block-margin)
+    --space-article: s('%s', article-padding)
+    --layout-gutter: s('%s', gutter-width)
+    --shadow-block: 0 1px 2px rgba(0, 0, 0, 0.05)
+
+html
+    box-sizing: border-box
+
+*, *::before, *::after
+    box-sizing: inherit
+
+html, body
+    min-height: 100%
+
+body
+    width: 100%
+    color: var(--color-default)
+    background: var(--color-background)
+    font: font-size font-sans
+    -webkit-text-size-adjust: 100%
+
+a
+    color: var(--color-link)
+    text-decoration: none
+    &:visited
+        color: var(--color-link)
+    &:hover
+        text-decoration: underline
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible
+    outline: 2px solid var(--color-link)
+    outline-offset: 2px
+
+.skip-link
+    position: fixed
+    top: 10px
+    left: 10px
+    z-index: 1000
+    transform: translateY(-160%)
+    padding: 8px 12px
+    color: var(--color-surface)
+    background: var(--color-link)
+    border-radius: var(--radius-small)
+    transition: transform 0.2s ease
+    &:focus
+        transform: translateY(0)
+
+#main:focus
+    outline: none
+
+code
+    margin: 0 2px
+    color: var(--highlight-foreground, #e96900)
+    padding: 3px 5px
+    font-size: 0.8em
+    border-radius: 2px
+    font-family: font-mono
+    background-color: var(--highlight-background, #f8f8f8)
+
+.left, .alignleft
+    float: left
+
+.right, .alignright
+    float: right
+
+.clear
+    clear: both

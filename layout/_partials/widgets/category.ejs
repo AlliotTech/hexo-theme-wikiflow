@@ -1,0 +1,47 @@
+<% if (site.categories.length) { %>
+    <% var categoryPerExpand = !!(theme.category && theme.category.expand_all); %>
+    <% var categoriesTree = wikiflow_category_tree(); %>
+    <div class="widget-wrap" id="categories">
+        <h3 class="widget-title">
+            <span><%= __('widget.categories') %></span>
+            &nbsp;
+            <a id="allExpand" href="#" aria-label="<%= __('widget.categories') %>">
+                <i class="fa-solid fa-angles-<%- categoryPerExpand ? 'up' : 'down' %> fa-2x"></i>
+            </a>
+            <button class="widget-mobile-toggle" type="button" aria-controls="categories-body" aria-expanded="false" aria-label="<%= __('widget.categories') %>"></button>
+        </h3>
+        <div class="widget-body" id="categories-body">
+
+        <%
+            function visitTreePosts(branch, perExpand) {
+        %>
+            <ul class="unstyled category-tree">
+                <% if (branch.children && branch.children.length) { %>
+                    <% branch.children.forEach(function(category) { %>
+                        <% var isOpen = perExpand || category.selected; %>
+                        <li class="directory<%- isOpen ? ' open' : '' %>">
+                            <a href="#" data-role="directory" aria-expanded="<%- isOpen ? 'true' : 'false' %>">
+                                <i class="fa-solid fa-folder<%- isOpen ? '-open' : '' %>"></i>
+                                &nbsp;
+                                <%- category.name %>
+                            </a>
+                            <% visitTreePosts(category, perExpand); %>
+                        </li>
+                    <% }); %>
+                <% } %>
+                <% if (branch.articles && branch.articles.length) { %>
+                    <% branch.articles.forEach(function(post) { %>
+                        <li class="file<%- (is_post() && post._id === page._id) ? ' active' : '' %>">
+                            <a href="<%- url_for(post.path) %>"><%- post.title %></a>
+                        </li>
+                    <% }); %>
+                <% } %>
+            </ul>
+        <%
+            }
+
+            visitTreePosts(categoriesTree, categoryPerExpand);
+        %>
+        </div>
+    </div>
+<% } %>

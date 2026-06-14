@@ -1,0 +1,163 @@
+highlight-light-file = hexo-config("highlight.light.file")
+highlight-dark-file = hexo-config("highlight.dark.file")
+highlight-background-value = hexo-config("highlight.light.background")
+highlight-foreground-value = hexo-config("highlight.light.foreground")
+highlight-gutter-background-value = hexo-config("highlight.light.gutter_background")
+highlight-gutter-foreground-value = hexo-config("highlight.light.gutter_foreground")
+highlight-background-dark-value = hexo-config("highlight.dark.background")
+highlight-foreground-dark-value = hexo-config("highlight.dark.foreground")
+highlight-gutter-background-dark-value = hexo-config("highlight.dark.gutter_background")
+highlight-gutter-foreground-dark-value = hexo-config("highlight.dark.gutter_foreground")
+
+if !highlight-background-value
+    highlight-background-value = "#f8f8f8"
+
+if !highlight-foreground-value
+    highlight-foreground-value = "#333"
+
+if !highlight-gutter-background-value
+    highlight-gutter-background-value = highlight-background-value
+
+if !highlight-gutter-foreground-value
+    highlight-gutter-foreground-value = highlight-foreground-value
+
+if !highlight-background-dark-value
+    highlight-background-dark-value = highlight-background-value
+
+if !highlight-foreground-dark-value
+    highlight-foreground-dark-value = highlight-foreground-value
+
+if !highlight-gutter-background-dark-value
+    highlight-gutter-background-dark-value = highlight-background-dark-value
+
+if !highlight-gutter-foreground-dark-value
+    highlight-gutter-foreground-dark-value = highlight-foreground-dark-value
+
+:root
+    --highlight-background: s('%s', unquote(highlight-background-value))
+    --highlight-foreground: s('%s', unquote(highlight-foreground-value))
+    --highlight-gutter-background: s('%s', unquote(highlight-gutter-background-value))
+    --highlight-gutter-foreground: s('%s', unquote(highlight-gutter-foreground-value))
+
+.highlight
+    position: relative
+    margin: 0px
+    display: block
+    overflow-x: auto
+    padding: 0
+    color: var(--highlight-foreground)
+    background: var(--highlight-background)
+    font-size: 13px
+    font-family: font-mono
+    line-height: 1.55
+    color-scheme: light
+    scrollbar-color: var(--color-grey) var(--highlight-background)
+    scrollbar-width: thin
+    &::-webkit-scrollbar
+        height: 10px
+    &::-webkit-scrollbar-thumb
+        background: var(--color-grey)
+        border-radius: var(--radius-pill)
+    &::-webkit-scrollbar-track
+        background: rgba(0,0,0,0.06)
+    pre
+        margin: 0
+        padding: 10px 0
+        border: 0
+        line-height: 1.55
+    table
+        border: 0
+        margin: 0
+        width: auto
+        td
+            border: none
+            padding: 0
+        td.gutter
+            width: 1%
+        td.code
+            width: 100%
+    .gutter
+        user-select: none
+        background: var(--highlight-gutter-background)
+        pre
+            color: var(--highlight-gutter-foreground)
+            text-align: right
+            padding-left: 10px
+            padding-right: 10px
+            opacity: 0.85
+    .code pre
+        padding-left: 10px
+        padding-right: 10px
+        width: 100%
+
+.article-entry
+    .highlight
+        margin: 1.6em 0
+        .line
+            min-height: 1.55em
+    .code-container
+        display: flow-root
+        position: relative
+        margin: 1.6em 0
+        .highlight,
+        pre
+            margin: 0
+
+.highlight:hover .copy-btn,
+.code-container:hover .copy-btn,
+.copy-btn:focus
+    opacity: 1
+
+.copy-btn
+    position: absolute
+    right: 4px
+    top: 8px
+    z-index: 2
+    min-width: 28px
+    padding: 2px 6px
+    border: 1px solid #d5d5d5
+    border-radius: 3px
+    background-color: #dcdcdc
+    background-image: linear-gradient(#fcfcfc, #dcdcdc)
+    color: var(--color-default)
+    cursor: pointer
+    font: 12px font-sans
+    line-height: 1.6
+    opacity: 0
+    text-align: center
+    transition: opacity 0.2s ease
+    &:hover,
+    &:focus
+        color: var(--color-link)
+        border-color: var(--color-link)
+
+.code-copy-status
+    position: absolute
+    width: 1px
+    height: 1px
+    overflow: hidden
+    clip: rect(0 0 0 0)
+
+@media mq-mini
+    .highlight
+        font-size: 12px
+        line-height: 1.55
+
+@media mq-mobile
+    .highlight
+        font-size: 12px
+
+@require highlight-light-file if highlight-light-file
+
+if highlight-dark-file
+    @media (prefers-color-scheme: dark)
+        :root
+            --highlight-background: s('%s', unquote(highlight-background-dark-value))
+            --highlight-foreground: s('%s', unquote(highlight-foreground-dark-value))
+            --highlight-gutter-background: s('%s', unquote(highlight-gutter-background-dark-value))
+            --highlight-gutter-foreground: s('%s', unquote(highlight-gutter-foreground-dark-value))
+
+        .highlight
+            color-scheme: dark
+
+        @require highlight-dark-file

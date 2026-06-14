@@ -1,0 +1,28 @@
+<%
+var mathjaxVendor = theme.vendors && Object.prototype.hasOwnProperty.call(theme.vendors, 'mathjax') ? theme.vendors.mathjax : null;
+var mathjaxSrc = mathjaxVendor && mathjaxVendor.url ? mathjaxVendor.url : mathjaxVendor;
+%>
+<% if (mathjaxSrc && mathjaxSrc !== false && mathjaxSrc !== 'false' && mathjaxSrc !== 'off') { %>
+<script>
+    window.MathJax = {
+        tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            processEscapes: true,
+            tags: 'ams'
+        },
+        options: {
+            skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        startup: {
+            pageReady: function () {
+                return MathJax.startup.defaultPageReady().then(function () {
+                    document.querySelectorAll('mjx-container').forEach(function (container) {
+                        if (container.parentNode) container.parentNode.classList.add('has-jax');
+                    });
+                });
+            }
+        }
+    };
+</script>
+<script id="MathJax-script" async src="<%- mathjaxSrc %>"></script>
+<% } %>

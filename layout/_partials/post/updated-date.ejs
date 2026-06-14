@@ -1,0 +1,9 @@
+<% var updated = wikiflow_post_updated_time(post); %>
+<% if (updated) { %>
+    <div class="<%= class_name %>">
+        <i class="fa-solid fa-arrows-rotate"></i>
+        <a href="<%- url_for(post.path) %>">
+            <time datetime="<%= date_xml(updated) %>" itemprop="dateModified"><%= date(updated, date_format) %></time>
+        </a>
+    </div>
+<% } %>

@@ -1,0 +1,7 @@
+<aside id="sidebar">
+    <%- partial('_partials/post/toc', { post: page, variant: 'sidebar' }) %>
+    <% (theme.widgets || []).forEach(function(widget) { %>
+        <%- partial('_partials/widgets/' + widget) %>
+    <% }) %>
+    <div id="toTop" class="fa-solid fa-angle-up"></div>
+</aside>

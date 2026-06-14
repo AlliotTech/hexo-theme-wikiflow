@@ -1,0 +1,13 @@
+<%
+    var styles = ['fontawesome', 'open_sans', 'source_code_pro'];
+
+    styles.forEach(function (key) {
+        var vendor = theme.vendors && theme.vendors[key];
+        if (!vendor || vendor === false || vendor === 'false' || vendor === 'off') return;
+        var url = vendor.url || vendor;
+        if (!url) return;
+%>
+    <link rel="stylesheet" href="<%- url %>"<% if (vendor.integrity) { %> integrity="<%- vendor.integrity %>" crossorigin="anonymous"<% } %> />
+<%
+    });
+%>

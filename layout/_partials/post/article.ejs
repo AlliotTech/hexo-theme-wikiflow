@@ -1,0 +1,54 @@
+<article id="<%= post.layout %>-<%= post.slug %>" class="article article-type-<%= post.layout %>" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        <% if (post.banner) { %>
+            <%- partial('_partials/post/banner', { post: post, index: index }) %>
+        <% } %>
+        <% if (post.link || post.title) { %>
+            <header class="article-header">
+                <% if (post.layout != 'page') { %>
+                    <div class="article-meta">
+                        <%- partial('_partials/post/category', { post: post }) %>
+                        <%- partial('_partials/post/tag', { post: post }) %>
+                        <%- partial('_partials/post/date', { post: post, class_name: 'article-date', date_format: null }) %>
+                        <%- partial('_partials/post/updated-date', { post: post, class_name: 'article-updated-date', date_format: null }) %>
+                        <% wikiflow_history_links(post).forEach(function(link) { %>
+                            <div class="article-meta-button">
+                                <a href="<%= link.url %>"><%= link.label %></a>
+                            </div>
+                        <% }); %>
+                        <%- wikiflow_inject('postMeta') %>
+                    </div>
+                <% } %>
+                <%- partial('_partials/post/title', { post: post, index: index, class_name: 'article-title' }) %>
+            </header>
+        <% } %>
+        <%- partial('_partials/post/gallery', { post: post }) %>
+        <% var excerpt = index ? wikiflow_post_excerpt(post) : ''; %>
+        <div class="article-entry" itemprop="articleBody">
+        <% if (excerpt) { %>
+            <p><%- excerpt %></p>
+        <% } else if (!index) { %>
+            <%- partial('_partials/post/toc', { post: post, variant: 'mobile' }) %>
+        <% } %>
+        <%- wikiflow_inject('postBodyStart') %>
+        <% if (!excerpt) { %>
+            <%- post.content %>
+        <% } %>
+        <%- wikiflow_inject('postBodyEnd') %>
+        </div>
+        <% if (excerpt) { %>
+            <div class="article-more-link">
+                <a href="<%- url_for(post.path) %>#more"><%= __('article.more') %></a>
+            </div>
+        <% } %>
+        <% if (typeof showNav !== 'undefined' && showNav) { %>
+            <%- partial('_partials/post/nav', { post: post }) %>
+        <% } %>
+        <footer class="article-footer">
+        </footer>
+    </div>
+</article>
+
+<% if (typeof showComments !== 'undefined' && showComments) { %>
+    <%- partial('_third-party/comments/index', { post: post }) %>
+<% } %>

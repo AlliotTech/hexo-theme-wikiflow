@@ -1,0 +1,36 @@
+# Optional third-party frontend assets.
+#
+# Values in theme config can be false, "cdn", "local", or a custom URL.
+# "local" is only used when the corresponding file exists in source/libs;
+# otherwise the resolver falls back to the CDN URL.
+
+fontawesome:
+  type: style
+  name: fontawesome-free
+  version: 7.2.0
+  default: cdn
+  cdn: https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.2.0/css/all.min.css
+  local: libs/fontawesome-free/css/all.min.css
+
+open_sans:
+  type: style
+  name: open-sans
+  version: 1
+  default: false
+  cdn: https://fonts.googleapis.com/css?family=Open+Sans:400,600,700
+  local: libs/open-sans/styles.css
+
+source_code_pro:
+  type: style
+  name: source-code-pro
+  version: 1
+  default: false
+  cdn: https://fonts.googleapis.com/css?family=Source+Code+Pro:400,600
+  local: libs/source-code-pro/styles.css
+
+mathjax:
+  type: script
+  name: mathjax
+  version: 4.1.2
+  default: https://cdn.jsdelivr.net/npm/mathjax@4.1.2/tex-mml-chtml.js
+  cdn: https://cdn.jsdelivr.net/npm/mathjax@4.1.2/tex-mml-chtml.js

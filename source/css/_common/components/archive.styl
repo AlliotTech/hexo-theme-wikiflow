@@ -1,0 +1,248 @@
+.archives
+    clearfix()
+    .article:first-child
+        margin: 20px 0
+
+.archive-year-wrap,
+.archive-category-wrap,
+.archive-tag-wrap,
+.layout-title
+    font-size: 1.4em
+    margin: block-margin 0 20px 0
+    @media mq-mini
+        padding: 0 15px
+        font-size: 1.2em
+    .fa-solid,
+    .fa-regular,
+    .fa-brands
+        margin-right: 3px
+    .archive-year
+        color: color-default
+        &:hover
+            color: color-link
+.layout-wrap-inner
+    @media mq-mini
+        padding: 0 15px
+
+.archive-article
+    clearfix()
+    avoid-column-break()
+    @extend $block
+    padding: 0
+    margin-bottom: 15px
+    &.archive-type-summary
+        padding: 15px
+        .article-entry
+            padding: 0
+            p
+                margin: 12px 0
+    .archive-article-content,
+    .archive-article-thumbnail
+        display: table-cell
+        vertical-align: top
+        @media mq-mini
+            display: block
+    .archive-article-thumbnail
+        width: 160px
+        padding-right: 15px
+        @media mq-mini
+            width: 100%
+            padding-bottom: 15px
+        .thumbnail
+            height: 0
+            width: 100%
+            padding-bottom: 56.25%
+            display: block
+            position: relative
+            overflow: hidden
+            span
+                width: 100%
+                height: 100%
+                display: block
+            .thumbnail-image
+                position: absolute
+                background-size: cover
+                background-position: center
+            .thumbnail-none
+                background-image: url(thumbnail-default-small)
+
+.archive-year
+    @extend $block-caption
+
+.archive-article-header
+    a
+        @extend $link-dark
+
+.archive-article-title
+    display: block
+    font-size: 1.6em
+    line-height: 1.4em
+    margin-bottom: 12px
+    @media mq-mini
+        display: block
+        font-size: 1.3em
+
+.archive-article-date
+    display: block
+    margin-top: 8px
+
+.layout-wrap-inner
+    &.list-categories
+        .category-list .category-list-item .category-list-link
+            font-size: 1.2em
+        ul
+            margin-left: 15px
+            list-style: none
+            li,
+            .category-list-child
+                padding: 10px 0
+                font-size: font-size
+                border-bottom: none
+                a
+                    color: color-sidebar-text
+            ul, ol
+                list-style: none
+                li
+                    border: none
+                    &:last-child
+                        padding-bottom: 0px
+        li
+            a
+                &:before
+                    color: #ccc
+                    content: "\f0da"
+                    font-size: 12px
+                    margin-right: 6px
+                    font-family: "Font Awesome 7 Free"
+                    font-weight: 900
+                    transition: 0.2s ease
+                &:hover:before
+                    color: color-sidebar-text-dark
+    &.tag-cloud
+        a
+            @extend $link-dark
+            display: inline-block
+            margin-right: 8px
+            &:before
+                content: '#'
+
+.category-index-grid
+    display: grid
+    grid-template-columns: repeat(2, minmax(0, 1fr))
+    gap: 24px 28px
+    @media mq-mini
+        grid-template-columns: 1fr
+    @media mq-mobile
+        grid-template-columns: 1fr
+
+.category-index-group
+    min-width: 0
+    padding: 0 0 18px
+    border-top: 1px solid var(--color-border)
+
+.category-index-header
+    display: flex
+    align-items: center
+    gap: 10px
+    padding-top: 14px
+    h2
+        flex: 1 1 auto
+        min-width: 0
+        margin: 0
+        font-size: 1.15em
+        line-height: 1.35
+        a
+            @extend $link-dark
+    .category-index-count
+        flex: 0 0 auto
+        min-width: 28px
+        padding: 2px 8px
+        color: var(--color-grey)
+        font-size: 0.85em
+        text-align: center
+        border: 1px solid var(--color-border)
+        border-radius: var(--radius-pill)
+
+.category-index-links,
+.category-index-posts,
+.tag-index-list
+    list-style: none
+    margin: 12px 0 0
+    padding: 0
+
+.category-index-links
+    display: flex
+    flex-wrap: wrap
+    gap: 8px 12px
+    li
+        min-width: 0
+    a
+        color: var(--color-sidebar-text-dark)
+
+.category-index-posts
+    li
+        margin-top: 8px
+        line-height: 1.5
+    a
+        color: var(--color-sidebar-text)
+        &:hover
+            color: var(--color-link)
+
+.tag-index-inner
+    max-width: 840px
+
+.tag-index-list
+    display: flex
+    flex-wrap: wrap
+    gap: 10px
+    li
+        min-width: 0
+    a
+        display: inline-flex
+        align-items: center
+        gap: 8px
+        min-height: 36px
+        padding: 0 12px
+        color: var(--color-default)
+        border: 1px solid var(--color-border)
+        border-radius: var(--radius-pill)
+        background: var(--color-surface)
+        &:hover
+            color: var(--color-link)
+            border-color: var(--color-link)
+            text-decoration: none
+
+.tag-index-count
+    color: var(--color-grey)
+    font-size: 0.85em
+
+.layout-empty
+    color: var(--color-grey)
+    line-height: 1.6
+
+#page-nav
+    clearfix()
+    margin: block-margin auto
+    text-align: center
+    color: color-grey
+    overflow: hidden
+    a, span
+        height: 32px
+        padding: 0 10px
+        line-height: 32px
+        text-align: center
+        display: inline-block
+        border-radius: 2px
+    a
+        color: color-grey
+        text-decoration: none
+        &:hover
+            color: white
+            background: color-link
+    .page-number
+        display: inline-block
+        @media mq-mini
+            display: none
+    .current
+        color: color-default
+        font-weight: bold

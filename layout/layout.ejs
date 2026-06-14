@@ -1,0 +1,23 @@
+<%- partial('_partials/head/head') %>
+<body>
+    <div id="container">
+        <a class="skip-link" href="#main">Skip to content</a>
+        <%- partial('_partials/header') %>
+        <%- wikiflow_inject('header') %>
+        <div class="outer">
+            <section id="main" tabindex="-1"><%- body %></section>
+            <% if (theme.sidebar && theme.sidebar.position) { %>
+                <%- partial('_partials/sidebar') %>
+                <%- wikiflow_inject('sidebar') %>
+            <% } %>
+            <% if (theme.profile && theme.profile.enabled) { %>
+                <%- partial('_partials/profile', null, {cache: !config.relative_link}) %>
+            <% } %>
+        </div>
+        <%- wikiflow_inject('footer') %>
+        <%- partial('_partials/footer', null, {cache: !config.relative_link}) %>
+        <%- partial('_scripts/index') %>
+    </div>
+    <%- wikiflow_inject('bodyEnd') %>
+</body>
+</html>

@@ -1,0 +1,49 @@
+name: Publish to npm
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  npm-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Update npm for OIDC
+        run: npm install -g npm@latest
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Verify release tag
+        run: |
+          expected_tag="v$(node -p "require('./package.json').version")"
+          if [ "$expected_tag" != "$GITHUB_REF_NAME" ]; then
+            echo "Release tag $GITHUB_REF_NAME does not match package version $expected_tag."
+            exit 1
+          fi
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm test
+
+      - name: Package dry-run
+        run: npm run test:package
+
+      - name: Publish
+        run: npm publish --provenance

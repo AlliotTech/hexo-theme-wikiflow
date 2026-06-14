@@ -1,0 +1,23 @@
+<% var tocVariant = typeof variant !== 'undefined' ? variant : 'mobile'; %>
+<% var tocTitle = __('article.catalogue'); %>
+<% var tocContent = post && post.content ? toc(post.content) : ''; %>
+<% var hasTocContent = tocContent && String(tocContent).trim(); %>
+<% if (post && post.toc !== false && hasTocContent) { %>
+    <% if (tocVariant === 'sidebar') { %>
+        <nav class="post-toc post-toc-sidebar widget-wrap" aria-label="<%= tocTitle %>">
+            <h3 class="widget-title">
+                <span><%= tocTitle %></span>
+            </h3>
+            <div class="post-toc-body widget">
+                <%- tocContent %>
+            </div>
+        </nav>
+    <% } else { %>
+        <details class="post-toc post-toc-mobile">
+            <summary class="post-toc-title"><%= tocTitle %></summary>
+            <div class="post-toc-body">
+                <%- tocContent %>
+            </div>
+        </details>
+    <% } %>
+<% } %>
