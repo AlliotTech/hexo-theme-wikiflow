@@ -1,9 +1,30 @@
+<%
+var footer = theme.footer || {};
+var beian = footer.beian || {};
+var hasIcpBeian = beian.enable && beian.icp;
+var hasGonganBeian = beian.enable && beian.gongan_id && beian.gongan_num;
+%>
 <footer id="footer">
     <div class="outer">
         <div id="footer-info" class="inner">
             <%= config.author || config.title %> &copy; <%= date(new Date(), 'YYYY') %>
             <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-nd/4.0/80x15.png" /></a>
             <br> Powered by <a href="https://hexo.io/" target="_blank" rel="noopener noreferrer">Hexo</a>. Theme - <a href="https://github.com/AlliotTech/hexo-theme-wikiflow">WikiFlow</a>
+            <% if (hasIcpBeian || hasGonganBeian) { %>
+            <div class="beian">
+                <% if (hasIcpBeian) { %>
+                <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer"><%= beian.icp %></a>
+                <% } %>
+                <% if (hasGonganBeian) { %>
+                <a class="beian-gongan" href="https://beian.mps.gov.cn/#/query/webSearch?code=<%= encodeURIComponent(beian.gongan_id) %>" target="_blank" rel="noopener noreferrer">
+                    <% if (beian.gongan_icon_url) { %>
+                    <img src="<%- url_for(beian.gongan_icon_url) %>" alt="" />
+                    <% } %>
+                    <span><%= beian.gongan_num %></span>
+                </a>
+                <% } %>
+            </div>
+            <% } %>
         </div>
     </div>
 </footer>

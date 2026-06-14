@@ -149,6 +149,14 @@ category:
 recent_posts:
   thumbnail: true
 
+footer:
+  beian:
+    enable: false
+    icp:
+    gongan_id:
+    gongan_num:
+    gongan_icon_url:
+
 post_meta:
   updated_at:
     enable: true
@@ -204,6 +212,7 @@ Optional features are enabled from `_config.wikiflow.yml`.
 * `comment.disqus`: loads Disqus comments when a shortname is configured.
 * `share: default`: enables the built-in share popover.
 * `post_history.enable`: shows Source, Edit, and History links for content stored in a GitHub/GitLab-style repository.
+* `footer.beian`: adds ICP and gongan beian links to the footer for Chinese websites.
 
 ### Configure CDN
 

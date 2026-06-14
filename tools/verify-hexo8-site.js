@@ -58,6 +58,42 @@ const scenarios = [
     }
   },
   {
+    name: 'footer-beian',
+    configPatch: config => config.replace(
+      '  favicon: /css/images/favicon.ico\n',
+      [
+        '  favicon: /css/images/favicon.ico',
+        '  footer:',
+        '    beian:',
+        '      enable: true',
+        '      icp: 京ICP备12345678号-1',
+        '      gongan_id: 11000002000001',
+        '      gongan_num: 京公网安备11000002000001号',
+        '      gongan_icon_url: /css/images/favicon.ico',
+        ''
+      ].join('\n')
+    ),
+    expectHtml: {
+      includes: [
+        'href="https://beian.miit.gov.cn/"',
+        '京ICP备12345678号-1',
+        'href="https://beian.mps.gov.cn/#/query/webSearch?code=11000002000001"',
+        '京公网安备11000002000001号',
+        'class="beian-gongan"',
+        'src="/css/images/favicon.ico"'
+      ]
+    },
+    expectCss: {
+      includes: [
+        '.beian',
+        '.beian-gongan img'
+      ]
+    },
+    browser: {
+      galleryEnabled: true
+    }
+  },
+  {
     name: 'codeblock-default-theme',
     configPatch: config => config
       .replace('      light: github', '      light:')

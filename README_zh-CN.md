@@ -149,6 +149,14 @@ category:
 recent_posts:
   thumbnail: true
 
+footer:
+  beian:
+    enable: false
+    icp:
+    gongan_id:
+    gongan_num:
+    gongan_icon_url:
+
 post_meta:
   updated_at:
     enable: true
@@ -204,6 +212,7 @@ categories:
 * `comment.disqus`：配置 shortname 后加载 Disqus 评论。
 * `share: default`：启用内置分享弹层。
 * `post_history.enable`：为托管在 GitHub/GitLab 风格仓库中的文章显示 Source、Edit 和 History 链接。
+* `footer.beian`：在网站页脚显示 ICP 与公安备案链接。
 
 ### 配置 CDN
 
