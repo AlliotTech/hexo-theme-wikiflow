@@ -13,10 +13,10 @@ var hasGonganBeian = beian.enable && beian.gongan_id && beian.gongan_num;
             <% if (hasIcpBeian || hasGonganBeian) { %>
             <div class="beian">
                 <% if (hasIcpBeian) { %>
-                <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer"><%= beian.icp %></a>
+                <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer nofollow"><%= beian.icp %></a>
                 <% } %>
                 <% if (hasGonganBeian) { %>
-                <a class="beian-gongan" href="https://beian.mps.gov.cn/#/query/webSearch?code=<%= encodeURIComponent(beian.gongan_id) %>" target="_blank" rel="noopener noreferrer">
+                <a class="beian-gongan" href="https://beian.mps.gov.cn/#/query/webSearch?code=<%= encodeURIComponent(beian.gongan_id) %>" target="_blank" rel="noopener noreferrer nofollow">
                     <% if (beian.gongan_icon_url) { %>
                     <img src="<%- url_for(beian.gongan_icon_url) %>" alt="" />
                     <% } %>

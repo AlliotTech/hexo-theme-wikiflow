@@ -75,9 +75,9 @@ const scenarios = [
     ),
     expectHtml: {
       includes: [
-        'href="https://beian.miit.gov.cn/"',
+        'href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer nofollow"',
         '京ICP备12345678号-1',
-        'href="https://beian.mps.gov.cn/#/query/webSearch?code=11000002000001"',
+        'href="https://beian.mps.gov.cn/#/query/webSearch?code=11000002000001" target="_blank" rel="noopener noreferrer nofollow"',
         '京公网安备11000002000001号',
         'class="beian-gongan"',
         'src="/css/images/favicon.ico"'
