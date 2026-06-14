@@ -82,7 +82,7 @@ const scenarios = [
   {
     name: 'custom-injects',
     configPatch: config => config.replace(
-      'theme_config:\n',
+      /theme_config:\r?\n/,
       [
         'theme_config:',
         '  custom_file_path:',
