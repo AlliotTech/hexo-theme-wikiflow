@@ -100,15 +100,14 @@ const scenarios = [
       .replace('      dark: github-dark', '      dark:'),
     expectCss: {
       includes: [
-        'Generated from highlight.js/styles/monokai.css',
         '--highlight-background: #272822;',
-        '.highlight .code .string'
-      ],
-      excludes: [
-        'Generated from highlight.js/styles/github.css',
-        '@media (prefers-color-scheme: dark)',
         '.hljs-string',
         'code.hljs'
+      ],
+      excludes: [
+        'Generated from highlight.js/styles/monokai.css',
+        '@media (prefers-color-scheme: dark)',
+        '.highlight .code .string'
       ]
     },
     browser: {
@@ -322,16 +321,17 @@ async function verifyGeneratedCss(scenario, tmpRoot) {
     'grid-area: "left"'
   ];
   const includes = expectation.includes || [
-    'Generated from highlight.js/styles/github.css',
     '--highlight-background: #ffffff;',
-    '.highlight .code .variable.language_',
-    '.highlight .code .title.function_',
+    '.hljs-variable.language_',
+    '.hljs-title.function_',
     '@media (prefers-color-scheme: dark)',
-    'Generated from highlight.js/styles/github-dark.css'
+    '.hljs-string'
   ];
   const excludes = expectation.excludes || [
-    '.hljs-variable',
-    'code.hljs'
+    'Generated from highlight.js/styles/github.css',
+    'Generated from highlight.js/styles/github-dark.css',
+    '.highlight .code .variable.language_',
+    '.highlight .code .title.function_'
   ];
   const missing = genericIncludes.concat(includes).filter(fragment => !css.includes(fragment));
   const unexpected = genericExcludes.concat(excludes).filter(fragment => css.includes(fragment));

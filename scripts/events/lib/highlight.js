@@ -127,69 +127,6 @@ function completeThemeColors(colors) {
     };
 }
 
-function transformSelector(selector) {
-    const trimmed = selector.trim();
-    if (!trimmed || !trimmed.includes('.hljs')) return null;
-
-    if (/(^|[\s>+~])(?:pre\s+)?code\.hljs\b/.test(trimmed)) return null;
-
-    const hasTokenSelector = trimmed.includes('.hljs-');
-    let transformed = trimmed
-        .replace(/\.hljs-([A-Za-z0-9_-]+)/g, '.$1')
-        .replace(/\.hljs\b/g, '.highlight');
-
-    if (hasTokenSelector && !transformed.startsWith('.highlight')) {
-        transformed = `.highlight .code ${transformed}`;
-    } else if (hasTokenSelector) {
-        transformed = transformed.replace(/^\.highlight\s+/, '.highlight .code ');
-    }
-
-    return transformed;
-}
-
-function transformRules(rules) {
-    if (!Array.isArray(rules)) return rules;
-
-    return rules.reduce((result, rule) => {
-        if (rule.type === 'rule') {
-            const selectors = [...new Set((rule.selectors || []).map(transformSelector).filter(Boolean))];
-            if (selectors.length) {
-                rule.selectors = selectors;
-                result.push(rule);
-            }
-            return result;
-        }
-
-        if (rule.rules) rule.rules = transformRules(rule.rules);
-        result.push(rule);
-        return result;
-    }, []);
-}
-
-function transformHighlightCss(content, file) {
-    const ast = parseCss(content, file);
-    return transformHighlightAst(ast);
-}
-
-function transformHighlightAst(ast) {
-    ast.stylesheet.rules = transformRules(ast.stylesheet.rules);
-    return css.stringify(ast);
-}
-
-function safeFileName(name) {
-    return name.replace(/[^A-Za-z0-9_.-]/g, '-');
-}
-
-function writeGeneratedTheme(hexo, name, content) {
-    const outputDir = path.join(hexo.base_dir, '.tmp', 'wikiflow-highlight');
-    const outputFile = path.join(outputDir, `${safeFileName(name)}.css`);
-
-    fs.mkdirSync(outputDir, { recursive: true });
-    fs.writeFileSync(outputFile, content);
-
-    return outputFile;
-}
-
 function resolveHighlightTheme(hexo, name) {
     const themeName = name || DEFAULT_THEME;
     const themeFile = resolvePackagePath('highlight.js', path.join('styles', `${themeName}.css`));
@@ -198,16 +135,10 @@ function resolveHighlightTheme(hexo, name) {
         const source = fs.readFileSync(themeFile, 'utf8');
         const ast = parseCss(source, themeFile);
         const colors = extractThemeColors(ast);
-        const transformed = transformHighlightAst(ast);
-        const generatedFile = writeGeneratedTheme(
-            hexo,
-            themeName,
-            `/* Generated from highlight.js/styles/${themeName}.css. */\n${transformed}\n`
-        );
 
         return {
             name: themeName,
-            file: generatedFile,
+            file: themeFile,
             ...completeThemeColors(colors)
         };
     }
@@ -258,4 +189,3 @@ module.exports = configureHighlight;
 module.exports.completeThemeColors = completeThemeColors;
 module.exports.extractThemeColors = extractThemeColors;
 module.exports.parseColor = parseColor;
-module.exports.transformHighlightCss = transformHighlightCss;

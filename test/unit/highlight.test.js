@@ -1,31 +1,56 @@
 'use strict';
 
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
 const test = require('node:test');
+const configureHighlight = require('../../scripts/events/lib/highlight');
 const {
     completeThemeColors,
-    parseColor,
-    transformHighlightCss
-} = require('../../scripts/events/lib/highlight');
+    parseColor
+} = configureHighlight;
 
-test('transformHighlightCss rewrites highlight.js selectors for Hexo highlight markup', () => {
-    const transformed = transformHighlightCss(`
-.hljs {
-  color: #222;
-  background: #fff;
-}
-.hljs-string, .hljs .hljs-title.function_ {
-  color: #080;
-}
-pre code.hljs {
-  display: block;
-}
-`, 'unit.css');
+test('configureHighlight uses highlight.js theme CSS without writing generated files', () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'wikiflow-highlight-'));
+    const warnings = [];
+    const hexo = {
+        base_dir: tmp,
+        config: {
+            highlight: {},
+            syntax_highlighter: 'highlight.js'
+        },
+        log: {
+            warn(message) {
+                warnings.push(message);
+            }
+        },
+        theme: {
+            config: {
+                codeblock: {
+                    theme: {
+                        light: 'github',
+                        dark: ''
+                    }
+                }
+            }
+        }
+    };
 
-    assert.match(transformed, /\.highlight \.code \.string/);
-    assert.match(transformed, /\.highlight \.code \.title\.function_/);
-    assert.doesNotMatch(transformed, /\.hljs-string/);
-    assert.doesNotMatch(transformed, /code\.hljs/);
+    try {
+        configureHighlight(hexo);
+
+        assert.equal(hexo.config.highlight.hljs, false);
+        assert.equal(hexo.theme.config.highlight.light.name, 'github');
+        assert.match(
+            hexo.theme.config.highlight.light.file,
+            /node_modules[/\\]highlight\.js[/\\]styles[/\\]github\.css$/
+        );
+        assert.equal(fs.existsSync(path.join(tmp, '.tmp', 'wikiflow-highlight')), false);
+        assert.deepEqual(warnings, []);
+    } finally {
+        fs.rmSync(tmp, { recursive: true, force: true });
+    }
 });
 
 test('parseColor handles hex and rgb colors', () => {

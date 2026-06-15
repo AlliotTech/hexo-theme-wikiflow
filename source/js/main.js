@@ -258,6 +258,17 @@
         button.appendChild(createCopyIcon(className));
     }
 
+    function setupHighlightClasses() {
+        document.querySelectorAll('.article-entry .highlight').forEach(function (block) {
+            block.querySelectorAll('.code .line span, code.highlight span').forEach(function (token) {
+                Array.prototype.slice.call(token.classList).forEach(function (name) {
+                    if (name === 'line' || name.indexOf('hljs-') === 0) return;
+                    token.classList.add('hljs-' + name);
+                });
+            });
+        });
+    }
+
     function setupCodeCopy() {
         document.querySelectorAll('.article-entry .highlight').forEach(function (block, index) {
             var button;
@@ -427,6 +438,7 @@
         setupProfileCard();
         setupMobileMenu();
         setupMobileWidgets();
+        setupHighlightClasses();
         setupCodeCopy();
         setupToTop();
         setupTaskLists();
