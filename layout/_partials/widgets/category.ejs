@@ -7,8 +7,12 @@
         var categoryTreeUrl = categoryExternal ? wikiflow_category_tree_url() : '';
         var categoriesTree = categoryExternal ? null : wikiflow_category_tree();
         var categoriesUrl = url_for(config.category_dir || 'categories');
+        var categoryTocContent = typeof sidebarTocContent !== 'undefined' ? sidebarTocContent : '';
+        var hasCategoryToc = categoryTocContent && String(categoryTocContent).trim();
+        var outlineLabel = __('article.outline');
+        if (outlineLabel === 'article.outline') outlineLabel = __('article.catalogue');
     %>
-    <div class="widget-wrap" id="categories"
+    <div class="widget-wrap<%- hasCategoryToc ? ' sidebar-category-panel sidebar-panel-active-categories' : '' %>" id="categories"
         data-category-mode="<%= categoryExternal ? 'external' : 'full' %>"
         data-tree-src="<%= categoryTreeUrl %>"
         data-current-path="<%= url_for(page.path || '') %>"
@@ -17,14 +21,25 @@
         data-fallback-label="<%= __('widget.categories') %>"
         data-expand-all="<%= categoryPerExpand ? 'true' : 'false' %>">
         <h3 class="widget-title">
-            <span><%= __('widget.categories') %></span>
+            <% if (hasCategoryToc) { %>
+                <span class="sidebar-panel-tablist" role="tablist" aria-label="<%= __('widget.categories') %>">
+                    <button class="sidebar-panel-tab is-active" type="button" role="tab" data-sidebar-panel="categories" aria-controls="categories-body" aria-selected="true">
+                        <%= __('widget.categories') %>
+                    </button>
+                    <button class="sidebar-panel-tab" type="button" role="tab" data-sidebar-panel="outline" aria-controls="categories-outline-body" aria-selected="false">
+                        <%= outlineLabel %>
+                    </button>
+                </span>
+            <% } else { %>
+                <span><%= __('widget.categories') %></span>
+            <% } %>
             &nbsp;
             <a id="allExpand" href="#" aria-label="<%= __('widget.categories') %>">
                 <i class="fa-solid fa-angles-<%- categoryPerExpand ? 'up' : 'down' %> fa-2x"></i>
             </a>
             <button class="widget-mobile-toggle" type="button" aria-controls="categories-body" aria-expanded="false" aria-label="<%= __('widget.categories') %>"></button>
         </h3>
-        <div class="widget-body" id="categories-body">
+        <div class="widget-body<%- hasCategoryToc ? ' sidebar-panel sidebar-panel-categories is-active' : '' %>" id="categories-body"<% if (hasCategoryToc) { %> role="tabpanel" aria-hidden="false"<% } %>>
 
         <% if (categoryExternal) { %>
             <div class="category-tree-loading" data-role="category-tree-status" aria-live="polite"></div>
@@ -66,5 +81,12 @@
         %>
         <% } %>
         </div>
+        <% if (hasCategoryToc) { %>
+            <div class="widget-body sidebar-panel sidebar-panel-outline post-toc post-toc-sidebar" id="categories-outline-body" role="tabpanel" aria-hidden="true">
+                <div class="post-toc-body">
+                    <%- categoryTocContent %>
+                </div>
+            </div>
+        <% } %>
     </div>
 <% } %>

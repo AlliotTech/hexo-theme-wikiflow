@@ -197,38 +197,37 @@
     }
 
     function setupSidebarPanels() {
-        var sidebar = document.getElementById('sidebar');
         var tabs;
 
-        if (!sidebar) return;
-
-        tabs = Array.prototype.slice.call(sidebar.querySelectorAll('.sidebar-panel-tab'));
+        tabs = Array.prototype.slice.call(document.querySelectorAll('.sidebar-panel-tab'));
         if (!tabs.length) return;
 
-        function activate(panelName) {
-            sidebar.classList.remove('sidebar-panel-active-toc', 'sidebar-panel-active-widgets');
-            sidebar.classList.add('sidebar-panel-active-' + panelName);
+        function activate(widget, panelName) {
+            if (!widget) return;
 
-            tabs.forEach(function (tab) {
+            widget.classList.remove('sidebar-panel-active-categories', 'sidebar-panel-active-outline');
+            widget.classList.add('sidebar-panel-active-' + panelName);
+
+            widget.querySelectorAll('.sidebar-panel-tab').forEach(function (tab) {
                 var active = tab.getAttribute('data-sidebar-panel') === panelName;
                 tab.classList.toggle('is-active', active);
                 tab.setAttribute('aria-selected', active ? 'true' : 'false');
             });
 
-            sidebar.querySelectorAll('.sidebar-panel').forEach(function (panel) {
-                var active = panel.id === 'sidebar-panel-' + panelName;
+            widget.querySelectorAll('.sidebar-panel').forEach(function (panel) {
+                var active = panel.classList.contains('sidebar-panel-' + panelName);
                 panel.classList.toggle('is-active', active);
                 panel.setAttribute('aria-hidden', active ? 'false' : 'true');
             });
 
-            if (panelName === 'widgets') {
-                document.dispatchEvent(new Event('wikiflow:sidebar-widgets-active'));
+            if (panelName === 'categories') {
+                document.dispatchEvent(new Event('wikiflow:sidebar-categories-active'));
             }
         }
 
         tabs.forEach(function (tab) {
             tab.addEventListener('click', function () {
-                activate(tab.getAttribute('data-sidebar-panel'));
+                activate(closest(tab, '.sidebar-category-panel'), tab.getAttribute('data-sidebar-panel'));
             });
         });
     }
@@ -719,7 +718,7 @@
             });
         });
 
-        document.addEventListener('wikiflow:sidebar-widgets-active', function () {
+        document.addEventListener('wikiflow:sidebar-categories-active', function () {
             ensureTree(false);
         });
 
