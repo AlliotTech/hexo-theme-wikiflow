@@ -42,9 +42,18 @@ function categoryPath(category) {
     return category && (category.path || category.permalink || '');
 }
 
+function categorySummary(category) {
+    return {
+        _id: category._id,
+        name: category.name,
+        path: categoryPath(category),
+        length: category.length || 0
+    };
+}
+
 function postSummary(post) {
     return {
-        title: post.title,
+        title: post.title || '',
         date: post.date,
         path: post.path,
         _id: post._id
@@ -52,6 +61,7 @@ function postSummary(post) {
 }
 
 function buildCategoryTree(categories, posts, currentPostId) {
+    const shouldMarkSelected = currentPostId != null;
     const categoryList = toArray(categories)
         .filter(category => category && category.length)
         .sort(sortByName);
@@ -66,12 +76,7 @@ function buildCategoryTree(categories, posts, currentPostId) {
 
     toArray(posts).forEach(post => {
         const postCategories = getPostCategories(post);
-        const postInfo = {
-            title: post.title,
-            date: post.date,
-            path: post.path,
-            _id: post._id
-        };
+        const postInfo = postSummary(post);
 
         if (!postCategories.length) {
             articlesByCategory.get('_root').push(postInfo);
@@ -93,14 +98,16 @@ function buildCategoryTree(categories, posts, currentPostId) {
         const children = (childrenByParent.get(parentId) || []).map(category => {
             const articles = (articlesByCategory.get(category._id) || []).sort(sortByDate);
             const branch = {
-                _id: category._id,
-                name: category.name,
+                ...categorySummary(category),
                 children: buildBranch(category._id),
-                articles,
-                selected: articles.some(post => post._id === currentPostId)
+                articles
             };
 
-            if (branch.children.some(child => child.selected)) branch.selected = true;
+            if (shouldMarkSelected) {
+                branch.selected = articles.some(post => post._id === currentPostId);
+                if (branch.children.some(child => child.selected)) branch.selected = true;
+            }
+
             return branch;
         });
 
@@ -111,9 +118,11 @@ function buildCategoryTree(categories, posts, currentPostId) {
     return {
         _id: '_root',
         name: '_root',
+        path: '',
+        length: toArray(posts).length,
         children: buildBranch('_root'),
         articles: rootArticles,
-        selected: rootArticles.some(post => post._id === currentPostId)
+        ...(shouldMarkSelected ? { selected: rootArticles.some(post => post._id === currentPostId) } : {})
     };
 }
 
@@ -167,6 +176,13 @@ function register(hexoInstance) {
     hexoInstance.extend.helper.register('wikiflow_category_groups', function(options) {
         return buildCategoryGroups(this.site.categories, options);
     });
+
+    hexoInstance.extend.helper.register('wikiflow_category_tree_url', function() {
+        const categoryConfig = this.theme.category || {};
+        if (!categoryConfig.tree_path) return '';
+
+        return this.url_for(categoryConfig.tree_path);
+    });
 }
 
 if (typeof hexo !== 'undefined') register(hexo);
@@ -174,6 +190,7 @@ if (typeof hexo !== 'undefined') register(hexo);
 module.exports = {
     buildCategoryGroups,
     buildCategoryTree,
+    categorySummary,
     getPostCategories,
     register,
     toArray

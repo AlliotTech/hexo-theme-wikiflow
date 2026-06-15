@@ -137,6 +137,9 @@ home:
 
 # 分类 widget。
 category:
+  # external：构建一次共享 JSON，前端按需渲染目录树，避免每页重复输出全站文章树。
+  # full：保持旧版行为，服务端在每个页面完整输出目录树。
+  mode: external
   # true：默认展开全部分类目录；false：只展开当前文章所在分支。
   expand_all: false
 

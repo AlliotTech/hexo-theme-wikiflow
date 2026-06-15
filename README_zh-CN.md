@@ -144,6 +144,7 @@ home:
   index_file: index.md
 
 category:
+  mode: external
   expand_all: false
 
 recent_posts:
@@ -201,6 +202,8 @@ categories:
 ```
 
 归档页和最近文章中的缩略图优先读取 `thumbnail`，其次读取 `banner`。文章图库使用 Hexo 的 `photos` front matter 字段。`embed` 脚手架可以通过 `iframe_url` 创建 iframe 页面，也可以读取文章资源目录中的 `embed_page/index.html`。
+
+分类 widget 默认使用 `category.mode: external`。WikiFlow 会生成一个带 hash 的 `assets/wikiflow/category-tree.*.json`，再由浏览器渲染侧栏目录树：优先展开当前文章所在分支，其余 DOM 在用户展开目录或点击全部展开时再创建。如需恢复旧版每个页面服务端完整输出目录树的行为，可以设置 `category.mode: full`。
 
 ## 插件功能
 

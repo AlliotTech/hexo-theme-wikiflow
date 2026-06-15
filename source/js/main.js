@@ -362,12 +362,130 @@
 
     function setupCategoryTree() {
         var categories = document.getElementById('categories');
+        var body;
+        var external;
+        var treeSource;
+        var rootUrl;
+        var currentPath;
+        var loadingPromise;
+        var loadedTree;
+        var renderedTree = false;
+        var branchByDirectory = typeof WeakMap === 'function' ? new WeakMap() : null;
         var iconFolderOpenClass = 'fa-folder-open';
         var iconFolderCloseClass = 'fa-folder';
         var iconAllExpandClass = 'fa-angles-down';
         var iconAllPackClass = 'fa-angles-up';
 
         if (!categories) return;
+
+        body = document.getElementById('categories-body');
+        external = categories.getAttribute('data-category-mode') === 'external';
+        treeSource = categories.getAttribute('data-tree-src') || '';
+        rootUrl = categories.getAttribute('data-root-url') || '/';
+        currentPath = normalizePath(categories.getAttribute('data-current-path') || window.location.pathname);
+
+        function safeDecode(value) {
+            try {
+                return decodeURIComponent(value);
+            } catch {
+                return value;
+            }
+        }
+
+        function normalizedRoot() {
+            var root = safeDecode(rootUrl || '/').split('#')[0].split('?')[0];
+            if (root.charAt(0) !== '/') root = '/' + root;
+            if (root.length > 1 && root.slice(-1) !== '/') root += '/';
+            return root;
+        }
+
+        function normalizePath(value) {
+            var path = String(value || '');
+            var root = normalizedRoot();
+
+            try {
+                path = new URL(path, window.location.origin).pathname;
+            } catch {
+                path = path.split('#')[0].split('?')[0];
+            }
+
+            path = safeDecode(path).replace(/\\/g, '/');
+            if (root !== '/' && path.indexOf(root) === 0) path = '/' + path.slice(root.length);
+            path = path.replace(/^\/+/, '');
+            path = path.replace(/(?:^|\/)index\.html?$/i, '');
+            path = path.replace(/\/+$/, '');
+            return path;
+        }
+
+        function withRoot(path) {
+            var value = String(path || '');
+            var root = rootUrl || '/';
+
+            if (/^(?:[a-z]+:)?\/\//i.test(value) || value.charAt(0) === '/') return value || '/';
+            if (root.slice(-1) !== '/') root += '/';
+            return root + value.replace(/^\/+/, '');
+        }
+
+        function getBranch(directory) {
+            if (branchByDirectory) return branchByDirectory.get(directory);
+            return directory.wikiflowBranch;
+        }
+
+        function setBranchData(directory, branch) {
+            if (branchByDirectory) {
+                branchByDirectory.set(directory, branch);
+                return;
+            }
+            directory.wikiflowBranch = branch;
+        }
+
+        function nodeHasChildren(branch) {
+            return !!(branch && ((branch.children && branch.children.length) || (branch.articles && branch.articles.length)));
+        }
+
+        function markSelected(branch) {
+            var selected = false;
+
+            if (!branch) return false;
+
+            (branch.articles || []).forEach(function (post) {
+                post.selected = normalizePath(post.path) === currentPath;
+                if (post.selected) selected = true;
+            });
+
+            (branch.children || []).forEach(function (child) {
+                if (markSelected(child)) selected = true;
+            });
+
+            branch.selected = selected;
+            return selected;
+        }
+
+        function removeLoadingState() {
+            if (!body) return;
+            body.removeAttribute('aria-busy');
+            body.querySelectorAll('[data-role="category-tree-status"]').forEach(function (status) {
+                status.remove();
+            });
+        }
+
+        function showFallback() {
+            var fallbackUrl = categories.getAttribute('data-fallback-url') || '/categories/';
+            var fallbackLabel = categories.getAttribute('data-fallback-label') || 'Categories';
+            var paragraph;
+            var link;
+
+            if (!body || body.querySelector('.category-tree-fallback')) return;
+
+            removeLoadingState();
+            paragraph = document.createElement('p');
+            link = document.createElement('a');
+            paragraph.className = 'category-tree-fallback';
+            link.href = fallbackUrl;
+            link.textContent = fallbackLabel;
+            paragraph.appendChild(link);
+            body.appendChild(paragraph);
+        }
 
         function setFolderIcon(icon, expanded) {
             if (!icon) return;
@@ -379,6 +497,123 @@
             if (!icon) return;
             icon.classList.remove(iconAllExpandClass, iconAllPackClass);
             icon.classList.add(expanded ? iconAllPackClass : iconAllExpandClass);
+        }
+
+        function createIcon(className) {
+            var icon = document.createElement('i');
+            icon.className = className;
+            icon.setAttribute('aria-hidden', 'true');
+            return icon;
+        }
+
+        function createFile(post) {
+            var item = document.createElement('li');
+            var link = document.createElement('a');
+
+            item.className = 'file';
+            if (post.selected) item.classList.add('active');
+            link.href = withRoot(post.path);
+            link.textContent = post.title || '';
+            item.appendChild(link);
+            return item;
+        }
+
+        function createTree(branch, renderDescendants) {
+            var list = document.createElement('ul');
+
+            list.className = 'unstyled category-tree';
+            (branch.children || []).forEach(function (child) {
+                list.appendChild(createDirectory(child, renderDescendants || child.selected, renderDescendants));
+            });
+            (branch.articles || []).forEach(function (post) {
+                list.appendChild(createFile(post));
+            });
+            return list;
+        }
+
+        function renderDirectoryChildren(directory, renderDescendants) {
+            var branch = getBranch(directory);
+
+            if (!branch || directory.querySelector(':scope > ul.category-tree') || !nodeHasChildren(branch)) return;
+            directory.appendChild(createTree(branch, renderDescendants));
+        }
+
+        function createDirectory(branch, expanded, renderDescendants) {
+            var item = document.createElement('li');
+            var link = document.createElement('a');
+
+            item.className = 'directory';
+            setBranchData(item, branch);
+            link.href = '#';
+            link.setAttribute('data-role', 'directory');
+            link.setAttribute('aria-expanded', 'false');
+            link.appendChild(createIcon('fa-solid fa-folder'));
+            link.appendChild(document.createTextNode(' ' + (branch.name || '')));
+            item.appendChild(link);
+
+            if (expanded || renderDescendants) renderDirectoryChildren(item, renderDescendants);
+            setDirectory(item, expanded);
+            return item;
+        }
+
+        function renderTree(renderDescendants) {
+            if (!body || !loadedTree) return;
+
+            body.innerHTML = '';
+            body.appendChild(createTree(loadedTree, renderDescendants));
+            removeLoadingState();
+            renderedTree = true;
+        }
+
+        function materializeAll() {
+            if (!renderedTree) {
+                renderTree(true);
+                return;
+            }
+
+            categories.querySelectorAll('li.directory').forEach(function (directory) {
+                renderDirectoryChildren(directory, true);
+            });
+        }
+
+        function loadTree() {
+            if (loadedTree) return Promise.resolve(loadedTree);
+            if (loadingPromise) return loadingPromise;
+            if (!external || !treeSource || !window.fetch) {
+                showFallback();
+                return Promise.resolve(null);
+            }
+
+            if (body) body.setAttribute('aria-busy', 'true');
+            loadingPromise = fetch(treeSource, { credentials: 'same-origin' })
+                .then(function (response) {
+                    if (!response.ok) throw new Error('Failed to load category tree.');
+                    return response.json();
+                })
+                .then(function (payload) {
+                    loadedTree = payload.tree || payload;
+                    markSelected(loadedTree);
+                    return loadedTree;
+                })
+                .catch(function () {
+                    showFallback();
+                    return null;
+                });
+
+            return loadingPromise;
+        }
+
+        function ensureTree(renderDescendants) {
+            if (!external) return Promise.resolve();
+
+            return loadTree().then(function (tree) {
+                if (!tree) return;
+                if (!renderedTree) {
+                    renderTree(renderDescendants);
+                } else if (renderDescendants) {
+                    materializeAll();
+                }
+            });
         }
 
         function setDirectory(directory, expanded) {
@@ -395,6 +630,8 @@
             var branches;
 
             if (!directory) return;
+            if (includeChildren) renderDirectoryChildren(directory, true);
+            if (expanded) renderDirectoryChildren(directory, false);
             branches = includeChildren ? directory.querySelectorAll('li.directory') : [];
             setDirectory(directory, expanded);
             branches.forEach(function (branch) {
@@ -408,28 +645,58 @@
             var allIcon;
             var shouldExpandAll;
 
+            if (external && event.target.closest('.widget-mobile-toggle')) {
+                ensureTree(false);
+                return;
+            }
+
             if (directoryLink) {
                 event.preventDefault();
-                setBranch(directoryLink, !directoryLink.closest('li.directory').classList.contains('open'), false);
+                ensureTree(false).then(function () {
+                    var directory = directoryLink.closest('li.directory');
+                    setBranch(directoryLink, !directory.classList.contains('open'), false);
+                });
                 return;
             }
 
             if (!allExpandLink) return;
             event.preventDefault();
-            allIcon = allExpandLink.querySelector('.fa-solid, .fa-regular, .fa-brands');
-            shouldExpandAll = allIcon && allIcon.classList.contains(iconAllExpandClass);
-            categories.querySelectorAll('li.directory').forEach(function (directory) {
-                setDirectory(directory, shouldExpandAll);
+            ensureTree(true).then(function () {
+                allIcon = allExpandLink.querySelector('.fa-solid, .fa-regular, .fa-brands');
+                shouldExpandAll = allIcon && allIcon.classList.contains(iconAllExpandClass);
+                if (shouldExpandAll) materializeAll();
+                categories.querySelectorAll('li.directory').forEach(function (directory) {
+                    setDirectory(directory, shouldExpandAll);
+                });
+                setAllIcon(allIcon, shouldExpandAll);
             });
-            setAllIcon(allIcon, shouldExpandAll);
         });
 
-        categories.querySelectorAll('a[data-role="directory"]').forEach(function (directoryLink) {
-            directoryLink.addEventListener('contextmenu', function (event) {
-                event.preventDefault();
+        categories.addEventListener('contextmenu', function (event) {
+            var directoryLink = event.target.closest('a[data-role="directory"]');
+
+            if (!directoryLink) return;
+            event.preventDefault();
+            ensureTree(false).then(function () {
                 setBranch(directoryLink, !directoryLink.closest('li.directory').classList.contains('open'), true);
             });
         });
+
+        if (!external) return;
+
+        if (categories.getAttribute('data-expand-all') === 'true') {
+            ensureTree(true);
+        } else if (!window.matchMedia || !window.matchMedia('(max-width: 799px)').matches) {
+            if (window.requestIdleCallback) {
+                window.requestIdleCallback(function () {
+                    ensureTree(false);
+                }, { timeout: 1200 });
+            } else {
+                window.setTimeout(function () {
+                    ensureTree(false);
+                }, 100);
+            }
+        }
     }
 
     ready(function () {

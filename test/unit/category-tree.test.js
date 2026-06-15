@@ -34,8 +34,11 @@ test('buildCategoryTree groups posts under their deepest category', () => {
     const jsBranch = devBranch.children.find(category => category._id === 'js');
 
     assert.equal(tree.articles[0].title, 'Root Note');
+    assert.equal(tree.length, 2);
+    assert.equal(devBranch.length, 1);
     assert.equal(devBranch.selected, true);
     assert.equal(jsBranch.selected, true);
+    assert.equal(jsBranch.path, '');
     assert.deepEqual(jsBranch.articles.map(post => post.title), ['JS Note']);
     assert.equal(tree.children[0]._id, 'dev');
     assert.equal(tree.children[1]._id, 'ops');

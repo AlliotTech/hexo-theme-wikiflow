@@ -1,7 +1,21 @@
 <% if (site.categories.length) { %>
-    <% var categoryPerExpand = !!(theme.category && theme.category.expand_all); %>
-    <% var categoriesTree = wikiflow_category_tree(); %>
-    <div class="widget-wrap" id="categories">
+    <%
+        var categoryConfig = theme.category || {};
+        var categoryMode = categoryConfig.mode || 'external';
+        var categoryExternal = categoryMode !== 'full';
+        var categoryPerExpand = !!categoryConfig.expand_all;
+        var categoryTreeUrl = categoryExternal ? wikiflow_category_tree_url() : '';
+        var categoriesTree = categoryExternal ? null : wikiflow_category_tree();
+        var categoriesUrl = url_for(config.category_dir || 'categories');
+    %>
+    <div class="widget-wrap" id="categories"
+        data-category-mode="<%= categoryExternal ? 'external' : 'full' %>"
+        data-tree-src="<%= categoryTreeUrl %>"
+        data-current-path="<%= url_for(page.path || '') %>"
+        data-root-url="<%= url_for('/') %>"
+        data-fallback-url="<%= categoriesUrl %>"
+        data-fallback-label="<%= __('widget.categories') %>"
+        data-expand-all="<%= categoryPerExpand ? 'true' : 'false' %>">
         <h3 class="widget-title">
             <span><%= __('widget.categories') %></span>
             &nbsp;
@@ -12,6 +26,14 @@
         </h3>
         <div class="widget-body" id="categories-body">
 
+        <% if (categoryExternal) { %>
+            <div class="category-tree-loading" data-role="category-tree-status" aria-live="polite"></div>
+            <noscript>
+                <p class="category-tree-fallback">
+                    <a href="<%- categoriesUrl %>"><%= __('widget.categories') %></a>
+                </p>
+            </noscript>
+        <% } else { %>
         <%
             function visitTreePosts(branch, perExpand) {
         %>
@@ -42,6 +64,7 @@
 
             visitTreePosts(categoriesTree, categoryPerExpand);
         %>
+        <% } %>
         </div>
     </div>
 <% } %>

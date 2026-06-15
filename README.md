@@ -144,6 +144,7 @@ home:
   index_file: index.md
 
 category:
+  mode: external
   expand_all: false
 
 recent_posts:
@@ -201,6 +202,8 @@ categories:
 ```
 
 Thumbnails on archive and recent-post views come from `thumbnail` first and then `banner`. Post galleries use Hexo's `photos` front-matter field. The `embed` scaffold creates an iframe page from `iframe_url`, or from an `embed_page/index.html` file in the post asset folder.
+
+The category widget uses `category.mode: external` by default. WikiFlow emits one hashed `assets/wikiflow/category-tree.*.json` file and renders the sidebar tree in the browser, opening the current article branch first and creating the rest of the DOM only when a branch or the expand-all control is used. Set `category.mode: full` to restore the legacy server-rendered tree on every page.
 
 ## Plugins
 

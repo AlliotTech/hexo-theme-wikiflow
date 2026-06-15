@@ -31,6 +31,21 @@ const scenarios = [
     }
   },
   {
+    name: 'category-full',
+    categoryMode: 'full',
+    configPatch: config => config.replace(
+      /  category:\r?\n    expand_all: false/,
+      [
+        '  category:',
+        '    mode: full',
+        '    expand_all: false'
+      ].join('\n')
+    ),
+    browser: {
+      galleryEnabled: true
+    }
+  },
+  {
     name: 'gallery-disabled',
     configPatch: config => config.replace('    gallery: true', '    gallery: false'),
     browser: {
@@ -231,12 +246,38 @@ async function verifyScenario(scenario) {
     throw new Error(`Hexo 8 fixture build missed expected files for ${scenario.name}: ${missing.join(', ')}`);
   }
 
+  await verifyCategoryTreeAsset(scenario, tmpRoot);
+
   await verifyGeneratedHtml(scenario, tmpRoot);
   await verifySmokeHtml(scenario, tmpRoot);
   await verifyGeneratedCss(scenario, tmpRoot);
 
   if (browserMode) {
     await verifyBrowserRuntime(scenario);
+  }
+}
+
+async function verifyCategoryTreeAsset(scenario, tmpRoot) {
+  const assetDir = path.join(tmpRoot, 'public', 'assets', 'wikiflow');
+  const mode = scenario.categoryMode || 'external';
+  const files = fs.existsSync(assetDir)
+    ? (await fs.promises.readdir(assetDir)).filter(file => /^category-tree\.[a-f0-9]{12}\.json$/.test(file))
+    : [];
+
+  if (mode === 'full') {
+    if (files.length) {
+      throw new Error(`Full category mode should not emit an external tree asset for ${scenario.name}: ${files.join(', ')}`);
+    }
+    return;
+  }
+
+  if (files.length !== 1) {
+    throw new Error(`External category mode expected one hashed tree asset for ${scenario.name}, found: ${files.join(', ') || '(none)'}`);
+  }
+
+  const payload = JSON.parse(await fs.promises.readFile(path.join(assetDir, files[0]), 'utf8'));
+  if (payload.version !== 1 || !payload.tree || !Array.isArray(payload.tree.children)) {
+    throw new Error(`External category tree payload is malformed for ${scenario.name}`);
   }
 }
 
@@ -270,6 +311,7 @@ async function verifyGeneratedHtml(scenario, tmpRoot) {
   const html = await fs.promises.readFile(htmlPath, 'utf8');
   const tocDisabledHtmlPath = path.join(tmpRoot, 'public', 'wiki', 'reference', 'second-note', 'index.html');
   const tocDisabledHtml = await fs.promises.readFile(tocDisabledHtmlPath, 'utf8');
+  const categoryMode = scenario.categoryMode || 'external';
   const genericIncludes = [
     '<button id="profile-anchor" type="button" aria-controls="profile" aria-expanded="false"',
     '<img id="avatar" src="/css/images/logo.png" alt="WikiFlow" />',
@@ -288,8 +330,25 @@ async function verifyGeneratedHtml(scenario, tmpRoot) {
     'class="post-toc post-toc-sidebar widget-wrap"',
     'class="post-toc post-toc-mobile"'
   ];
-  const includes = genericIncludes.concat(scenario.expectHtml?.includes || []);
-  const excludes = genericExcludes.concat(scenario.expectHtml?.excludes || []);
+  const categoryModeIncludes = categoryMode === 'full'
+    ? [
+        'data-category-mode="full"',
+        'class="file active"'
+      ]
+    : [
+        'data-category-mode="external"',
+        'data-tree-src="/assets/wikiflow/category-tree.'
+      ];
+  const categoryModeExcludes = categoryMode === 'full'
+    ? [
+        'data-category-mode="external"',
+        'data-tree-src="/assets/wikiflow/category-tree.'
+      ]
+    : [
+        'class="file active"'
+      ];
+  const includes = genericIncludes.concat(categoryModeIncludes, scenario.expectHtml?.includes || []);
+  const excludes = genericExcludes.concat(categoryModeExcludes, scenario.expectHtml?.excludes || []);
   const missing = includes.filter(fragment => !html.includes(fragment));
   const unexpected = excludes.filter(fragment => html.includes(fragment));
   const unexpectedTocDisabled = tocDisabledExcludes.filter(fragment => tocDisabledHtml.includes(fragment));
@@ -427,6 +486,12 @@ async function verifyBrowserRuntime(scenario) {
 
   try {
     await page.goto(`http://127.0.0.1:${port}/wiki/guide/first-note/`, { waitUntil: 'domcontentloaded' });
+    await page.waitForFunction(() => {
+      const categories = document.querySelector('#categories');
+      return !categories ||
+        categories.getAttribute('data-category-mode') === 'full' ||
+        document.querySelector('#categories li.directory');
+    }, null, { timeout: 3000 });
     await page.waitForTimeout(1000);
 
     const runtime = await page.evaluate(() => ({
@@ -458,9 +523,17 @@ async function verifyBrowserRuntime(scenario) {
         sidebar: rectFor('#sidebar'),
         tocSidebar: rectFor('.post-toc-sidebar'),
         article: rectFor('.article'),
-        galleryItem: rectFor('.gallery-item')
+        galleryItem: rectFor('.gallery-item'),
+        categoryMode: document.querySelector('#categories')?.getAttribute('data-category-mode'),
+        categoryActiveFile: !!document.querySelector('#categories li.file.active'),
+        categoryFileCount: document.querySelectorAll('#categories li.file').length
       };
     });
+
+    if ((scenario.categoryMode || 'external') === 'external') {
+      await page.click('#allExpand');
+      await page.waitForFunction(() => document.querySelectorAll('#categories li.file').length >= 2, null, { timeout: 3000 });
+    }
 
     await page.setViewportSize({ width: 390, height: 844 });
     await page.waitForTimeout(300);
@@ -533,6 +606,9 @@ async function verifyBrowserRuntime(scenario) {
       !layout.tocSidebar?.visible ||
       !layout.article?.visible ||
       !layout.galleryItem?.visible ||
+      layout.categoryMode !== (scenario.categoryMode || 'external') ||
+      !layout.categoryActiveFile ||
+      layout.categoryFileCount < 1 ||
       layout.main.width < 500 ||
       layout.article.height < 200 ||
       !mobileLayout.categories?.visible ||
