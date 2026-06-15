@@ -60,7 +60,7 @@ const scenarios = [
   {
     name: 'footer-beian',
     configPatch: config => config.replace(
-      '  favicon: /css/images/favicon.ico\n',
+      /  favicon: \/css\/images\/favicon\.ico\r?\n/,
       [
         '  favicon: /css/images/favicon.ico',
         '  footer:',
