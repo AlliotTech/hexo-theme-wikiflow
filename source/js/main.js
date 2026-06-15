@@ -196,6 +196,43 @@
         syncInitialState();
     }
 
+    function setupSidebarPanels() {
+        var sidebar = document.getElementById('sidebar');
+        var tabs;
+
+        if (!sidebar) return;
+
+        tabs = Array.prototype.slice.call(sidebar.querySelectorAll('.sidebar-panel-tab'));
+        if (!tabs.length) return;
+
+        function activate(panelName) {
+            sidebar.classList.remove('sidebar-panel-active-toc', 'sidebar-panel-active-widgets');
+            sidebar.classList.add('sidebar-panel-active-' + panelName);
+
+            tabs.forEach(function (tab) {
+                var active = tab.getAttribute('data-sidebar-panel') === panelName;
+                tab.classList.toggle('is-active', active);
+                tab.setAttribute('aria-selected', active ? 'true' : 'false');
+            });
+
+            sidebar.querySelectorAll('.sidebar-panel').forEach(function (panel) {
+                var active = panel.id === 'sidebar-panel-' + panelName;
+                panel.classList.toggle('is-active', active);
+                panel.setAttribute('aria-hidden', active ? 'false' : 'true');
+            });
+
+            if (panelName === 'widgets') {
+                document.dispatchEvent(new Event('wikiflow:sidebar-widgets-active'));
+            }
+        }
+
+        tabs.forEach(function (tab) {
+            tab.addEventListener('click', function () {
+                activate(tab.getAttribute('data-sidebar-panel'));
+            });
+        });
+    }
+
     function copyText(text) {
         function fallbackCopy() {
             return new Promise(function (resolve, reject) {
@@ -682,6 +719,10 @@
             });
         });
 
+        document.addEventListener('wikiflow:sidebar-widgets-active', function () {
+            ensureTree(false);
+        });
+
         if (!external) return;
 
         if (categories.getAttribute('data-expand-all') === 'true') {
@@ -705,6 +746,7 @@
         setupProfileCard();
         setupMobileMenu();
         setupMobileWidgets();
+        setupSidebarPanels();
         setupHighlightClasses();
         setupCodeCopy();
         setupToTop();

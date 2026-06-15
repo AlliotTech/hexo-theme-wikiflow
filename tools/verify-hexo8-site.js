@@ -315,6 +315,9 @@ async function verifyGeneratedHtml(scenario, tmpRoot) {
   const genericIncludes = [
     '<button id="profile-anchor" type="button" aria-controls="profile" aria-expanded="false"',
     '<img id="avatar" src="/css/images/logo.png" alt="WikiFlow" />',
+    'class="sidebar-panel-tabs"',
+    'id="sidebar-panel-toc"',
+    'id="sidebar-panel-widgets"',
     'class="post-toc post-toc-sidebar widget-wrap"',
     'class="post-toc post-toc-mobile"',
     'class="fa-solid fa-calendar"',
@@ -327,6 +330,8 @@ async function verifyGeneratedHtml(scenario, tmpRoot) {
     'fa fa-'
   ];
   const tocDisabledExcludes = [
+    'id="sidebar-panel-toc"',
+    'sidebar-panel-active-toc',
     'class="post-toc post-toc-sidebar widget-wrap"',
     'class="post-toc post-toc-mobile"'
   ];
@@ -371,6 +376,8 @@ async function verifyGeneratedCss(scenario, tmpRoot) {
     'grid-template-areas: "sidebar main profile";',
     'grid-area: profile;',
     'grid-area: sidebar;',
+    '.sidebar-panel-tabs',
+    '.sidebar-panel-container',
     '.post-toc-sidebar',
     '.post-toc-mobile'
   ];
@@ -521,19 +528,92 @@ async function verifyBrowserRuntime(scenario) {
         main: rectFor('#main'),
         profile: rectFor('#profile'),
         sidebar: rectFor('#sidebar'),
+        sidebarTabs: rectFor('.sidebar-panel-tabs'),
+        tocPanel: rectFor('#sidebar-panel-toc'),
+        widgetsPanel: rectFor('#sidebar-panel-widgets'),
         tocSidebar: rectFor('.post-toc-sidebar'),
         article: rectFor('.article'),
         galleryItem: rectFor('.gallery-item'),
-        categoryMode: document.querySelector('#categories')?.getAttribute('data-category-mode'),
-        categoryActiveFile: !!document.querySelector('#categories li.file.active'),
-        categoryFileCount: document.querySelectorAll('#categories li.file').length
+        categories: rectFor('#categories'),
+        activePanel: document.querySelector('#sidebar')?.classList.contains('sidebar-panel-active-toc') ? 'toc' : 'widgets',
+        activeTab: document.querySelector('.sidebar-panel-tab.is-active')?.getAttribute('data-sidebar-panel'),
+        tocTabSelected: document.querySelector('.sidebar-panel-tab[data-sidebar-panel="toc"]')?.getAttribute('aria-selected'),
+        widgetsTabSelected: document.querySelector('.sidebar-panel-tab[data-sidebar-panel="widgets"]')?.getAttribute('aria-selected')
       };
     });
+
+    await page.click('.sidebar-panel-tab[data-sidebar-panel="widgets"]');
+    await page.waitForFunction(() => {
+      const categories = document.querySelector('#categories');
+      if (!categories) return false;
+      const rect = categories.getBoundingClientRect();
+      return rect.width > 0 && rect.height > 0 &&
+        (categories.getAttribute('data-category-mode') === 'full' || document.querySelector('#categories li.directory'));
+    }, null, { timeout: 3000 });
 
     if ((scenario.categoryMode || 'external') === 'external') {
       await page.click('#allExpand');
       await page.waitForFunction(() => document.querySelectorAll('#categories li.file').length >= 2, null, { timeout: 3000 });
     }
+
+    const widgetsPanelLayout = await page.evaluate(() => {
+      const rectFor = selector => {
+        const element = document.querySelector(selector);
+        if (!element) return null;
+        const rect = element.getBoundingClientRect();
+        return {
+          width: Math.round(rect.width),
+          height: Math.round(rect.height),
+          top: Math.round(rect.top),
+          left: Math.round(rect.left),
+          visible: rect.width > 0 && rect.height > 0
+        };
+      };
+
+      return {
+        tocSidebar: rectFor('.post-toc-sidebar'),
+        categories: rectFor('#categories'),
+        categoryMode: document.querySelector('#categories')?.getAttribute('data-category-mode'),
+        categoryActiveFile: !!document.querySelector('#categories li.file.active'),
+        categoryFileCount: document.querySelectorAll('#categories li.file').length,
+        activePanel: document.querySelector('#sidebar')?.classList.contains('sidebar-panel-active-widgets') ? 'widgets' : 'toc',
+        activeTab: document.querySelector('.sidebar-panel-tab.is-active')?.getAttribute('data-sidebar-panel'),
+        tocTabSelected: document.querySelector('.sidebar-panel-tab[data-sidebar-panel="toc"]')?.getAttribute('aria-selected'),
+        widgetsTabSelected: document.querySelector('.sidebar-panel-tab[data-sidebar-panel="widgets"]')?.getAttribute('aria-selected')
+      };
+    });
+
+    await page.click('.sidebar-panel-tab[data-sidebar-panel="toc"]');
+    await page.waitForFunction(() => {
+      const toc = document.querySelector('.post-toc-sidebar');
+      if (!toc) return false;
+      const rect = toc.getBoundingClientRect();
+      return rect.width > 0 && rect.height > 0;
+    }, null, { timeout: 3000 });
+
+    const tocPanelLayout = await page.evaluate(() => {
+      const rectFor = selector => {
+        const element = document.querySelector(selector);
+        if (!element) return null;
+        const rect = element.getBoundingClientRect();
+        return {
+          width: Math.round(rect.width),
+          height: Math.round(rect.height),
+          top: Math.round(rect.top),
+          left: Math.round(rect.left),
+          visible: rect.width > 0 && rect.height > 0
+        };
+      };
+
+      return {
+        tocSidebar: rectFor('.post-toc-sidebar'),
+        categories: rectFor('#categories'),
+        activePanel: document.querySelector('#sidebar')?.classList.contains('sidebar-panel-active-toc') ? 'toc' : 'widgets',
+        activeTab: document.querySelector('.sidebar-panel-tab.is-active')?.getAttribute('data-sidebar-panel'),
+        tocTabSelected: document.querySelector('.sidebar-panel-tab[data-sidebar-panel="toc"]')?.getAttribute('aria-selected'),
+        widgetsTabSelected: document.querySelector('.sidebar-panel-tab[data-sidebar-panel="widgets"]')?.getAttribute('aria-selected')
+      };
+    });
 
     await page.setViewportSize({ width: 390, height: 844 });
     await page.waitForTimeout(300);
@@ -553,7 +633,7 @@ async function verifyBrowserRuntime(scenario) {
       };
       const categories = rectFor('#categories');
       const article = rectFor('.article');
-      const sidebarWidgets = Array.from(document.querySelectorAll('#sidebar > .widget-wrap'))
+      const sidebarWidgets = Array.from(document.querySelectorAll('#sidebar .widget-wrap'))
         .map(widget => {
           const rect = widget.getBoundingClientRect();
           return {
@@ -563,11 +643,12 @@ async function verifyBrowserRuntime(scenario) {
             visible: rect.width > 0 && rect.height > 0
           };
         })
-        .filter(widget => widget.visible && widget.id !== 'categories');
+        .filter(widget => widget.visible && widget.id !== 'categories' && widget.id !== 'sidebar-panel-toc');
 
       return {
         categories,
         article,
+        tocSidebar: rectFor('.post-toc-sidebar'),
         gapCategoriesToArticle: categories && article ? article.top - categories.bottom : null,
         otherWidgetsAfterArticle: sidebarWidgets.every(widget => article && widget.top >= article.bottom)
       };
@@ -597,37 +678,60 @@ async function verifyBrowserRuntime(scenario) {
     if (runtime.jquery !== 'undefined' ||
       runtime.hasLightGallery !== 'undefined' ||
       runtime.hasLgThumbnail !== 'undefined' ||
-      runtime.justified !== 'undefined' ||
-      runtime.galleryItems < 1 ||
-      !layout.header?.visible ||
-      !layout.main?.visible ||
-      !layout.profile?.visible ||
-      !layout.sidebar?.visible ||
-      !layout.tocSidebar?.visible ||
-      !layout.article?.visible ||
-      !layout.galleryItem?.visible ||
-      layout.categoryMode !== (scenario.categoryMode || 'external') ||
-      !layout.categoryActiveFile ||
-      layout.categoryFileCount < 1 ||
-      layout.main.width < 500 ||
-      layout.article.height < 200 ||
-      !mobileLayout.categories?.visible ||
-      !mobileLayout.article?.visible ||
-      mobileLayout.gapCategoriesToArticle < 0 ||
-      mobileLayout.gapCategoriesToArticle > 80 ||
+	      runtime.justified !== 'undefined' ||
+	      runtime.galleryItems < 1 ||
+	      !layout.header?.visible ||
+	      !layout.main?.visible ||
+	      !layout.profile?.visible ||
+	      !layout.sidebar?.visible ||
+	      !layout.sidebarTabs?.visible ||
+	      layout.activePanel !== 'toc' ||
+	      layout.activeTab !== 'toc' ||
+	      layout.tocTabSelected !== 'true' ||
+	      layout.widgetsTabSelected !== 'false' ||
+	      !layout.tocPanel?.visible ||
+	      layout.widgetsPanel?.visible ||
+	      !layout.tocSidebar?.visible ||
+	      layout.categories?.visible ||
+	      !layout.article?.visible ||
+	      !layout.galleryItem?.visible ||
+	      widgetsPanelLayout.activePanel !== 'widgets' ||
+	      widgetsPanelLayout.activeTab !== 'widgets' ||
+	      widgetsPanelLayout.tocTabSelected !== 'false' ||
+	      widgetsPanelLayout.widgetsTabSelected !== 'true' ||
+	      widgetsPanelLayout.tocSidebar?.visible ||
+	      !widgetsPanelLayout.categories?.visible ||
+	      widgetsPanelLayout.categoryMode !== (scenario.categoryMode || 'external') ||
+	      !widgetsPanelLayout.categoryActiveFile ||
+	      widgetsPanelLayout.categoryFileCount < 1 ||
+	      tocPanelLayout.activePanel !== 'toc' ||
+	      tocPanelLayout.activeTab !== 'toc' ||
+	      tocPanelLayout.tocTabSelected !== 'true' ||
+	      tocPanelLayout.widgetsTabSelected !== 'false' ||
+	      !tocPanelLayout.tocSidebar?.visible ||
+	      tocPanelLayout.categories?.visible ||
+	      layout.main.width < 500 ||
+	      layout.article.height < 200 ||
+	      !mobileLayout.categories?.visible ||
+	      mobileLayout.tocSidebar?.visible ||
+	      !mobileLayout.article?.visible ||
+	      mobileLayout.gapCategoriesToArticle < 0 ||
+	      mobileLayout.gapCategoriesToArticle > 80 ||
       !mobileLayout.otherWidgetsAfterArticle ||
       lightbox.rootGalleryDisabled !== !scenario.browser.galleryEnabled ||
       (scenario.browser.galleryEnabled && (!lightbox.visibleGallery || !lightbox.closeButton || !lightbox.activeImage)) ||
       (!scenario.browser.galleryEnabled && (lightbox.visibleGallery || lightbox.closeButton || lightbox.activeImage)) ||
-      runtimeErrors.length ||
-      failedResponses.length) {
-      throw new Error(`Browser fixture verification failed:\n${JSON.stringify({
-        scenario: scenario.name,
-        runtime,
-        layout,
-        mobileLayout,
-        lightbox,
-        messages,
+	      runtimeErrors.length ||
+	      failedResponses.length) {
+	      throw new Error(`Browser fixture verification failed:\n${JSON.stringify({
+	        scenario: scenario.name,
+	        runtime,
+	        layout,
+	        widgetsPanelLayout,
+	        tocPanelLayout,
+	        mobileLayout,
+	        lightbox,
+	        messages,
         failedResponses
       }, null, 2)}`);
     }

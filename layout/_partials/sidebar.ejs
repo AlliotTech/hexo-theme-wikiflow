@@ -1,7 +1,37 @@
-<aside id="sidebar">
-    <%- partial('_partials/post/toc', { post: page, variant: 'sidebar' }) %>
-    <% (theme.widgets || []).forEach(function(widget) { %>
-        <%- partial('_partials/widgets/' + widget) %>
-    <% }) %>
+<%
+    var sidebarWidgets = (theme.widgets || []).filter(function(widget) {
+        return widget !== 'category' || site.categories.length;
+    });
+    var sidebarTocContent = page && page.content ? toc(page.content) : '';
+    var hasSidebarToc = page && page.toc !== false && sidebarTocContent && String(sidebarTocContent).trim();
+    var hasSidebarWidgets = sidebarWidgets.length;
+    var sidebarActivePanel = hasSidebarToc ? 'toc' : 'widgets';
+    var sidebarTabsVisible = hasSidebarToc && hasSidebarWidgets;
+%>
+<aside id="sidebar" class="sidebar-panel-active-<%= sidebarActivePanel %>">
+    <% if (sidebarTabsVisible) { %>
+        <nav class="sidebar-panel-tabs" aria-label="Sidebar sections">
+            <button class="sidebar-panel-tab<%- sidebarActivePanel === 'toc' ? ' is-active' : '' %>" type="button" data-sidebar-panel="toc" aria-controls="sidebar-panel-toc" aria-selected="<%= sidebarActivePanel === 'toc' ? 'true' : 'false' %>">
+                <%= __('article.catalogue') %>
+            </button>
+            <button class="sidebar-panel-tab<%- sidebarActivePanel === 'widgets' ? ' is-active' : '' %>" type="button" data-sidebar-panel="widgets" aria-controls="sidebar-panel-widgets" aria-selected="<%= sidebarActivePanel === 'widgets' ? 'true' : 'false' %>">
+                <%= __('widget.categories') %>
+            </button>
+        </nav>
+    <% } %>
+    <div class="sidebar-panel-container">
+        <% if (hasSidebarToc) { %>
+            <section id="sidebar-panel-toc" class="sidebar-panel sidebar-panel-toc<%- sidebarActivePanel === 'toc' ? ' is-active' : '' %>" aria-hidden="<%= sidebarActivePanel === 'toc' ? 'false' : 'true' %>">
+                <%- partial('_partials/post/toc', { post: page, variant: 'sidebar', tocContent: sidebarTocContent }) %>
+            </section>
+        <% } %>
+        <% if (hasSidebarWidgets) { %>
+            <section id="sidebar-panel-widgets" class="sidebar-panel sidebar-panel-widgets<%- sidebarActivePanel === 'widgets' ? ' is-active' : '' %>" aria-hidden="<%= sidebarActivePanel === 'widgets' ? 'false' : 'true' %>">
+                <% sidebarWidgets.forEach(function(widget) { %>
+                    <%- partial('_partials/widgets/' + widget) %>
+                <% }) %>
+            </section>
+        <% } %>
+    </div>
     <div id="toTop" class="fa-solid fa-angle-up"></div>
 </aside>
