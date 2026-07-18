@@ -31,6 +31,25 @@ const scenarios = [
     }
   },
   {
+    name: 'language-array',
+    configPatch: config => config.replace(
+      'language: en',
+      [
+        'language:',
+        '  - zh-CN',
+        '  - en'
+      ].join('\n')
+    ),
+    expectHtml: {
+      includes: [
+        '<html lang="zh-CN"'
+      ]
+    },
+    browser: {
+      galleryEnabled: true
+    }
+  },
+  {
     name: 'category-full',
     categoryMode: 'full',
     configPatch: config => config.replace(
