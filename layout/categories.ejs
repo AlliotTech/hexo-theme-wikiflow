@@ -9,7 +9,7 @@
                 <section class="category-index-group">
                     <header class="category-index-header">
                         <h2>
-                            <a href="<%- url_for(group.path) %>"><%= group.name %></a>
+                            <a href="<%= url_for(group.path) %>"><%= group.name %></a>
                         </h2>
                         <span class="category-index-count"><%= group.length %></span>
                     </header>
@@ -17,7 +17,7 @@
                         <ul class="category-index-links">
                             <% group.children.forEach(function(child) { %>
                                 <li>
-                                    <a href="<%- url_for(child.path) %>"><%= child.name %></a>
+                                    <a href="<%= url_for(child.path) %>"><%= child.name %></a>
                                     <span class="category-list-count"><%= child.length %></span>
                                 </li>
                             <% }); %>
@@ -26,7 +26,7 @@
                     <% if (group.posts.length) { %>
                         <ul class="category-index-posts">
                             <% group.posts.forEach(function(post) { %>
-                                <li><a href="<%- url_for(post.path) %>"><%= post.title || __('insight.untitled') %></a></li>
+                                <li><a href="<%= url_for(post.path) %>"><%= post.title || __('insight.untitled') %></a></li>
                             <% }); %>
                         </ul>
                     <% } %>

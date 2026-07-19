@@ -18,7 +18,7 @@ var hasGonganBeian = beian.enable && beian.gongan_id && beian.gongan_num;
                 <% if (hasGonganBeian) { %>
                 <a class="beian-gongan" href="https://beian.mps.gov.cn/#/query/webSearch?code=<%= encodeURIComponent(beian.gongan_id) %>" target="_blank" rel="noopener noreferrer nofollow">
                     <% if (beian.gongan_icon_url) { %>
-                    <img src="<%- url_for(beian.gongan_icon_url) %>" alt="" />
+                    <img src="<%= url_for(beian.gongan_icon_url) %>" alt="" />
                     <% } %>
                     <span><%= beian.gongan_num %></span>
                 </a>

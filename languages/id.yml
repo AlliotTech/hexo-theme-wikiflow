@@ -18,8 +18,11 @@ widget:
   tags: 'tag'
   tag_cloud: 'awan tag'
 article:
+  more: 'Baca selengkapnya'
   comments: 'Komentar'
   share: 'Bagikan'
+  catalogue: 'Daftar isi'
+  outline: 'Garis besar'
 profile:
   follow: 'IKUTI'
   post: 'pos'

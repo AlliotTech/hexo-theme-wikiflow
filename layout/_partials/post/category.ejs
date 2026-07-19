@@ -1,11 +1,10 @@
 <% if (post.categories && post.categories.length) { %>
     <div class="article-category">
     	<i class="fa-solid fa-folder"></i>
-        <%- list_categories(post.categories, {
-            show_count: false,
-            class: 'article-category',
-            style: 'none',
-            separator: '<i class="fa-solid fa-angle-right"></i>'
+        <%- partial('_partials/post/taxonomy-links', {
+            items: post.categories,
+            class_name: 'article-category-link',
+            separator: '<i class="fa-solid fa-angle-right" aria-hidden="true"></i>'
         }) %>
     </div>
 <% } %>

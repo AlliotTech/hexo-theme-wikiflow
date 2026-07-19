@@ -18,9 +18,11 @@ widget:
   tags: 'タグ'
   tag_cloud: 'タグクラウド'
 article:
+  more: '続きを読む'
   comments: 'コメント'
   share: '共有'
   catalogue: 'カタログ'
+  outline: 'アウトライン'
 profile:
   follow: 'フォローする'
   post: '投稿'

@@ -65,6 +65,61 @@ const scenarios = [
     }
   },
   {
+    name: 'output-escaping',
+    categoryMode: 'full',
+    configPatch: config => config
+      .replace(
+        /  category:\r?\n    expand_all: false/,
+        [
+          '  category:',
+          '    mode: full',
+          '    expand_all: false'
+        ].join('\n')
+      )
+      .replace(
+        '    About: /about',
+        '    About: \'https://example.com/" onmouseover="window.WIKIFLOW_XSS=1\''
+      )
+      .replace(
+        '    WikiFlow: https://github.com/AlliotTech/hexo-theme-wikiflow',
+        '    WikiFlow: \'https://example.com/" data-wikiflow-injected="true\''
+      ),
+    prepare: async tmpRoot => {
+      const postPath = path.join(tmpRoot, 'source', '_posts', 'guide', 'first-note.md');
+      const post = await fs.promises.readFile(postPath, 'utf8');
+      await fs.promises.writeFile(
+        postPath,
+        post
+          .replace('title: First Note', 'title: \'First <img src=x onerror="window.WIKIFLOW_XSS=1">\'')
+          .replace('  - wiki', '  - \'wiki <math href="javascript:window.WIKIFLOW_XSS=1">\'')
+          .replace('  - Basics', '  - \'Basics <svg onload="window.WIKIFLOW_XSS=1">\'')
+      );
+    },
+    expectHtml: {
+      includes: [
+        'First &lt;img src=x onerror=&#34;window.WIKIFLOW_XSS=1&#34;&gt;',
+        'Basics &lt;svg onload=&#34;window.WIKIFLOW_XSS=1&#34;&gt;',
+        'wiki &lt;math href=&#34;javascript:window.WIKIFLOW_XSS=1&#34;&gt;',
+        'href="https://example.com/&#34; onmouseover=&#34;window.WIKIFLOW_XSS=1"'
+      ],
+      excludes: [
+        '<img src=x onerror="window.WIKIFLOW_XSS=1">',
+        '<svg onload="window.WIKIFLOW_XSS=1">',
+        '<math href="javascript:window.WIKIFLOW_XSS=1">',
+        ' onmouseover="window.WIKIFLOW_XSS=1"',
+        ' data-wikiflow-injected="true"'
+      ]
+    },
+    expectAllHtmlExcludes: [
+      '<img src=x onerror="window.WIKIFLOW_XSS=1">',
+      '<svg onload="window.WIKIFLOW_XSS=1">',
+      '<math href="javascript:window.WIKIFLOW_XSS=1">',
+      ' onmouseover="window.WIKIFLOW_XSS=1"',
+      ' data-wikiflow-injected="true"'
+    ],
+    browser: false
+  },
+  {
     name: 'gallery-disabled',
     configPatch: config => config.replace('    gallery: true', '    gallery: false'),
     browser: {
@@ -268,11 +323,50 @@ async function verifyScenario(scenario) {
   await verifyCategoryTreeAsset(scenario, tmpRoot);
 
   await verifyGeneratedHtml(scenario, tmpRoot);
+  await verifyAllGeneratedHtml(scenario, tmpRoot);
   await verifySmokeHtml(scenario, tmpRoot);
   await verifyGeneratedCss(scenario, tmpRoot);
 
-  if (browserMode) {
+  if (browserMode && scenario.browser !== false) {
     await verifyBrowserRuntime(scenario);
+  }
+}
+
+async function verifyAllGeneratedHtml(scenario, tmpRoot) {
+  const forbidden = scenario.expectAllHtmlExcludes || [];
+  if (!forbidden.length) return;
+
+  const publicRoot = path.join(tmpRoot, 'public');
+  const htmlFiles = [];
+
+  async function visit(directory) {
+    const entries = await fs.promises.readdir(directory, { withFileTypes: true });
+    for (const entry of entries) {
+      const target = path.join(directory, entry.name);
+      if (entry.isDirectory()) {
+        await visit(target);
+      } else if (entry.name.endsWith('.html')) {
+        htmlFiles.push(target);
+      }
+    }
+  }
+
+  await visit(publicRoot);
+  const failures = [];
+
+  for (const file of htmlFiles) {
+    const html = await fs.promises.readFile(file, 'utf8');
+    const matches = forbidden.filter(fragment => html.includes(fragment));
+    if (matches.length) {
+      failures.push({
+        file: path.relative(publicRoot, file),
+        matches
+      });
+    }
+  }
+
+  if (failures.length) {
+    throw new Error(`Unsafe HTML output found for ${scenario.name}:\n${JSON.stringify(failures, null, 2)}`);
   }
 }
 
@@ -339,13 +433,16 @@ async function verifyGeneratedHtml(scenario, tmpRoot) {
     'id="categories-outline-body"',
     'class="post-toc post-toc-mobile"',
     'class="fa-solid fa-calendar"',
-    'class="fa-brands fa-github"'
+    'class="fa-brands fa-github"',
+    'class="article-banner" decoding="async"',
+    'loading="lazy" decoding="async"'
   ];
   const genericExcludes = [
     'href="javascript:;"',
     'MathJax.Hub.Config',
     'text/x-mathjax-config',
-    'fa fa-'
+    'fa fa-',
+    '<span style="background-image:url('
   ];
   const tocDisabledExcludes = [
     'id="categories-outline-body"',

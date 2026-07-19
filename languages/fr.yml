@@ -18,9 +18,11 @@ widget:
   tags: 'Tags'
   tag_cloud: 'Nuage de tags'
 article:
+  more: 'Lire la suite'
   comments: 'Commentaires'
   share: 'Partager'
   catalogue: 'Catalogue'
+  outline: 'Plan'
 profile:
   follow: 'SUIVRE'
   post: 'Article'

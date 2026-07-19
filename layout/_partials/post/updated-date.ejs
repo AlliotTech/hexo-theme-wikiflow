@@ -2,7 +2,7 @@
 <% if (updated) { %>
     <div class="<%= class_name %>">
         <i class="fa-solid fa-arrows-rotate"></i>
-        <a href="<%- url_for(post.path) %>">
+        <a href="<%= url_for(post.path) %>">
             <time datetime="<%= date_xml(updated) %>" itemprop="dateModified"><%= date(updated, date_format) %></time>
         </a>
     </div>

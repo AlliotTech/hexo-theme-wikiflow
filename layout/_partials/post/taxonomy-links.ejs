@@ -1,0 +1,7 @@
+<%
+var taxonomyItems = !items ? [] : (typeof items.toArray === 'function' ? items.toArray() : items);
+var taxonomySeparator = typeof separator === 'undefined' ? '' : separator;
+%>
+<% taxonomyItems.forEach(function(item, index) { %>
+    <a class="<%= class_name %>" href="<%= url_for(item.path) %>"><%= item.name %></a><% if (index < taxonomyItems.length - 1) { %><%- taxonomySeparator %><% } %>
+<% }); %>

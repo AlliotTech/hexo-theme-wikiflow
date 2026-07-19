@@ -38,7 +38,7 @@
         </div>
         <% if (excerpt) { %>
             <div class="article-more-link">
-                <a href="<%- url_for(post.path) %>#more"><%= __('article.more') %></a>
+                <a href="<%= url_for(post.path) %>#more"><%= __('article.more') %></a>
             </div>
         <% } %>
         <% if (typeof showNav !== 'undefined' && showNav) { %>

@@ -22,6 +22,7 @@ article:
   comments: '댓글'
   share: '공유하기'
   catalogue: '카탈로그'
+  outline: '개요'
 profile:
   follow: '팔로우'
   post: '포스트'

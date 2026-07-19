@@ -19,9 +19,11 @@ widget:
   tags: 'Etiquetas'
   tag_cloud: 'Nube de etiquetas'
 article:
+  more: 'Leer más'
   comments: 'Comentarios'
   share: 'Compartir'
   catalogue: 'Catálogo'
+  outline: 'Esquema'
 profile:
   follow: 'SEGUIR'
   post: 'Entrada'

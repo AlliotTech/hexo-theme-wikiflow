@@ -9,7 +9,7 @@ module.exports = [
     ]
   },
   {
-    files: ['scripts/**/*.js', 'source/js/**/*.js', 'tools/**/*.js'],
+    files: ['scripts/**/*.js', 'source/js/**/*.js', 'test/**/*.js', 'tools/**/*.js'],
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: 'script',

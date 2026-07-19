@@ -1,5 +1,5 @@
 <% if (post.comments) { %>
     <% if (theme.comment && theme.comment.disqus) { %>
-        <a href="<%- post.permalink %>#comments" class="article-comment-link disqus-comment-count" data-disqus-url="<%= post.permalink %>"><%= __('article.comments') %></a>
+        <a href="<%= post.permalink %>#comments" class="article-comment-link disqus-comment-count" data-disqus-url="<%= post.permalink %>"><%= __('article.comments') %></a>
     <% } %>
 <% } %>

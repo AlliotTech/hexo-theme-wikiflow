@@ -7,7 +7,7 @@
         var url = vendor.url || vendor;
         if (!url) return;
 %>
-    <link rel="stylesheet" href="<%- url %>"<% if (vendor.integrity) { %> integrity="<%- vendor.integrity %>" crossorigin="anonymous"<% } %> />
+    <link rel="stylesheet" href="<%= url %>"<% if (vendor.integrity) { %> integrity="<%= vendor.integrity %>" crossorigin="anonymous"<% } %> />
 <%
     });
 %>

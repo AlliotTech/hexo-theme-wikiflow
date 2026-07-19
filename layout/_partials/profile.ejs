@@ -42,7 +42,7 @@ function socialIconClass(name) {
                     <% var tooltipClass = theme.social_icons && theme.social_icons.tooltip === false ? '' : 'class=tooltip'; %>
                     <% socialKeys.forEach(function(i) { %>
                     <td>
-                        <a href="<%- url_for(social[i]) %>" target="_blank" rel="noopener noreferrer" title="<%= i %>" <%= tooltipClass %>>
+                        <a href="<%= url_for(social[i]) %>" target="_blank" rel="noopener noreferrer" title="<%= i %>" <%= tooltipClass %>>
                             <i class="<%= socialIconClass(i) %>"></i>
                         </a>
                     </td>

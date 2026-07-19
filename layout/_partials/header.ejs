@@ -18,14 +18,14 @@
     } %>
     <div id="header-main" class="header-inner">
         <div class="outer header-main-inner">
-            <a href="<%- url_for() %>" id="logo">
+            <a href="<%= url_for() %>" id="logo">
                 <%- (logo.enabled ? '<i class="logo"></i>':'') %>
                 <span class="site-title"><%= config.title %></span>
             </a>
             <% if (menuKeys.length) { %>
                 <nav id="main-nav" aria-label="Primary">
                     <% menuKeys.forEach(function (name) { %>
-                        <a class="<%= navClass(name) %>" href="<%- url_for(menu[name]) %>"><%= name %></a>
+                        <a class="<%= navClass(name) %>" href="<%= url_for(menu[name]) %>"><%= name %></a>
                     <% }); %>
                 </nav>
             <% } %>
@@ -51,7 +51,7 @@
         <div id="main-nav-mobile" class="header-sub header-inner">
             <nav class="outer mobile-menu mobile-menu-primary" aria-label="Mobile primary">
                 <% mobilePrimaryKeys.forEach(function (name) { %>
-                    <a class="<%= navClass(name) %>" href="<%- url_for(menu[name]) %>"><%= name %></a>
+                    <a class="<%= navClass(name) %>" href="<%= url_for(menu[name]) %>"><%= name %></a>
                 <% }); %>
             </nav>
         </div>
@@ -60,7 +60,7 @@
                 <span class="mobile-menu-heading">Topics</span>
                 <div class="mobile-menu-list">
                     <% menuKeys.forEach(function (name) { %>
-                        <a class="<%= navClass(name) %>" href="<%- url_for(menu[name]) %>"><%= name %></a>
+                        <a class="<%= navClass(name) %>" href="<%= url_for(menu[name]) %>"><%= name %></a>
                     <% }); %>
                 </div>
             </nav>

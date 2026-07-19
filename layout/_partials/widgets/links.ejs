@@ -6,7 +6,7 @@
                 <% var links = theme.links || {}; %>
                 <% for (var i in links) { if (links[i]) { %>
                     <li>
-                        <a href="<%- links[i] %>"><%= i %></a>
+                        <a href="<%= url_for(links[i]) %>"><%= i %></a>
                     </li>
                 <% }} %>
             </ul>

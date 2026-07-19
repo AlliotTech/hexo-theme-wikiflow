@@ -36,7 +36,7 @@
     "build": "hexo generate",
     "server": "hexo server",
     "lint": "npm run lint:js && npm run lint:styles",
-    "lint:js": "eslint scripts source/js tools",
+    "lint:js": "eslint scripts source/js test tools",
     "lint:styles": "stylelint \"source/css/**/*.styl\"",
     "test": "npm run test:unit && node tools/verify-hexo8-site.js",
     "test:unit": "node --test test/unit/*.test.js",

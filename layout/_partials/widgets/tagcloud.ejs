@@ -1,8 +1,20 @@
 <% if (site.tags.length) { %>
+    <%
+        var cloudTags = site.tags.sort('name').toArray();
+        var tagCounts = cloudTags.map(function(tag) { return tag.length; });
+        var minTagCount = Math.min.apply(Math, tagCounts);
+        var maxTagCount = Math.max.apply(Math, tagCounts);
+        function tagFontSize(tag) {
+            if (maxTagCount === minTagCount) return 10;
+            return 10 + ((tag.length - minTagCount) / (maxTagCount - minTagCount)) * 10;
+        }
+    %>
     <div class="widget-wrap">
         <h3 class="widget-title"><span><%= __('widget.tag_cloud') %></span></h3>
         <div class="widget tagcloud">
-            <%- tagcloud() %>
+            <% cloudTags.forEach(function(tag) { %>
+                <a href="<%= url_for(tag.path) %>" style="font-size: <%= tagFontSize(tag).toFixed(2) %>px;"><%= tag.name %></a>
+            <% }); %>
         </div>
     </div>
 <% } %>

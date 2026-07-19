@@ -56,11 +56,11 @@
     <%- meta(page) %>
 
     <% if (theme.social && theme.social.rss) { %>
-        <link rel="alternate" href="<%- theme.social.rss %>" title="<%= config.title %>" type="application/atom+xml" />
+        <link rel="alternate" href="<%= url_for(theme.social.rss) %>" title="<%= config.title %>" type="application/atom+xml" />
     <% } %>
 
     <% if (theme.favicon) { %>
-        <link rel="icon" href="<%- url_for(theme.favicon) %>" />
+        <link rel="icon" href="<%= url_for(theme.favicon) %>" />
     <% } %>
 
     <%- partial('_scripts/vendors') %>
