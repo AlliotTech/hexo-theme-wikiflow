@@ -2,11 +2,11 @@
  * Insight search plugin
  * @author PPOffice { @link https://github.com/ppoffice }
  */
-(function (window, document, CONFIG) {
+(function (window, document, CONFIG, ENGINE) {
     'use strict';
 
     var main = document.querySelector('.ins-search');
-    if (!main || !CONFIG) return;
+    if (!main || !CONFIG || !ENGINE) return;
 
     var input = main.querySelector('.ins-search-input');
     var wrapper = main.querySelector('.ins-section-wrapper');
@@ -85,12 +85,6 @@
         return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
 
-    function parseKeywords(keywords) {
-        return String(keywords).trim().split(/\s+/).filter(Boolean).map(function (keyword) {
-            return keyword.toUpperCase();
-        });
-    }
-
     function cleanSearchText(text) {
         var parsed = new DOMParser().parseFromString(String(text || ''), 'text/html');
 
@@ -115,10 +109,10 @@
 
     function previewFor(item, keywordArray) {
         var sourceText = String(item.text || '');
-        var rawOccur = findFirstOccur(keywordArray, item, 'text');
+        var rawOccur = ENGINE.findFirstOccur(keywordArray, item, 'text');
         var rawStart = rawOccur > 80 ? rawOccur - 80 : 0;
         var text = cleanSearchText(sourceText.slice(rawStart, rawStart + 800));
-        var firstOccur = findFirstOccur(keywordArray, { text: text }, 'text');
+        var firstOccur = ENGINE.findFirstOccur(keywordArray, { text: text }, 'text');
         var start = firstOccur > 40 ? firstOccur - 40 : 0;
         var preview = text.slice(start, start + 180);
         if (start > 0) preview = '...' + preview;
@@ -144,97 +138,6 @@
         return resultSection;
     }
 
-    function extractToSet(json, key) {
-        var values = {};
-        json.pages.concat(json.posts).forEach(function (entry) {
-            if (!entry[key]) return;
-            entry[key].forEach(function (value) {
-                values[value.name] = value;
-            });
-        });
-        return Object.keys(values).map(function (name) {
-            return values[name];
-        });
-    }
-
-    function hasKeyword(obj, field, keyword) {
-        return upperField(obj, field).indexOf(keyword) > -1;
-    }
-
-    function upperField(obj, field) {
-        var cacheKey = '__upper_' + field;
-        if (!Object.prototype.hasOwnProperty.call(obj, field)) return '';
-        if (!Object.prototype.hasOwnProperty.call(obj, cacheKey)) {
-            obj[cacheKey] = String(obj[field]).toUpperCase();
-        }
-        return obj[cacheKey];
-    }
-
-    function matchesKeywords(keywordArray, obj, fields) {
-        return keywordArray.every(function (keyword) {
-            return fields.some(function (field) {
-                return hasKeyword(obj, field, keyword);
-            });
-        });
-    }
-
-    function findFirstOccur(keywordArray, obj, field) {
-        if (!Object.prototype.hasOwnProperty.call(obj, field)) return -1;
-
-        var value = upperField(obj, field);
-        return keywordArray.reduce(function (firstOccur, keyword) {
-            var index = value.indexOf(keyword);
-            if (index === -1) return firstOccur;
-            return firstOccur === -1 ? index : Math.min(firstOccur, index);
-        }, -1);
-    }
-
-    function weight(keywordArray, obj, fields, weights) {
-        var value = 0;
-        keywordArray.forEach(function (keyword) {
-            fields.forEach(function (field, index) {
-                if (upperField(obj, field).indexOf(keyword) > -1) value += weights[index];
-            });
-        });
-        return value;
-    }
-
-    function searchCollection(items, keywordArray, fields, weights) {
-        return items.map(function (item) {
-            if (!matchesKeywords(keywordArray, item, fields)) return null;
-            return {
-                item: item,
-                firstOccur: findFirstOccur(keywordArray, item, 'text'),
-                weight: weight(keywordArray, item, fields, weights)
-            };
-        }).filter(Boolean).sort(function (a, b) {
-            return b.weight - a.weight;
-        });
-    }
-
-    function createSearchIndex(json) {
-        var data = {
-            pages: Array.isArray(json.pages) ? json.pages : [],
-            posts: Array.isArray(json.posts) ? json.posts : []
-        };
-
-        return {
-            pages: data.pages,
-            posts: data.posts,
-            categories: extractToSet(data, 'categories'),
-            tags: extractToSet(data, 'tags')
-        };
-    }
-
-    function search(index, keywordArray) {
-        return {
-            posts: searchCollection(index.posts, keywordArray, ['title', 'text'], [3, 1]),
-            pages: searchCollection(index.pages, keywordArray, ['title', 'text'], [3, 1]),
-            categories: searchCollection(index.categories, keywordArray, ['name', 'slug'], [1, 1]),
-            tags: searchCollection(index.tags, keywordArray, ['name', 'slug'], [1, 1])
-        };
-    }
-
     function searchResultToDOM(keywordArray, searchResult) {
         var hasResults = false;
         while (container.firstChild) container.removeChild(container.firstChild);
@@ -258,12 +161,12 @@
     function scheduleSearch() {
         window.clearTimeout(searchTimer);
         searchTimer = window.setTimeout(function () {
-            var keywordArray = parseKeywords(input.value);
+            var keywordArray = ENGINE.parseKeywords(input.value);
             if (!keywordArray.length) {
                 searchResultToDOM(keywordArray, {});
                 return;
             }
-            if (searchIndex) searchResultToDOM(keywordArray, search(searchIndex, keywordArray));
+            if (searchIndex) searchResultToDOM(keywordArray, ENGINE.search(searchIndex, keywordArray));
         }, 160);
     }
 
@@ -327,7 +230,7 @@
                 return response.json();
             })
             .then(function (json) {
-                searchIndex = createSearchIndex(json);
+                searchIndex = ENGINE.createSearchIndex(json);
                 input.addEventListener('input', scheduleSearch);
                 searchResultToDOM([], {});
                 return searchIndex;
@@ -408,4 +311,4 @@
     };
 
     if (window.location.hash.trim() === '#ins-search') openSearch();
-})(window, document, window.INSIGHT_CONFIG);
+})(window, document, window.INSIGHT_CONFIG, window.WIKIFLOW_INSIGHT_ENGINE);

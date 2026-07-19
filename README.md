@@ -223,7 +223,7 @@ Optional features are enabled from `_config.wikiflow.yml`.
 * `plugins.google_analytics`: loads Google Analytics 4 when configured with a `G-...` measurement ID.
 * `comment.disqus`: loads Disqus comments when a shortname is configured.
 * `share: default`: enables the built-in share popover.
-* `post_history.enable`: shows Source, Edit, and History links for content stored in a GitHub/GitLab-style repository.
+* `post_history.enable`: shows Source, Edit, and History links for content stored in a GitHub repository.
 * `footer.license`: optionally displays the site's content license; WikiFlow does not declare one by default.
 * `footer.beian`: adds ICP and gongan beian links to the footer for Chinese websites.
 

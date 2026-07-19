@@ -40,7 +40,7 @@ test('configureHighlight uses highlight.js theme CSS without writing generated f
     try {
         configureHighlight(hexo);
 
-        assert.equal(hexo.config.highlight.hljs, false);
+        assert.equal(hexo.config.highlight.hljs, true);
         assert.equal(hexo.theme.config.highlight.light.name, 'github');
         assert.match(
             hexo.theme.config.highlight.light.file,

@@ -17,3 +17,6 @@ var wikiflowUiConfig = JSON.stringify({
 
 <!-- Custom Scripts -->
 <%- js('js/main') %>
+<% if (theme.share && (is_home() || is_post() || page.layout === 'page')) { %>
+    <%- js('js/share') %>
+<% } %>

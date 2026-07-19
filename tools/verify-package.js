@@ -39,7 +39,10 @@ const requiredPackageFiles = [
   'layout/layout.ejs',
   'source/js/analytics.js',
   'source/js/disqus.js',
+  'source/js/insight-engine.js',
   'source/js/main.js',
+  'source/js/share.js',
+  'scripts/helpers/render-data.js',
   'source/css/style.styl'
 ];
 

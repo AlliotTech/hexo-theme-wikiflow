@@ -2,7 +2,7 @@
     var sidebarWidgets = (theme.widgets || []).filter(function(widget) {
         return widget !== 'category' || site.categories.length;
     });
-    var sidebarTocContent = page && page.content ? toc(page.content) : '';
+    var sidebarTocContent = page && page.toc !== false ? wikiflow_toc(page) : '';
     var hasSidebarToc = page && page.toc !== false && sidebarTocContent && String(sidebarTocContent).trim();
 %>
 <aside id="sidebar">

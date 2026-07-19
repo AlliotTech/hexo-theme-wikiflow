@@ -23,6 +23,7 @@
         },
         ROOT_URL: config.root || '/',
         CONTENT_URL: url_for('/content.json'),
+        ENGINE_URL: url_for('/js/insight-engine.js'),
         SCRIPT_URL: url_for('/js/insight.js')
     }).replace(/</g, '\\u003c')
         .replace(/>/g, '\\u003e')

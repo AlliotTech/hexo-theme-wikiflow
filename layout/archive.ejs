@@ -2,14 +2,9 @@
     <%
     var last_year_month;
     var last_year;
-    var count_per_month = {};
+    var count_per_month = wikiflow_archive_month_counts();
     var months_on_page = {};
     var archiveBase = config.archive_dir || 'archives';
-    site.posts.each(function(post) {
-        var date = post.date.format('YYYY-MM');
-        if (!(date in count_per_month)) count_per_month[date] = 0;
-        count_per_month[date] += 1;
-    });
     page.posts.each(function(post) {
         months_on_page[post.date.format('YYYY-MM')] = true;
     });

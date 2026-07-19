@@ -109,6 +109,24 @@ const scenarios = [
         "this.page.identifier = '"
       ]
     },
+    verifyGenerated: async tmpRoot => {
+      const aboutHtml = await fs.promises.readFile(path.join(tmpRoot, 'public', 'about', 'index.html'), 'utf8');
+      if (aboutHtml.includes('src="/js/disqus.js"') || aboutHtml.includes('count.js')) {
+        throw new Error('Disqus count script was loaded on a page without a comments section.');
+      }
+    },
+    browser: false
+  },
+  {
+    name: 'share-disabled',
+    shareDisabled: true,
+    configPatch: config => config.replace('  share: default', '  share: false'),
+    expectHtml: {
+      excludes: [
+        'class="article-share-link"',
+        'src="/js/share.js"'
+      ]
+    },
     browser: false
   },
   {
@@ -580,8 +598,13 @@ async function verifyGeneratedHtml(scenario, tmpRoot) {
     'class="fa-solid fa-calendar"',
     'class="fa-brands fa-github"',
     'class="article-banner" decoding="async"',
-    'loading="lazy" decoding="async"'
+    'loading="lazy" decoding="async"',
+    'class="hljs-variable language_"',
+    'class="hljs-title function_"'
   ];
+  if (!scenario.shareDisabled) {
+    genericIncludes.push('class="article-share-link"', 'src="/js/share.js"');
+  }
   const genericExcludes = [
     'maximum-scale=1',
     'href="javascript:;"',
@@ -966,6 +989,24 @@ async function verifyBrowserRuntime(scenario) {
       lightboxFocusReturned = await page.evaluate(() => document.activeElement?.classList.contains('gallery-item') || false);
     }
 
+    await page.click('.article-share-link');
+    const share = await page.evaluate(() => {
+      const button = document.querySelector('.article-share-link');
+      const box = document.querySelector('.article-share-box.on');
+      return {
+        visible: !!box,
+        expanded: button?.getAttribute('aria-expanded'),
+        inputValue: box?.querySelector('.article-share-input')?.value || '',
+        inputFocused: document.activeElement?.classList.contains('article-share-input') || false
+      };
+    });
+    await page.keyboard.press('Escape');
+    const shareClosed = await page.evaluate(() => ({
+      visible: !!document.querySelector('.article-share-box.on'),
+      expanded: document.querySelector('.article-share-link')?.getAttribute('aria-expanded'),
+      focusReturned: document.activeElement?.classList.contains('article-share-link') || false
+    }));
+
     const embedMessageStart = messages.length;
     await page.goto(`http://127.0.0.1:${port}/embed/`, { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(100);
@@ -1089,6 +1130,13 @@ async function verifyBrowserRuntime(scenario) {
       lightbox.rootGalleryDisabled !== !scenario.browser.galleryEnabled ||
       (scenario.browser.galleryEnabled && (!lightbox.visibleGallery || !lightbox.closeButton || !lightbox.activeImage || !lightbox.closeButtonFocused || !lightboxFocusReturned)) ||
       (!scenario.browser.galleryEnabled && (lightbox.visibleGallery || lightbox.closeButton || lightbox.activeImage)) ||
+      !share.visible ||
+      share.expanded !== 'true' ||
+      !share.inputValue ||
+      !share.inputFocused ||
+      shareClosed.visible ||
+      shareClosed.expanded !== 'false' ||
+      !shareClosed.focusReturned ||
       embedLayout.hasProfile ||
       embedLayout.hasSidebar ||
       !embedLayout.hasIframe ||
@@ -1118,6 +1166,8 @@ async function verifyBrowserRuntime(scenario) {
         mobileLayout,
         lightbox,
         lightboxFocusReturned,
+        share,
+        shareClosed,
         embedLayout,
         embedErrors,
         searchSuccess,

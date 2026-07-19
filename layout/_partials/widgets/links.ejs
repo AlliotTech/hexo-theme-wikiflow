@@ -1,14 +1,15 @@
-<% if (site.posts.length) { %>
+<% var links = theme.links || {}; %>
+<% var linkNames = Object.keys(links).filter(function(name) { return links[name]; }); %>
+<% if (linkNames.length) { %>
     <div class="widget-wrap widget-list">
         <h3 class="widget-title"><span><%= __('widget.links') %></span></h3>
         <div class="widget">
             <ul>
-                <% var links = theme.links || {}; %>
-                <% for (var i in links) { if (links[i]) { %>
+                <% linkNames.forEach(function(name) { %>
                     <li>
-                        <a href="<%= url_for(links[i]) %>"><%= i %></a>
+                        <a href="<%= url_for(links[name]) %>"><%= name %></a>
                     </li>
-                <% }} %>
+                <% }); %>
             </ul>
         </div>
     </div>

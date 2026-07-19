@@ -175,7 +175,7 @@ post_meta:
 post_history:
   # 关闭后不会显示源码历史按钮。
   enable: false
-  # 代码托管服务地址。当前链接格式按 GitHub/GitLab 一类路径拼接。
+  # GitHub 服务地址。链接格式按 GitHub 的 raw、edit、commits 路径拼接。
   server_url: https://github.com
   # 仓库 owner 或组织名。
   owner: AlliotTech

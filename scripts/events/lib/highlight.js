@@ -172,7 +172,7 @@ function configureHighlight(hexo) {
     const darkTheme = darkThemeName ? resolveHighlightTheme(hexo, darkThemeName) : {};
 
     hexo.config.highlight = hexo.config.highlight || {};
-    if (shouldUseHighlight(hexo)) hexo.config.highlight.hljs = false;
+    if (shouldUseHighlight(hexo)) hexo.config.highlight.hljs = true;
 
     themeConfig.codeblock = {
         ...codeblock,

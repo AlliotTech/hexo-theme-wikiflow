@@ -75,7 +75,7 @@
 
     function setupLightbox() {
         var enabled = !document.documentElement.hasAttribute('data-gallery-disabled');
-        if (!enabled) return;
+        if (!enabled || !document.querySelector('.gallery-item')) return;
 
         var lightbox = createLightbox();
         var image = lightbox.querySelector('.wikiflow-lightbox-image');
@@ -335,17 +335,6 @@
         button.appendChild(createCopyIcon(className));
     }
 
-    function setupHighlightClasses() {
-        document.querySelectorAll('.article-entry .highlight').forEach(function (block) {
-            block.querySelectorAll('.code .line span, code.highlight span').forEach(function (token) {
-                Array.prototype.slice.call(token.classList).forEach(function (name) {
-                    if (name === 'line' || name.indexOf('hljs-') === 0) return;
-                    token.classList.add('hljs-' + name);
-                });
-            });
-        });
-    }
-
     function setupCodeCopy() {
         document.querySelectorAll('.article-entry .highlight').forEach(function (block, index) {
             var button;
@@ -396,7 +385,9 @@
         if (!sidebar || !toTop) return;
 
         var threshold = sidebar.offsetHeight - window.innerHeight + 60;
+        var updateScheduled = false;
         function update() {
+            updateScheduled = false;
             if (document.documentElement.clientWidth >= 800 && window.scrollY > threshold && window.scrollY > 0) {
                 toTop.style.display = 'block';
                 toTop.style.left = sidebar.getBoundingClientRect().left + window.scrollX + 'px';
@@ -405,15 +396,26 @@
             }
         }
 
-        document.addEventListener('scroll', update, { passive: true });
+        function scheduleUpdate() {
+            if (updateScheduled) return;
+            updateScheduled = true;
+            if (window.requestAnimationFrame) {
+                window.requestAnimationFrame(update);
+            } else {
+                window.setTimeout(update, 16);
+            }
+        }
+
+        document.addEventListener('scroll', scheduleUpdate, { passive: true });
         window.addEventListener('resize', function () {
             threshold = sidebar.offsetHeight - window.innerHeight + 60;
-            update();
+            scheduleUpdate();
         });
         toTop.addEventListener('click', function () {
             var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
             window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
         });
+        scheduleUpdate();
     }
 
     function setupTaskLists() {
@@ -443,7 +445,7 @@
         var main = document.querySelector('.ins-search');
         var loadingPromise;
 
-        if (!main || !config || !config.SCRIPT_URL) return;
+        if (!main || !config || !config.ENGINE_URL || !config.SCRIPT_URL) return;
 
         function detachTriggers() {
             document.removeEventListener('click', handleClick);
@@ -470,27 +472,36 @@
             if (trigger) trigger.setAttribute('aria-expanded', 'true');
         }
 
-        function loadSearch() {
-            if (window.WIKIFLOW_INSIGHT) return Promise.resolve(window.WIKIFLOW_INSIGHT);
-            if (loadingPromise) return loadingPromise;
-
-            loadingPromise = new Promise(function (resolve, reject) {
+        function loadScript(url) {
+            return new Promise(function (resolve, reject) {
                 var script = document.createElement('script');
-                script.src = config.SCRIPT_URL;
+                script.src = url;
                 script.async = true;
-                script.addEventListener('load', function () {
-                    if (!window.WIKIFLOW_INSIGHT) {
-                        reject(new Error('Insight search failed to initialize.'));
-                        return;
-                    }
-                    detachTriggers();
-                    resolve(window.WIKIFLOW_INSIGHT);
-                });
+                script.addEventListener('load', resolve);
                 script.addEventListener('error', function () {
                     reject(new Error('Insight search script failed to load.'));
                 });
                 document.body.appendChild(script);
             });
+        }
+
+        function loadSearch() {
+            if (window.WIKIFLOW_INSIGHT) return Promise.resolve(window.WIKIFLOW_INSIGHT);
+            if (loadingPromise) return loadingPromise;
+
+            loadingPromise = (window.WIKIFLOW_INSIGHT_ENGINE
+                ? Promise.resolve()
+                : loadScript(config.ENGINE_URL))
+                .then(function () {
+                    return loadScript(config.SCRIPT_URL);
+                })
+                .then(function () {
+                    if (!window.WIKIFLOW_INSIGHT) {
+                        throw new Error('Insight search failed to initialize.');
+                    }
+                    detachTriggers();
+                    return window.WIKIFLOW_INSIGHT;
+                });
 
             return loadingPromise;
         }
@@ -871,7 +882,6 @@
         setupMobileMenu();
         setupMobileWidgets();
         setupSidebarPanels();
-        setupHighlightClasses();
         setupCodeCopy();
         setupToTop();
         setupTaskLists();
