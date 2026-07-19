@@ -2,27 +2,13 @@
 <% var social = theme.social || {}; %>
 <% var socialKeys = Object.keys(social).filter(function(name) { return social[name]; }); %>
 <% var tagCount = site.tags.filter(function(tag) { return tag.length; }).length; %>
-<%
-var brandSocialIcons = [
-    'apple', 'behance', 'discord', 'dribbble', 'facebook', 'github', 'gitlab',
-    'instagram', 'linkedin', 'mastodon', 'medium', 'pinterest', 'qq', 'reddit',
-    'skype', 'slack', 'stack-overflow', 'telegram', 'threads', 'tumblr',
-    'twitch', 'twitter', 'weibo', 'weixin', 'whatsapp', 'x-twitter', 'youtube',
-    'zhihu'
-];
-function socialIconClass(name) {
-    var icon = name === 'x' || name === 'twitter' ? 'x-twitter' : name;
-    var style = brandSocialIcons.indexOf(icon) === -1 ? 'fa-solid' : 'fa-brands';
-    return style + ' fa-' + icon;
-}
-%>
 <aside id="profile">
     <div class="inner profile-inner">
         <div class="base-info profile-block">
             <img id="avatar" src="<%= ( profile.gravatar ? gravatar(profile.gravatar, 128) : url_for(profile.avatar)) %>" alt="<%= profile.author || config.title %>" />
             <h2 id="name"><%= profile.author %></h2>
             <h3 id="title"><%= profile.author_title %></h3>
-            <span id="location"><i class="fa-solid fa-location-dot"></i><%= profile.location %></span>
+            <span id="location"><%- wikiflow_icon('location-dot') %><%= profile.location %></span>
             <a id="follow" target="_blank" rel="noopener noreferrer" href="<%= profile.follow %>"><%= __('profile.follow') %></a>
         </div>
         <div class="article-info profile-block">
@@ -43,7 +29,7 @@ function socialIconClass(name) {
                     <% socialKeys.forEach(function(i) { %>
                     <td>
                         <a href="<%= url_for(social[i]) %>" target="_blank" rel="noopener noreferrer" title="<%= i %>" <%= tooltipClass %>>
-                            <i class="<%= socialIconClass(i) %>"></i>
+                            <%- wikiflow_social_icon(i) %>
                         </a>
                     </td>
                     <% }); %>

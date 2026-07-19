@@ -30,6 +30,7 @@ test('external category tree payload only exposes fields used by the browser', (
     assert.deepEqual(tree, {
         children: [{
             name: 'Guide',
+            path: 'categories/guide/',
             children: [],
             articles: [{ title: 'First Note', path: 'wiki/first-note/' }]
         }],

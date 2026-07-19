@@ -121,7 +121,7 @@
             color: var(--color-text-inverse)
             background: transparent
             cursor: pointer
-            i
+            .wikiflow-icon
                 font-size: 14px
                 line-height: 1
         .widget-mobile-toggle
@@ -187,11 +187,9 @@
             a
                 &:before
                     color: #ccc
-                    content: "\f0da"
-                    font-size: 12px
+                    content: "›"
+                    font-size: 16px
                     margin-right: 6px
-                    font-family: "Font Awesome 7 Free"
-                    font-weight: 900
                     transition: 0.2s ease
                 &:hover:before
                     color: var(--color-sidebar-text-dark)
@@ -365,12 +363,15 @@
     background: var(--color-surface)
     color: var(--color-sidebar-text-dark)
     cursor: pointer
-    &:before
-        content: '\f107'
-        font-family: 'Font Awesome 7 Free'
-        font-weight: 900
-    &[aria-expanded="true"]:before
-        content: '\f106'
+    .widget-mobile-icon
+        display: inline-flex
+    .widget-mobile-icon-close
+        display: none
+    &[aria-expanded="true"]
+        .widget-mobile-icon-open
+            display: none
+        .widget-mobile-icon-close
+            display: inline-flex
     @media mq-mini
         display: inline-flex
     @media mq-mobile

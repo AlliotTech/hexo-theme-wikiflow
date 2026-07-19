@@ -74,6 +74,10 @@
   },
   "dependencies": {
     "@adobe/css-tools": "^4.5.0",
+    "@fortawesome/free-brands-svg-icons": "^7.3.1",
+    "@fortawesome/free-regular-svg-icons": "^7.3.1",
+    "@fortawesome/free-solid-svg-icons": "^7.3.1",
+    "cheerio": "^1.2.0",
     "highlight.js": "^11.11.1",
     "js-yaml": "^4.1.0"
   }

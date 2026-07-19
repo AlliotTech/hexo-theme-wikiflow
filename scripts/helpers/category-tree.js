@@ -62,11 +62,14 @@ function postSummary(post) {
 
 function buildCategoryTree(categories, posts, currentPostId) {
     const shouldMarkSelected = currentPostId != null;
+    const postList = toArray(posts);
     const categoryList = toArray(categories)
         .filter(category => category && category.length)
         .sort(sortByName);
     const childrenByParent = new Map();
     const articlesByCategory = new Map([['_root', []]]);
+    const selectedCategoryIds = new Set();
+    let selectedAtRoot = false;
 
     categoryList.forEach(category => {
         const parentId = getParentId(category);
@@ -74,9 +77,17 @@ function buildCategoryTree(categories, posts, currentPostId) {
         childrenByParent.get(parentId).push(category);
     });
 
-    toArray(posts).forEach(post => {
+    postList.forEach(post => {
         const postCategories = getPostCategories(post);
         const postInfo = postSummary(post);
+
+        if (shouldMarkSelected && post._id === currentPostId) {
+            const postCategoryIds = postCategories
+                .map(category => category && category._id)
+                .filter(Boolean);
+            postCategoryIds.forEach(categoryId => selectedCategoryIds.add(categoryId));
+            selectedAtRoot = !postCategoryIds.length;
+        }
 
         if (!postCategories.length) {
             articlesByCategory.get('_root').push(postInfo);
@@ -104,7 +115,7 @@ function buildCategoryTree(categories, posts, currentPostId) {
             };
 
             if (shouldMarkSelected) {
-                branch.selected = articles.some(post => post._id === currentPostId);
+                branch.selected = selectedCategoryIds.has(category._id);
                 if (branch.children.some(child => child.selected)) branch.selected = true;
             }
 
@@ -119,10 +130,10 @@ function buildCategoryTree(categories, posts, currentPostId) {
         _id: '_root',
         name: '_root',
         path: '',
-        length: toArray(posts).length,
+        length: postList.length,
         children: buildBranch('_root'),
         articles: rootArticles,
-        ...(shouldMarkSelected ? { selected: rootArticles.some(post => post._id === currentPostId) } : {})
+        ...(shouldMarkSelected ? { selected: selectedAtRoot } : {})
     };
 }
 

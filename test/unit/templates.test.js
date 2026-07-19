@@ -40,6 +40,8 @@ test('media templates provide accessible image and iframe text alternatives', ()
     assert.match(thumbnail, /<img[\s\S]*?alt=/u);
     assert.doesNotMatch(thumbnail, /<span[\s\S]*?alt=/u);
     assert.match(iframe, /<iframe[\s\S]*?title=/u);
+    assert.match(iframe, /wikiflow_embed_options/u);
+    assert.doesNotMatch(iframe, /<style/u);
 });
 
 test('clickable theme actions use native buttons', () => {
@@ -57,14 +59,18 @@ test('clickable theme actions use native buttons', () => {
     assert.match(sidebar, /<button[^>]*id="toTop"/u);
     assert.match(category, /<button[^>]*id="allExpand"/u);
     assert.match(category, /<button[^>]*data-role="directory"/u);
+    assert.match(category, /data-current-categories=/u);
+    assert.match(category, /data-current-post=/u);
     assert.doesNotMatch(category, /<a[^>]*data-role="directory"/u);
 });
 
 test('insight search loads its engine before the DOM controller', () => {
     const insight = fs.readFileSync(path.join(layoutRoot, '_partials/search/insight.ejs'), 'utf8');
+    const search = fs.readFileSync(path.join(layoutRoot, '_partials/search/index.ejs'), 'utf8');
     const main = fs.readFileSync(path.join(themeRoot, 'source/js/main.js'), 'utf8');
 
     assert.match(insight, /ENGINE_URL/u);
+    assert.match(search, /button:\s*wikiflow_icon\('magnifying-glass'\)/u);
     assert.match(main, /config\.ENGINE_URL/u);
     assert.match(main, /config\.SCRIPT_URL/u);
 });

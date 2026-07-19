@@ -153,11 +153,11 @@ div.article-meta-button
             top: 20px
             left: -40px
             float: left
-            content: "\f10d"
+            content: "“"
             color: var(--color-quote-icon)
             font-size: 32px
-            font-family: "Font Awesome 7 Free"
-            font-weight: 900
+            font-family: Georgia, serif
+            font-weight: 700
             text-align: center
             position: relative
         footer
@@ -232,14 +232,6 @@ div .article-more-link
         &:hover
             color: var(--color-default)
 
-.article-comment-link
-    float: right
-    &:before
-        content: "\f075"
-        font-family: "Font Awesome 7 Free"
-        font-weight: 900
-        padding-right: 5px
-
 .share-container
     float: left
 
@@ -287,15 +279,15 @@ div .article-more-link
 $article-share-link
     width: 50px
     height: 36px
-    display: block
+    display: flex
+    align-items: center
+    justify-content: center
     float: left
     position: relative
     color: #999
     text-shadow: 0 1px #fff
-    &:before
+    .wikiflow-icon
         font-size: 20px
-        absolute-center(@font-size)
-        text-align: center
     &:hover
         color: #fff
 
@@ -341,8 +333,8 @@ $article-share-link
             line-height: 36px
             margin-top: -18px
             position: absolute
-            font-family: "Font Awesome 7 Free"
-            font-weight: 900
+            font-family: Georgia, serif
+            font-weight: 700
             color: rgba(255, 255, 255, .5)
         &:hover
             &:before,
@@ -350,10 +342,10 @@ $article-share-link
                 color: rgba(255, 255, 255, .8)
         &:before
             left: 0
-            content: "\f104"
+            content: "‹"
         &:after
             right: 0
-            content: "\f105"
+            content: "›"
         &:first-child
             display: block
         img
@@ -416,15 +408,20 @@ $article-share-link
         &::-webkit-details-marker
             display: none
         &:after
-            content: "\f107"
+            content: ""
             float: right
-            font-family: "Font Awesome 7 Free"
-            font-weight: 900
+            width: 0.45em
+            height: 0.45em
+            margin: 0.25em 0.2em 0 0
+            border-right: 2px solid currentColor
+            border-bottom: 2px solid currentColor
+            transform: rotate(45deg)
     &[open]
         .post-toc-title
             border-bottom: 1px solid var(--color-border)
             &:after
-                content: "\f106"
+                margin-top: 0.5em
+                transform: rotate(225deg)
     .post-toc-body
         padding: 10px 14px
     .toc-link

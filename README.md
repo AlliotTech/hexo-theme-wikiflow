@@ -180,7 +180,7 @@ search:
   insight: true
 
 vendors:
-  fontawesome: cdn
+  fontawesome: false
   open_sans: false
   source_code_pro: false
   mathjax: https://cdn.jsdelivr.net/npm/mathjax@4.1.2/tex-mml-chtml.js
@@ -209,7 +209,9 @@ categories:
 
 MathJax is disabled by default. Set `mathjax: true` in a post or page's front matter to load it only where formulas are used, or set `plugins.mathjax: true` to enable it site-wide.
 
-Thumbnails on archive and recent-post views come from `thumbnail` first and then `banner`. When the banner's intrinsic size is known, add `banner_width` and `banner_height` to front matter to reserve its layout space and reduce visual shifting. Post galleries use Hexo's `photos` front-matter field. The `embed` scaffold creates an iframe page from `iframe_url`, or from an `embed_page/index.html` file in the post asset folder.
+Thumbnails on archive and recent-post views come from `thumbnail` first and then `banner`. When the banner's intrinsic size is known, add `banner_width` and `banner_height` to front matter to reserve its layout space and reduce visual shifting. Post galleries use Hexo's `photos` front-matter field. Rendered Markdown images receive native lazy-loading and asynchronous-decoding attributes unless the source HTML explicitly sets them.
+
+The `embed` scaffold creates an iframe page from `iframe_url`, or from an `embed_page/index.html` file in the post asset folder. Theme-level defaults live under `embed`; individual pages can override `iframe_title`, `iframe_loading`, `iframe_referrerpolicy`, `iframe_sandbox`, `iframe_allow`, and `iframe_allowfullscreen` in front matter.
 
 The category widget uses `category.mode: external` by default. WikiFlow emits one hashed `assets/wikiflow/category-tree.*.json` file and renders the sidebar tree in the browser, opening the current article branch first and creating the rest of the DOM only when a branch or the expand-all control is used. Set `category.mode: full` to restore the legacy server-rendered tree on every page.
 
@@ -229,11 +231,13 @@ Optional features are enabled from `_config.wikiflow.yml`.
 
 ### Configure CDN
 
-Vendor assets are resolved through `_vendors.yml`. A vendor value can be `cdn`, `true`, `local`, `false`, or a custom URL.
+WikiFlow generates one cacheable SVG sprite containing its core icons and the social icons configured by the site, so Font Awesome is no longer loaded by default. The legacy `vendors.fontawesome` entry remains available for custom styles that still depend on its classes.
+
+Other vendor assets are resolved through `_vendors.yml`. A vendor value can be `cdn`, `true`, `local`, `false`, or a custom URL.
 
 ```yml
 vendors:
-  fontawesome: cdn
+  fontawesome: false
   open_sans: false
   source_code_pro: false
   mathjax: https://cdn.jsdelivr.net/npm/mathjax@4.1.2/tex-mml-chtml.js

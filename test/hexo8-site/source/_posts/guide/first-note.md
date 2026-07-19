@@ -26,6 +26,8 @@ This article validates normal post rendering, table of contents output, metadata
 
 The body includes an [external link](https://hexo.io), inline `code`, and a fenced block.
 
+![Rendered content image](/css/images/thumb-default-small.png)
+
 ```js
 console.log('wikiflow');
 ```

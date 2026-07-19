@@ -15,12 +15,12 @@ const scenarios = [
     name: 'default',
     expectHtml: {
       includes: [
-        'https://cdn.example.com/fontawesome-free.css',
         'https://cdn.example.com/mathjax-v4.js',
         'window.MathJax = {',
         'id="MathJax-script"'
       ],
       excludes: [
+        'https://cdn.example.com/fontawesome-free.css',
         '/libs/fontawesome-free/css/all.min.css',
         '/libs/open-sans/styles.css',
         '/libs/source-code-pro/styles.css'
@@ -276,10 +276,36 @@ const scenarios = [
     }
   },
   {
+    name: 'insight-disabled',
+    configPatch: config => config.replace('    insight: true', '    insight: false'),
+    expectHtml: {
+      includes: [
+        'class="search-form-submit"',
+        'wikiflow-icon-solid-magnifying-glass'
+      ],
+      excludes: [
+        'window.INSIGHT_CONFIG',
+        'class="ins-search"'
+      ]
+    },
+    browser: false
+  },
+  {
+    name: 'fontawesome-compat',
+    configPatch: config => config.replace(
+      '    fontawesome: false',
+      '    fontawesome: https://cdn.example.com/fontawesome-free.css'
+    ),
+    expectHtml: {
+      includes: [
+        'https://cdn.example.com/fontawesome-free.css'
+      ]
+    },
+    browser: false
+  },
+  {
     name: 'vendors-disabled',
-    configPatch: config => config
-      .replace('    fontawesome: https://cdn.example.com/fontawesome-free.css', '    fontawesome: false')
-      .replace('    mathjax: https://cdn.example.com/mathjax-v4.js', '    mathjax: false'),
+    configPatch: config => config.replace('    mathjax: https://cdn.example.com/mathjax-v4.js', '    mathjax: false'),
     expectHtml: {
       excludes: [
         'https://cdn.example.com/fontawesome-free.css',
@@ -479,6 +505,7 @@ async function verifyScenario(scenario) {
   }
 
   await verifyCategoryTreeAsset(scenario, tmpRoot);
+  await verifyIconSpriteAsset(scenario, tmpRoot);
 
   await verifyGeneratedHtml(scenario, tmpRoot);
   await verifyAllGeneratedHtml(scenario, tmpRoot);
@@ -548,8 +575,31 @@ async function verifyCategoryTreeAsset(scenario, tmpRoot) {
   }
 
   const payload = JSON.parse(await fs.promises.readFile(path.join(assetDir, files[0]), 'utf8'));
-  if (payload.version !== 1 || !payload.tree || !Array.isArray(payload.tree.children)) {
+  if (payload.version !== 2 || !payload.tree || !Array.isArray(payload.tree.children)) {
     throw new Error(`External category tree payload is malformed for ${scenario.name}`);
+  }
+}
+
+async function verifyIconSpriteAsset(scenario, tmpRoot) {
+  const assetDir = path.join(tmpRoot, 'public', 'assets', 'wikiflow');
+  const files = fs.existsSync(assetDir)
+    ? (await fs.promises.readdir(assetDir)).filter(file => /^icons\.[a-f0-9]{12}\.svg$/.test(file))
+    : [];
+
+  if (files.length !== 1) {
+    throw new Error(`Expected one hashed icon sprite for ${scenario.name}, found: ${files.join(', ') || '(none)'}`);
+  }
+
+  const sprite = await fs.promises.readFile(path.join(assetDir, files[0]), 'utf8');
+  const requiredSymbols = [
+    'wikiflow-icon-solid-calendar',
+    'wikiflow-icon-solid-folder',
+    'wikiflow-icon-brands-github',
+    'wikiflow-icon-solid-rss'
+  ];
+  const missing = requiredSymbols.filter(symbol => !sprite.includes(`id="${symbol}"`));
+  if (missing.length || sprite.includes('wikiflow-icon-brands-discord')) {
+    throw new Error(`Icon sprite contents are invalid for ${scenario.name}: ${JSON.stringify({ missing })}`);
   }
 }
 
@@ -582,6 +632,7 @@ async function verifyGeneratedHtml(scenario, tmpRoot) {
   const htmlPath = path.join(tmpRoot, 'public', 'wiki', 'guide', 'first-note', 'index.html');
   const html = await fs.promises.readFile(htmlPath, 'utf8');
   const indexHtml = await fs.promises.readFile(path.join(tmpRoot, 'public', 'index.html'), 'utf8');
+  const embedHtml = await fs.promises.readFile(path.join(tmpRoot, 'public', 'embed', 'index.html'), 'utf8');
   const tocDisabledHtmlPath = path.join(tmpRoot, 'public', 'wiki', 'reference', 'second-note', 'index.html');
   const tocDisabledHtml = await fs.promises.readFile(tocDisabledHtmlPath, 'utf8');
   const categoryMode = scenario.categoryMode || 'external';
@@ -595,10 +646,12 @@ async function verifyGeneratedHtml(scenario, tmpRoot) {
     'data-sidebar-panel="outline"',
     'id="categories-outline-body"',
     'class="post-toc post-toc-mobile"',
-    'class="fa-solid fa-calendar"',
-    'class="fa-brands fa-github"',
+    'class="wikiflow-icon fa-solid fa-calendar"',
+    'class="wikiflow-icon fa-brands fa-github"',
+    '<use href="/assets/wikiflow/icons.',
     'class="article-banner" decoding="async"',
     'loading="lazy" decoding="async"',
+    'alt="Rendered content image" loading="lazy" decoding="async"',
     'class="hljs-variable language_"',
     'class="hljs-title function_"'
   ];
@@ -648,14 +701,18 @@ async function verifyGeneratedHtml(scenario, tmpRoot) {
   const descriptionMoreLink = indexHtml.match(/<div class="article-more-link">[\s\S]*?<a href="([^"]+)"/);
   const invalidDescriptionMoreLink = !scenario.skipIndexListAssertions &&
     (!descriptionMoreLink || descriptionMoreLink[1] !== '/wiki/reference/second-note/');
+  const invalidEmbed = !embedHtml.includes('<body class="layout-embed">') ||
+    !embedHtml.includes('title="Fixture frame" loading="eager" referrerpolicy="no-referrer" sandbox="allow-scripts" allow="fullscreen" allowfullscreen') ||
+    embedHtml.includes('<style>');
 
-  if (missing.length || unexpected.length || unexpectedTocDisabled.length || invalidIndexExcerpt || invalidDescriptionMoreLink) {
+  if (missing.length || unexpected.length || unexpectedTocDisabled.length || invalidIndexExcerpt || invalidDescriptionMoreLink || invalidEmbed) {
     throw new Error(`HTML expectation failed for ${scenario.name}:\n${JSON.stringify({
       missing,
       unexpected,
       unexpectedTocDisabled,
       invalidIndexExcerpt,
-      descriptionMoreHref: descriptionMoreLink && descriptionMoreLink[1]
+      descriptionMoreHref: descriptionMoreLink && descriptionMoreLink[1],
+      invalidEmbed
     }, null, 2)}`);
   }
 }
@@ -672,7 +729,8 @@ async function verifyGeneratedCss(scenario, tmpRoot) {
     '.sidebar-category-panel',
     '.sidebar-panel-outline',
     '.post-toc-sidebar',
-    '.post-toc-mobile'
+    '.post-toc-mobile',
+    'body.layout-embed'
   ];
   const genericExcludes = [
     'grid-area: true',
@@ -826,6 +884,16 @@ async function verifyBrowserRuntime(scenario) {
         outlineBody: rectFor('#categories-outline-body'),
         article: rectFor('.article'),
         galleryItem: rectFor('.gallery-item'),
+        icon: rectFor('.article-date .wikiflow-icon'),
+        iconGlyph: (() => {
+          const icon = document.querySelector('.article-date .wikiflow-icon');
+          if (!icon || typeof icon.getBBox !== 'function') return null;
+          const bounds = icon.getBBox();
+          return { width: bounds.width, height: bounds.height };
+        })(),
+        iconUseCount: document.querySelectorAll('.wikiflow-icon use').length,
+        iconReference: document.querySelector('.wikiflow-icon use')?.getAttribute('href') || '',
+        fontAwesomeStylesheet: Array.from(document.styleSheets).some(sheet => /fontawesome/iu.test(sheet.href || '')),
         activePanel: document.querySelector('#categories')?.classList.contains('sidebar-panel-active-categories') ? 'categories' : 'outline',
         activeTab: document.querySelector('.sidebar-panel-tab.is-active')?.getAttribute('data-sidebar-panel'),
         categoriesTabSelected: document.querySelector('.sidebar-panel-tab[data-sidebar-panel="categories"]')?.getAttribute('aria-selected'),
@@ -997,7 +1065,8 @@ async function verifyBrowserRuntime(scenario) {
         visible: !!box,
         expanded: button?.getAttribute('aria-expanded'),
         inputValue: box?.querySelector('.article-share-input')?.value || '',
-        inputFocused: document.activeElement?.classList.contains('article-share-input') || false
+        inputFocused: document.activeElement?.classList.contains('article-share-input') || false,
+        iconCount: box?.querySelectorAll('.wikiflow-icon use').length || 0
       };
     });
     await page.keyboard.press('Escape');
@@ -1098,6 +1167,11 @@ async function verifyBrowserRuntime(scenario) {
       layout.outlineTabSelected !== 'false' ||
       !layout.article?.visible ||
       !layout.galleryItem?.visible ||
+      !layout.icon?.visible ||
+      !layout.iconGlyph || layout.iconGlyph.width <= 0 || layout.iconGlyph.height <= 0 ||
+      layout.iconUseCount < 1 ||
+      !/\/assets\/wikiflow\/icons\.[a-f0-9]{12}\.svg#wikiflow-icon-/u.test(layout.iconReference) ||
+      layout.fontAwesomeStylesheet ||
       categoryPanelLayout.activePanel !== 'categories' ||
       categoryPanelLayout.activeTab !== 'categories' ||
       categoryPanelLayout.categoriesTabSelected !== 'true' ||
@@ -1134,6 +1208,7 @@ async function verifyBrowserRuntime(scenario) {
       share.expanded !== 'true' ||
       !share.inputValue ||
       !share.inputFocused ||
+      share.iconCount !== 3 ||
       shareClosed.visible ||
       shareClosed.expanded !== 'false' ||
       !shareClosed.focusReturned ||

@@ -1,6 +1,7 @@
 (function () {
     'use strict';
 
+    var ui = window.WIKIFLOW_UI || {};
     var lastShareButton = null;
 
     function closeShareBoxes(restoreFocus) {
@@ -14,13 +15,28 @@
         if (restoreFocus && lastShareButton) lastShareButton.focus();
     }
 
-    function createShareLink(href, className, title) {
+    function createIcon(name, style) {
+        var resolvedStyle = style || 'solid';
+        var icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        var use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+
+        icon.setAttribute('class', 'wikiflow-icon fa-' + resolvedStyle + ' fa-' + name);
+        icon.setAttribute('aria-hidden', 'true');
+        icon.setAttribute('focusable', 'false');
+        use.setAttribute('href', (ui.ICON_SPRITE_URL || '') + '#wikiflow-icon-' + resolvedStyle + '-' + name);
+        icon.appendChild(use);
+        return icon;
+    }
+
+    function createShareLink(href, className, title, iconName) {
         var link = document.createElement('a');
         link.href = href;
         link.className = className;
         link.target = '_blank';
         link.rel = 'noopener noreferrer';
         link.title = title;
+        link.setAttribute('aria-label', title);
+        link.appendChild(createIcon(iconName, 'brands'));
         return link;
     }
 
@@ -38,9 +54,9 @@
         input.value = url;
         input.readOnly = true;
         links.className = 'article-share-links';
-        links.appendChild(createShareLink('https://twitter.com/intent/tweet?url=' + encodedUrl, 'fa-brands fa-x-twitter article-share-twitter', 'Twitter'));
-        links.appendChild(createShareLink('https://www.facebook.com/sharer.php?u=' + encodedUrl, 'fa-brands fa-facebook article-share-facebook', 'Facebook'));
-        links.appendChild(createShareLink('https://pinterest.com/pin/create/button/?url=' + encodedUrl, 'fa-brands fa-pinterest article-share-pinterest', 'Pinterest'));
+        links.appendChild(createShareLink('https://twitter.com/intent/tweet?url=' + encodedUrl, 'article-share-twitter', 'Twitter', 'x-twitter'));
+        links.appendChild(createShareLink('https://www.facebook.com/sharer.php?u=' + encodedUrl, 'article-share-facebook', 'Facebook', 'facebook'));
+        links.appendChild(createShareLink('https://pinterest.com/pin/create/button/?url=' + encodedUrl, 'article-share-pinterest', 'Pinterest', 'pinterest'));
         box.appendChild(input);
         box.appendChild(links);
         document.body.appendChild(box);

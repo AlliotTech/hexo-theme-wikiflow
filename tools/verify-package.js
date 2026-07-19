@@ -42,7 +42,12 @@ const requiredPackageFiles = [
   'source/js/insight-engine.js',
   'source/js/main.js',
   'source/js/share.js',
+  'scripts/filters/content-images.js',
+  'scripts/generators/icon-sprite.js',
+  'scripts/helpers/embed.js',
+  'scripts/helpers/icon.js',
   'scripts/helpers/render-data.js',
+  'scripts/lib/icons.js',
   'source/css/style.styl'
 ];
 

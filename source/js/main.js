@@ -323,16 +323,33 @@
         return wrapper;
     }
 
-    function createCopyIcon(className) {
-        var icon = document.createElement('i');
-        icon.className = className;
+    function iconReference(name, style) {
+        return (ui.ICON_SPRITE_URL || '') + '#wikiflow-icon-' + (style || 'solid') + '-' + name;
+    }
+
+    function setIcon(icon, name, style) {
+        var resolvedStyle = style || 'solid';
+        var use = icon && icon.querySelector('use');
+
+        if (!icon || !use) return;
+        icon.setAttribute('class', 'wikiflow-icon fa-' + resolvedStyle + ' fa-' + name);
+        use.setAttribute('href', iconReference(name, resolvedStyle));
+    }
+
+    function createIcon(name, style) {
+        var icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        var use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+
         icon.setAttribute('aria-hidden', 'true');
+        icon.setAttribute('focusable', 'false');
+        icon.appendChild(use);
+        setIcon(icon, name, style);
         return icon;
     }
 
-    function setCopyState(button, className) {
+    function setCopyState(button, iconName) {
         button.textContent = '';
-        button.appendChild(createCopyIcon(className));
+        button.appendChild(createIcon(iconName));
     }
 
     function setupCodeCopy() {
@@ -347,7 +364,7 @@
             wrapper = wrapCodeBlock(block);
             button = document.createElement('button');
             status = document.createElement('span');
-            icon = createCopyIcon('fa-solid fa-copy fa-fw');
+            icon = createIcon('copy');
             button.type = 'button';
             button.className = 'copy-btn';
             button.setAttribute('aria-label', uiText('COPY_CODE', 'Copy code'));
@@ -361,17 +378,17 @@
 
             button.addEventListener('click', function () {
                 copyText(codeTextFromBlock(block)).then(function () {
-                    setCopyState(button, 'fa-solid fa-circle-check fa-fw');
+                    setCopyState(button, 'circle-check');
                     status.textContent = uiText('CODE_COPIED', 'Code copied');
                     window.setTimeout(function () {
-                        setCopyState(button, 'fa-solid fa-copy fa-fw');
+                        setCopyState(button, 'copy');
                         status.textContent = '';
                     }, 1800);
                 }).catch(function () {
-                    setCopyState(button, 'fa-solid fa-circle-xmark fa-fw');
+                    setCopyState(button, 'circle-xmark');
                     status.textContent = uiText('COPY_FAILED', 'Copy failed');
                     window.setTimeout(function () {
-                        setCopyState(button, 'fa-solid fa-copy fa-fw');
+                        setCopyState(button, 'copy');
                         status.textContent = '';
                     }, 1800);
                 });
@@ -539,14 +556,16 @@
         var treeSource;
         var rootUrl;
         var currentPath;
+        var currentCategoryPaths;
+        var currentPost;
         var loadingPromise;
         var loadedTree;
         var renderedTree = false;
         var branchByDirectory = typeof WeakMap === 'function' ? new WeakMap() : null;
-        var iconFolderOpenClass = 'fa-folder-open';
-        var iconFolderCloseClass = 'fa-folder';
-        var iconAllExpandClass = 'fa-angles-down';
-        var iconAllPackClass = 'fa-angles-up';
+        var iconFolderOpenClass = 'folder-open';
+        var iconFolderCloseClass = 'folder';
+        var iconAllExpandClass = 'angles-down';
+        var iconAllPackClass = 'angles-up';
 
         if (!categories) return;
 
@@ -555,6 +574,12 @@
         treeSource = categories.getAttribute('data-tree-src') || '';
         rootUrl = categories.getAttribute('data-root-url') || '/';
         currentPath = normalizePath(categories.getAttribute('data-current-path') || window.location.pathname);
+        currentPost = categories.getAttribute('data-current-post') === 'true';
+        try {
+            currentCategoryPaths = JSON.parse(categories.getAttribute('data-current-categories') || '[]');
+        } catch {
+            currentCategoryPaths = [];
+        }
 
         function safeDecode(value) {
             try {
@@ -633,6 +658,42 @@
             return selected;
         }
 
+        function markSelectedPath(branch) {
+            var currentBranch = branch;
+            var selectedBranches = [];
+            var selectedPost;
+
+            if (!currentPost || !branch) return;
+
+            for (var index = 0; index < currentCategoryPaths.length; index += 1) {
+                var categoryPath = normalizePath(currentCategoryPaths[index]);
+                var nextBranch = (currentBranch.children || []).find(function (child) {
+                    return normalizePath(child.path) === categoryPath;
+                });
+
+                if (!nextBranch) {
+                    markSelected(branch);
+                    return;
+                }
+
+                selectedBranches.push(nextBranch);
+                currentBranch = nextBranch;
+            }
+
+            selectedPost = (currentBranch.articles || []).find(function (post) {
+                return normalizePath(post.path) === currentPath;
+            });
+            if (!selectedPost) {
+                markSelected(branch);
+                return;
+            }
+
+            selectedPost.selected = true;
+            selectedBranches.forEach(function (selectedBranch) {
+                selectedBranch.selected = true;
+            });
+        }
+
         function removeLoadingState() {
             if (!body) return;
             body.removeAttribute('aria-busy');
@@ -661,21 +722,12 @@
 
         function setFolderIcon(icon, expanded) {
             if (!icon) return;
-            icon.classList.remove(iconFolderOpenClass, iconFolderCloseClass);
-            icon.classList.add(expanded ? iconFolderOpenClass : iconFolderCloseClass);
+            setIcon(icon, expanded ? iconFolderOpenClass : iconFolderCloseClass);
         }
 
         function setAllIcon(icon, expanded) {
             if (!icon) return;
-            icon.classList.remove(iconAllExpandClass, iconAllPackClass);
-            icon.classList.add(expanded ? iconAllPackClass : iconAllExpandClass);
-        }
-
-        function createIcon(className) {
-            var icon = document.createElement('i');
-            icon.className = className;
-            icon.setAttribute('aria-hidden', 'true');
-            return icon;
+            setIcon(icon, expanded ? iconAllPackClass : iconAllExpandClass);
         }
 
         function createFile(post) {
@@ -719,7 +771,7 @@
             link.type = 'button';
             link.setAttribute('data-role', 'directory');
             link.setAttribute('aria-expanded', 'false');
-            link.appendChild(createIcon('fa-solid fa-folder'));
+            link.appendChild(createIcon('folder'));
             link.appendChild(document.createTextNode(' ' + (branch.name || '')));
             item.appendChild(link);
 
@@ -764,7 +816,7 @@
                 })
                 .then(function (payload) {
                     loadedTree = payload.tree || payload;
-                    markSelected(loadedTree);
+                    markSelectedPath(loadedTree);
                     return loadedTree;
                 })
                 .catch(function () {
@@ -790,7 +842,7 @@
 
         function setDirectory(directory, expanded) {
             var link = directory.querySelector(':scope > [data-role="directory"]');
-            var icon = link && link.querySelector('.fa-solid, .fa-regular, .fa-brands');
+            var icon = link && link.querySelector('.wikiflow-icon');
 
             directory.classList.toggle('open', expanded);
             if (link) link.setAttribute('aria-expanded', expanded ? 'true' : 'false');
@@ -834,8 +886,8 @@
             if (!allExpandLink) return;
             event.preventDefault();
             ensureTree(true).then(function () {
-                allIcon = allExpandLink.querySelector('.fa-solid, .fa-regular, .fa-brands');
-                shouldExpandAll = allIcon && allIcon.classList.contains(iconAllExpandClass);
+                allIcon = allExpandLink.querySelector('.wikiflow-icon');
+                shouldExpandAll = allIcon && allIcon.classList.contains('fa-' + iconAllExpandClass);
                 if (shouldExpandAll) materializeAll();
                 categories.querySelectorAll('li.directory').forEach(function (directory) {
                     setDirectory(directory, shouldExpandAll);

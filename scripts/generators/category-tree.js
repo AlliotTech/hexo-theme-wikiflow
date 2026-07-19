@@ -21,6 +21,7 @@ function shouldGenerateCategoryTree(hexoInstance) {
 function slimCategoryTree(branch) {
     return {
         ...(branch.name && branch.name !== '_root' ? { name: branch.name } : {}),
+        ...(branch.path ? { path: branch.path } : {}),
         children: (branch.children || []).map(slimCategoryTree),
         articles: (branch.articles || []).map(post => ({
             title: post.title || '',
@@ -31,7 +32,7 @@ function slimCategoryTree(branch) {
 
 function buildPayload(hexoInstance) {
     return {
-        version: 1,
+        version: 2,
         tree: slimCategoryTree(buildCategoryTree(
             hexoInstance.locals.get('categories'),
             hexoInstance.locals.get('posts')

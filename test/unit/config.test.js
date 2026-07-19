@@ -37,6 +37,7 @@ test('theme defaults use packaged assets and opt-in heavyweight integrations', (
     assert.equal(config.logo.url, '/css/images/logo.png');
     assert.equal(config.plugins.mathjax, false);
     assert.equal(config.footer.license.enable, false);
+    assert.equal(config.vendors.fontawesome, false);
 });
 
 test('language files expose the same keys as English', () => {

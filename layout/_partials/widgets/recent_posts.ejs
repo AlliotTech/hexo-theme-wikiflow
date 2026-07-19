@@ -15,7 +15,7 @@
                             <p class="item-category"><%- partial('_partials/post/taxonomy-links', {
                                 items: post.categories,
                                 class_name: 'article-category-link',
-                                separator: '<i class="fa-solid fa-angle-right" aria-hidden="true"></i>'
+                                separator: wikiflow_icon('angle-right')
                             }) %></p>
                             <p class="item-title"><a href="<%= url_for((post.link?post.link:post.path)) %>" class="title"><%= post.title %></a></p>
                             <p class="item-date"><time datetime="<%= date_xml(post.date) %>" itemprop="datePublished"><%= date(post.date) %></time></p>

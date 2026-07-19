@@ -128,8 +128,8 @@ profile:
   # “关注我”按钮链接。
   follow: https://github.com/AlliotTech/
 
-# 资料栏社交链接。键名会同时作为 Font Awesome 图标名，例如 `github`
-# 会渲染 Font Awesome 的 github 品牌图标。`rss` 还会用于 `<link rel="alternate">`。
+# 资料栏社交链接。键名会同时作为 SVG 图标名，例如 `github`。
+# `rss` 还会用于 `<link rel="alternate">`。
 social:
   github: https://github.com/AlliotTech/hexo-theme-wikiflow
   rss: /atom.xml
@@ -185,6 +185,19 @@ post_history:
   repository: hexo-theme-wikiflow
   # 文章源码所在分支。
   branch: main
+
+# embed 布局的 iframe 默认属性。单篇页面可用同名 `iframe_*` front matter 覆盖。
+embed:
+  # 浏览器加载策略：lazy 或 eager。
+  loading: lazy
+  # iframe 请求的 Referrer-Policy。
+  referrerpolicy: strict-origin-when-cross-origin
+  # 留空不设置 sandbox；设为 true 启用最严格 sandbox，或填写允许项数组。
+  sandbox:
+  # Permissions Policy，例如：fullscreen; clipboard-read。
+  allow:
+  # 是否输出 allowfullscreen。
+  allowfullscreen: false
 
 # ---------------------------------------------------------------
 # Code Block Settings
@@ -268,8 +281,8 @@ open_graph:
 #   - false：禁用该资源
 #   - https://...：使用自定义 URL
 vendors:
-  # Font Awesome Free，主题图标依赖它。
-  fontawesome: cdn
+  # 主题核心图标使用按站点生成的 SVG sprite；这里只保留旧站点自定义样式兼容入口。
+  fontawesome: false
   # Open Sans 字体。默认关闭，减少外部请求。
   open_sans: false
   # Source Code Pro 字体。默认关闭，代码字体使用系统等宽字体。

@@ -1,10 +1,10 @@
 <% if (post.categories && post.categories.length) { %>
     <div class="article-category">
-    	<i class="fa-solid fa-folder"></i>
+        <%- wikiflow_icon('folder') %>
         <%- partial('_partials/post/taxonomy-links', {
             items: post.categories,
             class_name: 'article-category-link',
-            separator: '<i class="fa-solid fa-angle-right" aria-hidden="true"></i>'
+            separator: wikiflow_icon('angle-right')
         }) %>
     </div>
 <% } %>

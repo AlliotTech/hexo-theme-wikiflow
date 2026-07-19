@@ -154,6 +154,22 @@ $nav-link
     padding: 0 8px
     .search-form
         position: relative
+        display: flex
+        align-items: center
+
+.search-form-submit
+    display: inline-flex
+    align-items: center
+    justify-content: center
+    width: 34px
+    height: 34px
+    margin-left: 4px
+    padding: 0
+    border: 1px solid var(--color-border)
+    border-radius: 50%
+    color: var(--color-default)
+    background: var(--color-surface)
+    cursor: pointer
 
 .search-form-trigger
     @extend .nav-icon
@@ -162,10 +178,6 @@ $nav-link
     background: none
     font: font-size font-sans
     color: var(--color-default)
-    &:before
-        content: '\f002'
-        font-family: 'Font Awesome 7 Free'
-        font-weight: 900
     &:hover,
     &:focus
         outline: none
@@ -178,12 +190,15 @@ $nav-link
     border-radius: 50%
     background: none
     font: font-size font-sans
-    &:before
-        content: '\f0c9'
-        font-family: 'Font Awesome 7 Free'
-        font-weight: 900
-    &[aria-expanded="true"]:before
-        content: '\f00d'
+    .mobile-menu-icon
+        display: inline-flex
+    .mobile-menu-icon-close
+        display: none
+    &[aria-expanded="true"]
+        .mobile-menu-icon-open
+            display: none
+        .mobile-menu-icon-close
+            display: inline-flex
     &:hover,
     &:focus
         background: rgba(9, 105, 218, 0.08)

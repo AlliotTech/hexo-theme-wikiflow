@@ -1,18 +1,6 @@
-<style>
-section#main, article#<%= post.layout %>-<%= post.slug %>, .article-inner, .article-inner iframe {
-    width: 100%;
-    height: 100%;
-}
-#container > .outer {
-    margin-bottom: 80px !important;
-    height: 100%;
-}
-iframe#embed_iframe {
-    background-color: rgba(255,255,255,0.8);
-}
-</style>
+<% var iframe = wikiflow_embed_options(post); %>
 <article id="<%= post.layout %>-<%= post.slug %>" class="article article-type-<%= post.layout %>" itemscope>
     <div class="article-inner">
-        <iframe id="embed_iframe" src="<%= post.iframe_url ? post.iframe_url : './embed_page/' %>" title="<%= post.title || config.title %>" loading="lazy"></iframe>
+        <iframe id="embed_iframe" src="<%= iframe.src %>" title="<%= iframe.title %>" loading="<%= iframe.loading %>" referrerpolicy="<%= iframe.referrerpolicy %>"<% if (iframe.sandbox !== null) { %> sandbox="<%= iframe.sandbox %>"<% } %><% if (iframe.allow) { %> allow="<%= iframe.allow %>"<% } %><% if (iframe.allowfullscreen) { %> allowfullscreen<% } %>></iframe>
     </div>
 </article>

@@ -125,7 +125,7 @@ theme_config:
       fb_admins:
       twitter_id:
   vendors:
-    fontawesome: https://cdn.example.com/fontawesome-free.css
+    fontawesome: false
     open_sans: false
     source_code_pro: false
     mathjax: https://cdn.example.com/mathjax-v4.js

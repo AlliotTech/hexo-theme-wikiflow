@@ -1,5 +1,6 @@
 <%- partial('_partials/head/head') %>
-<body>
+<% var layoutClass = 'layout-' + String(page.layout || 'page').replace(/[^a-z0-9_-]+/giu, '-').toLowerCase(); %>
+<body class="<%= layoutClass %>">
     <div id="container">
         <a class="skip-link" href="#main"><%= __('nav.skip') %></a>
         <%- partial('_partials/header') %>

@@ -3,7 +3,7 @@
     <div class="ins-search-container" role="dialog" aria-modal="true" aria-label="<%= __('index.search') %>">
         <div class="ins-input-wrapper">
             <input type="text" class="ins-search-input" placeholder="<%= __('insight.hint') %>" aria-label="<%= __('index.search') %>" />
-            <button type="button" class="ins-close ins-selectable" aria-label="<%= __('insight.close') %>"><i class="fa-solid fa-circle-xmark"></i></button>
+            <button type="button" class="ins-close ins-selectable" aria-label="<%= __('insight.close') %>"><%- wikiflow_icon('circle-xmark') %></button>
         </div>
         <div class="ins-section-wrapper">
             <div class="ins-section-container"></div>
@@ -23,6 +23,7 @@
         },
         ROOT_URL: config.root || '/',
         CONTENT_URL: url_for('/content.json'),
+        ICON_SPRITE_URL: wikiflow_icon_sprite_url(),
         ENGINE_URL: url_for('/js/insight-engine.js'),
         SCRIPT_URL: url_for('/js/insight.js')
     }).replace(/</g, '\\u003c')

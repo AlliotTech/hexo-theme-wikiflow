@@ -16,7 +16,7 @@
             last_year = year;
     %>
             <div class="timeline-row timeline-row-major">
-                <span class="node"><i class="fa-regular fa-calendar"></i></span>
+                <span class="node"><%- wikiflow_icon('calendar', 'regular') %></span>
                 <h1 class="title"><a href="<%= url_for(archiveBase + '/' + year + '/') %>"><%= year %></a></h1>
             </div>
     <%
@@ -25,7 +25,7 @@
             last_year_month = year_month;
     %>
             <div class="timeline-row timeline-row-major">
-                <span class="node"><i class="fa-solid fa-calendar"></i></span>
+                <span class="node"><%- wikiflow_icon('calendar') %></span>
                 <h1 class="title"><a href="<%= url_for(archiveBase + '/' + year + '/' + post.date.format('MM') + '/') %>"><%= year_month %></a><span class="archive-list-count"><%= count_per_month[year_month] %></span></h1>
             </div>
     <%  } %>

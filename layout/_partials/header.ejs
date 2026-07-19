@@ -35,14 +35,17 @@
                         <div class="profile" id="profile-nav">
                             <button id="profile-anchor" type="button" aria-controls="profile" aria-expanded="false" aria-label="<%= profile.author || config.title %>">
                                 <img class="avatar" src="<%= ( profile.gravatar ? gravatar(profile.gravatar) : url_for(profile.avatar)) %>" alt="" />
-                                <i class="fa-solid fa-caret-down"></i>
+                                <%- wikiflow_icon('caret-down') %>
                             </button>
                         </div>
                     </nav>
                 <% } %>
                 <%- partial('_partials/search/index') %>
                 <% if (menuKeys.length) { %>
-                    <button id="mobile-menu-trigger" class="mobile-menu-trigger" type="button" aria-controls="mobile-menu-panel" aria-expanded="false" aria-label="<%= __('nav.menu') %>" title="<%= __('nav.menu') %>"></button>
+                    <button id="mobile-menu-trigger" class="mobile-menu-trigger" type="button" aria-controls="mobile-menu-panel" aria-expanded="false" aria-label="<%= __('nav.menu') %>" title="<%= __('nav.menu') %>">
+                        <span class="mobile-menu-icon mobile-menu-icon-open"><%- wikiflow_icon('bars') %></span>
+                        <span class="mobile-menu-icon mobile-menu-icon-close"><%- wikiflow_icon('xmark') %></span>
+                    </button>
                 <% } %>
             </div>
         </div>

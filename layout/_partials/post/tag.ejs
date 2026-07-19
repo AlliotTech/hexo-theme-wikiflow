@@ -1,6 +1,6 @@
 <% if (post.tags && post.tags.length) { %>
     <div class="article-tag">
-        <i class="fa-solid fa-tag"></i>
+        <%- wikiflow_icon('tag') %>
         <%- partial('_partials/post/taxonomy-links', {
             items: post.tags,
             class_name: 'article-tag-link',

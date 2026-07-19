@@ -9,6 +9,12 @@
         var categoriesUrl = url_for(config.category_dir || 'categories');
         var categoryTocContent = typeof sidebarTocContent !== 'undefined' ? sidebarTocContent : '';
         var hasCategoryToc = categoryTocContent && String(categoryTocContent).trim();
+        var currentPostCategories = is_post() && page.categories
+            ? (Array.isArray(page.categories) ? page.categories : page.categories.toArray())
+            : [];
+        var currentCategoryPaths = currentPostCategories
+            .map(function(category) { return category.path || category.permalink || ''; })
+            .filter(Boolean);
         var outlineLabel = __('article.outline');
         if (outlineLabel === 'article.outline') outlineLabel = __('article.catalogue');
     %>
@@ -16,6 +22,8 @@
         data-category-mode="<%= categoryExternal ? 'external' : 'full' %>"
         data-tree-src="<%= categoryTreeUrl %>"
         data-current-path="<%= url_for(page.path || '') %>"
+        data-current-post="<%= is_post() ? 'true' : 'false' %>"
+        data-current-categories="<%= JSON.stringify(currentCategoryPaths) %>"
         data-root-url="<%= url_for('/') %>"
         data-fallback-url="<%= categoriesUrl %>"
         data-fallback-label="<%= __('widget.categories') %>"
@@ -35,9 +43,12 @@
             <% } %>
             &nbsp;
             <button id="allExpand" type="button" aria-label="<%= __('widget.categories') %>">
-                <i class="fa-solid fa-angles-<%- categoryPerExpand ? 'up' : 'down' %> fa-2x"></i>
+                <%- wikiflow_icon(categoryPerExpand ? 'angles-up' : 'angles-down') %>
             </button>
-            <button class="widget-mobile-toggle" type="button" aria-controls="categories-body" aria-expanded="false" aria-label="<%= __('widget.categories') %>"></button>
+            <button class="widget-mobile-toggle" type="button" aria-controls="categories-body" aria-expanded="false" aria-label="<%= __('widget.categories') %>">
+                <span class="widget-mobile-icon widget-mobile-icon-open"><%- wikiflow_icon('angles-down') %></span>
+                <span class="widget-mobile-icon widget-mobile-icon-close"><%- wikiflow_icon('angles-up') %></span>
+            </button>
         </h3>
         <div class="widget-body<%- hasCategoryToc ? ' sidebar-panel sidebar-panel-categories is-active' : '' %>" id="categories-body"<% if (hasCategoryToc) { %> role="tabpanel" aria-hidden="false"<% } %>>
 
@@ -58,7 +69,7 @@
                         <% var isOpen = perExpand || category.selected; %>
                         <li class="directory<%- isOpen ? ' open' : '' %>">
                             <button type="button" data-role="directory" aria-expanded="<%- isOpen ? 'true' : 'false' %>">
-                                <i class="fa-solid fa-folder<%- isOpen ? '-open' : '' %>"></i>
+                                <%- wikiflow_icon(isOpen ? 'folder-open' : 'folder') %>
                                 &nbsp;
                                 <%= category.name %>
                             </button>

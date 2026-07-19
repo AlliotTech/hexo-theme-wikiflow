@@ -7,9 +7,9 @@
 fontawesome:
   type: style
   name: fontawesome-free
-  version: 7.2.0
-  default: cdn
-  cdn: https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.2.0/css/all.min.css
+  version: 7.3.1
+  default: false
+  cdn: https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.3.1/css/all.min.css
   local: libs/fontawesome-free/css/all.min.css
 
 open_sans:

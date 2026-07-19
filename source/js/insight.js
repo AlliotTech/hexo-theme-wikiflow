@@ -27,6 +27,18 @@
         return element;
     }
 
+    function createIcon(name) {
+        var icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        var use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+
+        icon.setAttribute('class', 'wikiflow-icon fa-solid fa-' + name);
+        icon.setAttribute('aria-hidden', 'true');
+        icon.setAttribute('focusable', 'false');
+        use.setAttribute('href', (CONFIG.ICON_SPRITE_URL || '') + '#wikiflow-icon-solid-' + name);
+        icon.appendChild(use);
+        return icon;
+    }
+
     function section(title) {
         var element = createElement('section', 'ins-section');
         element.appendChild(createElement('header', 'ins-section-header', title));
@@ -38,7 +50,7 @@
         var header = createElement('header');
         var titleText = title != null && title !== '' ? title : CONFIG.TRANSLATION.UNTITLED;
         var titleElement = createElement('span', 'ins-search-title');
-        header.appendChild(createElement('i', 'fa-solid fa-' + icon));
+        header.appendChild(createIcon(icon));
         appendHighlightedText(titleElement, titleText, keywords || []);
         header.appendChild(titleElement);
         if (slug) header.appendChild(createElement('span', 'ins-slug', slug));
