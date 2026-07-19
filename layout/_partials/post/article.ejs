@@ -23,14 +23,14 @@
             </header>
         <% } %>
         <%- partial('_partials/post/gallery', { post: post }) %>
-        <% var excerpt = index ? wikiflow_post_excerpt(post) : ''; %>
-        <% var excerptIsDescription = excerpt && !post.excerpt && post.description; %>
+        <% var excerptData = index ? wikiflow_post_excerpt(post) : { content: '', html: false }; %>
+        <% var excerpt = excerptData.content; %>
         <div class="article-entry" itemprop="articleBody">
         <% if (excerpt) { %>
-            <% if (excerptIsDescription) { %>
-                <p><%= excerpt %></p>
-            <% } else { %>
+            <% if (excerptData.html) { %>
                 <%- excerpt %>
+            <% } else { %>
+                <p><%= excerpt %></p>
             <% } %>
         <% } else if (!index) { %>
             <%- partial('_partials/post/toc', { post: post, variant: 'mobile' }) %>

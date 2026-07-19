@@ -22,7 +22,8 @@
             ERROR: __('insight.error')
         },
         ROOT_URL: config.root || '/',
-        CONTENT_URL: url_for('/content.json')
+        CONTENT_URL: url_for('/content.json'),
+        SCRIPT_URL: url_for('/js/insight.js')
     }).replace(/</g, '\\u003c')
         .replace(/>/g, '\\u003e')
         .replace(/&/g, '\\u0026')
@@ -34,4 +35,3 @@
     window.INSIGHT_CONFIG = <%- insightConfig %>;
 })(window);
 </script>
-<%- js('js/insight') %>

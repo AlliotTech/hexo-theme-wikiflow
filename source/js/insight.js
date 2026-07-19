@@ -13,6 +13,8 @@
     var container = main.querySelector('.ins-section-container');
     var lastTrigger = null;
     var searchTimer = null;
+    var searchIndex = null;
+    var dataPromise = null;
 
     if (main.parentNode) main.parentNode.removeChild(main);
     document.body.appendChild(main);
@@ -89,15 +91,10 @@
         });
     }
 
-    function decodeHtml(text) {
-        var textarea = document.createElement('textarea');
-        textarea.innerHTML = String(text || '');
-        return textarea.value;
-    }
-
     function cleanSearchText(text) {
-        return decodeHtml(text)
-            .replace(/<[^>]*>/g, ' ')
+        var parsed = new DOMParser().parseFromString(String(text || ''), 'text/html');
+
+        return String(parsed.body.textContent || '')
             .replace(/[0-9]{8,}/g, ' ')
             .replace(/\b\d{1,4}(?=[#.$/A-Za-z])/g, ' ')
             .replace(/\b\d{1,4}\s+(?=[#.$/A-Za-z])/g, ' ')
@@ -215,14 +212,26 @@
         });
     }
 
-    function search(json, keywordArray) {
-        var tags = extractToSet(json, 'tags');
-        var categories = extractToSet(json, 'categories');
+    function createSearchIndex(json) {
+        var data = {
+            pages: Array.isArray(json.pages) ? json.pages : [],
+            posts: Array.isArray(json.posts) ? json.posts : []
+        };
+
         return {
-            posts: searchCollection(json.posts, keywordArray, ['title', 'text'], [3, 1]),
-            pages: searchCollection(json.pages, keywordArray, ['title', 'text'], [3, 1]),
-            categories: searchCollection(categories, keywordArray, ['name', 'slug'], [1, 1]),
-            tags: searchCollection(tags, keywordArray, ['name', 'slug'], [1, 1])
+            pages: data.pages,
+            posts: data.posts,
+            categories: extractToSet(data, 'categories'),
+            tags: extractToSet(data, 'tags')
+        };
+    }
+
+    function search(index, keywordArray) {
+        return {
+            posts: searchCollection(index.posts, keywordArray, ['title', 'text'], [3, 1]),
+            pages: searchCollection(index.pages, keywordArray, ['title', 'text'], [3, 1]),
+            categories: searchCollection(index.categories, keywordArray, ['name', 'slug'], [1, 1]),
+            tags: searchCollection(index.tags, keywordArray, ['name', 'slug'], [1, 1])
         };
     }
 
@@ -246,7 +255,7 @@
         }
     }
 
-    function scheduleSearch(json) {
+    function scheduleSearch() {
         window.clearTimeout(searchTimer);
         searchTimer = window.setTimeout(function () {
             var keywordArray = parseKeywords(input.value);
@@ -254,7 +263,7 @@
                 searchResultToDOM(keywordArray, {});
                 return;
             }
-            searchResultToDOM(keywordArray, search(json, keywordArray));
+            if (searchIndex) searchResultToDOM(keywordArray, search(searchIndex, keywordArray));
         }, 160);
     }
 
@@ -299,6 +308,7 @@
         main.classList.add('show');
         main.setAttribute('aria-hidden', 'false');
         input.focus();
+        loadData();
     }
 
     function closeSearch() {
@@ -307,22 +317,31 @@
         if (lastTrigger && typeof lastTrigger.focus === 'function') lastTrigger.focus();
     }
 
-    fetch(CONFIG.CONTENT_URL)
-        .then(function (response) {
-            if (!response.ok) throw new Error('Insight search data request failed.');
-            return response.json();
-        })
-        .then(function (json) {
-            if (window.location.hash.trim() === '#ins-search') openSearch();
-            input.addEventListener('input', function () {
-                scheduleSearch(json);
+    function loadData() {
+        if (dataPromise) return dataPromise;
+
+        main.setAttribute('aria-busy', 'true');
+        dataPromise = fetch(CONFIG.CONTENT_URL)
+            .then(function (response) {
+                if (!response.ok) throw new Error('Insight search data request failed.');
+                return response.json();
+            })
+            .then(function (json) {
+                searchIndex = createSearchIndex(json);
+                input.addEventListener('input', scheduleSearch);
+                searchResultToDOM([], {});
+                return searchIndex;
+            })
+            .catch(function () {
+                showSearchError();
+                return null;
+            })
+            .finally(function () {
+                main.removeAttribute('aria-busy');
             });
-            searchResultToDOM([], {});
-        })
-        .catch(function () {
-            showSearchError();
-            if (window.location.hash.trim() === '#ins-search') openSearch();
-        });
+
+        return dataPromise;
+    }
 
     document.addEventListener('click', function (event) {
         var searchInput = event.target.closest('.search-form-input');
@@ -382,4 +401,11 @@
             focusables[0].focus();
         }
     }
+
+    window.WIKIFLOW_INSIGHT = {
+        close: closeSearch,
+        open: openSearch
+    };
+
+    if (window.location.hash.trim() === '#ins-search') openSearch();
 })(window, document, window.INSIGHT_CONFIG);

@@ -14,6 +14,7 @@ const forbiddenRepositoryPaths = [
   'docs/starter/source/robots.txt'
 ];
 const forbiddenPackagePrefixes = [
+  'docs/assets/',
   'test/',
   'tools/',
   '.tmp/',
@@ -36,6 +37,8 @@ const requiredPackageFiles = [
   'docs/starter/source/about/index.md',
   'docs/starter/scaffolds/post.md',
   'layout/layout.ejs',
+  'source/js/analytics.js',
+  'source/js/disqus.js',
   'source/js/main.js',
   'source/css/style.styl'
 ];

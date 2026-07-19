@@ -20,7 +20,7 @@
     "_config.yml",
     "_config.yml.example",
     "_vendors.yml",
-    "docs",
+    "docs/starter",
     "languages",
     "layout",
     "scripts",

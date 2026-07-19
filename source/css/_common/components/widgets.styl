@@ -117,6 +117,10 @@
             margin-top: 1px
             margin-left: auto
             padding: 0
+            border: 0
+            color: var(--color-text-inverse)
+            background: transparent
+            cursor: pointer
             i
                 font-size: 14px
                 line-height: 1
@@ -305,8 +309,16 @@
             display: block
         &.directory
             font-weight: bold
-            & > a
+            & > a,
+            & > button
                 color: var(--color-sidebar-text-dark)
+                width: 100%
+                border: 0
+                padding: 0
+                background: transparent
+                cursor: pointer
+                font: inherit
+                text-align: left
                 &:hover
                     text-decoration: none
         &.file
@@ -318,10 +330,13 @@
             padding-left: 10px
             word-wrap: break-word
         a,
-        a:hover
+        a:hover,
+        button,
+        button:hover
             display: block
             text-decoration: none
-        a:focus:before
+        a:focus:before,
+        button:focus:before
             content: "↪"
             float: left
             margin-left: -13px

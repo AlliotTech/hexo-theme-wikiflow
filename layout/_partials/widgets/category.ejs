@@ -23,10 +23,10 @@
         <h3 class="widget-title">
             <% if (hasCategoryToc) { %>
                 <span class="sidebar-panel-tablist" role="tablist" aria-label="<%= __('widget.categories') %>">
-                    <button class="sidebar-panel-tab is-active" type="button" role="tab" data-sidebar-panel="categories" aria-controls="categories-body" aria-selected="true">
+                    <button class="sidebar-panel-tab is-active" type="button" role="tab" data-sidebar-panel="categories" aria-controls="categories-body" aria-selected="true" tabindex="0">
                         <%= __('widget.categories') %>
                     </button>
-                    <button class="sidebar-panel-tab" type="button" role="tab" data-sidebar-panel="outline" aria-controls="categories-outline-body" aria-selected="false">
+                    <button class="sidebar-panel-tab" type="button" role="tab" data-sidebar-panel="outline" aria-controls="categories-outline-body" aria-selected="false" tabindex="-1">
                         <%= outlineLabel %>
                     </button>
                 </span>
@@ -34,9 +34,9 @@
                 <span><%= __('widget.categories') %></span>
             <% } %>
             &nbsp;
-            <a id="allExpand" href="#" aria-label="<%= __('widget.categories') %>">
+            <button id="allExpand" type="button" aria-label="<%= __('widget.categories') %>">
                 <i class="fa-solid fa-angles-<%- categoryPerExpand ? 'up' : 'down' %> fa-2x"></i>
-            </a>
+            </button>
             <button class="widget-mobile-toggle" type="button" aria-controls="categories-body" aria-expanded="false" aria-label="<%= __('widget.categories') %>"></button>
         </h3>
         <div class="widget-body<%- hasCategoryToc ? ' sidebar-panel sidebar-panel-categories is-active' : '' %>" id="categories-body"<% if (hasCategoryToc) { %> role="tabpanel" aria-hidden="false"<% } %>>
@@ -57,11 +57,11 @@
                     <% branch.children.forEach(function(category) { %>
                         <% var isOpen = perExpand || category.selected; %>
                         <li class="directory<%- isOpen ? ' open' : '' %>">
-                            <a href="#" data-role="directory" aria-expanded="<%- isOpen ? 'true' : 'false' %>">
+                            <button type="button" data-role="directory" aria-expanded="<%- isOpen ? 'true' : 'false' %>">
                                 <i class="fa-solid fa-folder<%- isOpen ? '-open' : '' %>"></i>
                                 &nbsp;
                                 <%= category.name %>
-                            </a>
+                            </button>
                             <% visitTreePosts(category, perExpand); %>
                         </li>
                     <% }); %>

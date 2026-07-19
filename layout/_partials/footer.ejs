@@ -1,6 +1,8 @@
 <%
 var footer = theme.footer || {};
+var license = footer.license || {};
 var beian = footer.beian || {};
+var hasLicense = license.enable && (license.name || license.icon);
 var hasIcpBeian = beian.enable && beian.icp;
 var hasGonganBeian = beian.enable && beian.gongan_id && beian.gongan_num;
 %>
@@ -8,8 +10,15 @@ var hasGonganBeian = beian.enable && beian.gongan_id && beian.gongan_num;
     <div class="outer">
         <div id="footer-info" class="inner">
             <%= config.author || config.title %> &copy; <%= date(new Date(), 'YYYY') %>
-            <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-nd/4.0/80x15.png" /></a>
+            <% if (hasLicense) { %>
+                <% if (license.url) { %><a rel="license" href="<%= license.url %>"><% } %>
+                <% if (license.icon) { %><img alt="<%= license.name || '' %>" src="<%= url_for(license.icon) %>" /><% } %>
+                <% if (license.name) { %><span><%= license.name %></span><% } %>
+                <% if (license.url) { %></a><% } %>
+            <% } %>
+            <% if (footer.powered_by !== false) { %>
             <br> Powered by <a href="https://hexo.io/" target="_blank" rel="noopener noreferrer">Hexo</a>. Theme - <a href="https://github.com/AlliotTech/hexo-theme-wikiflow">WikiFlow</a>
+            <% } %>
             <% if (hasIcpBeian || hasGonganBeian) { %>
             <div class="beian">
                 <% if (hasIcpBeian) { %>

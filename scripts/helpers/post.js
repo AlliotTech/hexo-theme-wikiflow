@@ -3,6 +3,7 @@
 'use strict';
 
 const yaml = require('js-yaml');
+const { stripHTML } = require('hexo-util');
 
 const HISTORY_ACTIONS = [
     { path: 'raw', label: 'Source' },
@@ -22,26 +23,29 @@ function joinUrlParts(base, ...parts) {
 }
 
 function getAutoExcerpt(content, lines) {
-    const source = String(content || '');
-    const lineCount = Number(lines) || 0;
-    let position = 0;
+    const lineCount = Math.max(0, Number(lines) || 0);
+    if (!lineCount) return '';
 
-    for (let count = 0; count < lineCount; count++) {
-        position = source.indexOf('\n', position + 1);
-        if (position < 0) return '';
-    }
-
-    return position > 0 ? source.substring(0, position + 1) : '';
+    return stripHTML(String(content || ''))
+        .split(/\r?\n/u)
+        .map(line => line.trim())
+        .filter(Boolean)
+        .slice(0, lineCount)
+        .join(' ');
 }
 
 function getPostExcerpt(post, themeConfig = {}) {
-    if (!post) return '';
-    if (post.excerpt || post.description) return post.excerpt || post.description;
+    if (!post) return { content: '', html: false };
+    if (post.excerpt) return { content: post.excerpt, html: true };
+    if (post.description) return { content: post.description, html: false };
 
     const autoExcerpt = themeConfig.auto_excerpt || {};
-    if (!autoExcerpt.enable) return '';
+    if (!autoExcerpt.enable) return { content: '', html: false };
 
-    return getAutoExcerpt(post.content, autoExcerpt.lines);
+    return {
+        content: getAutoExcerpt(post.content, autoExcerpt.lines),
+        html: false
+    };
 }
 
 function parseFrontMatter(raw) {

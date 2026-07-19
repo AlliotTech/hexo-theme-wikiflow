@@ -18,14 +18,24 @@ function shouldGenerateCategoryTree(hexoInstance) {
     return categoryMode(hexoInstance) === 'external';
 }
 
+function slimCategoryTree(branch) {
+    return {
+        ...(branch.name && branch.name !== '_root' ? { name: branch.name } : {}),
+        children: (branch.children || []).map(slimCategoryTree),
+        articles: (branch.articles || []).map(post => ({
+            title: post.title || '',
+            path: post.path || ''
+        }))
+    };
+}
+
 function buildPayload(hexoInstance) {
     return {
         version: 1,
-        root: hexoInstance.config.root || '/',
-        tree: buildCategoryTree(
+        tree: slimCategoryTree(buildCategoryTree(
             hexoInstance.locals.get('categories'),
             hexoInstance.locals.get('posts')
-        )
+        ))
     };
 }
 
@@ -52,23 +62,29 @@ function prepareCategoryTree(hexoInstance) {
     themeConfig.category = categoryConfig;
 }
 
-hexo.extend.filter.register('before_generate', () => {
-    prepareCategoryTree(hexo);
-}, 20);
+function register(hexoInstance) {
+    hexoInstance.extend.filter.register('before_generate', () => {
+        prepareCategoryTree(hexoInstance);
+    }, 20);
 
-hexo.extend.generator.register('wikiflow_category_tree', () => {
-    const categoryConfig = (hexo.theme.config || {}).category || {};
+    hexoInstance.extend.generator.register('wikiflow_category_tree', () => {
+        const categoryConfig = (hexoInstance.theme.config || {}).category || {};
 
-    if (!shouldGenerateCategoryTree(hexo) || !categoryConfig.tree_asset) return [];
+        if (!shouldGenerateCategoryTree(hexoInstance) || !categoryConfig.tree_asset) return [];
 
-    return {
-        path: categoryConfig.tree_asset.path,
-        data: categoryConfig.tree_asset.data
-    };
-});
+        return {
+            path: categoryConfig.tree_asset.path,
+            data: categoryConfig.tree_asset.data
+        };
+    });
+}
+
+if (typeof hexo !== 'undefined') register(hexo);
 
 module.exports = {
     buildPayload,
     prepareCategoryTree,
-    shouldGenerateCategoryTree
+    register,
+    shouldGenerateCategoryTree,
+    slimCategoryTree
 };

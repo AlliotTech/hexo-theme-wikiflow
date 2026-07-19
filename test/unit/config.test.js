@@ -30,6 +30,15 @@ test('theme YAML files parse successfully', () => {
     }
 });
 
+test('theme defaults use packaged assets and opt-in heavyweight integrations', () => {
+    const config = readYaml('_config.yml');
+
+    assert.equal(config.favicon, '/css/images/favicon.ico');
+    assert.equal(config.logo.url, '/css/images/logo.png');
+    assert.equal(config.plugins.mathjax, false);
+    assert.equal(config.footer.license.enable, false);
+});
+
 test('language files expose the same keys as English', () => {
     const languageDir = path.join(themeRoot, 'languages');
     const files = fs.readdirSync(languageDir).filter(file => /\.ya?ml$/u.test(file)).sort();

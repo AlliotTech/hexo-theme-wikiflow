@@ -1,13 +1,13 @@
 <% if (post.link) { %>
 	<a href="<%= url_for(post.link) %>" target="_blank" rel="noopener noreferrer" itemprop="url">
-        <img src="<%= url_for(post.banner) %>" alt="<%= post.title || '' %>" class="article-banner" decoding="async" />
+	        <img src="<%= url_for(post.banner) %>" alt="<%= post.title || '' %>" class="article-banner" decoding="async" loading="<%= index ? 'lazy' : 'eager' %>" fetchpriority="<%= index ? 'auto' : 'high' %>"<% if (post.banner_width) { %> width="<%= post.banner_width %>"<% } %><% if (post.banner_height) { %> height="<%= post.banner_height %>"<% } %> />
     </a>
 <% } else if (post.title) { %>
 	<% if (index) { %>
 		<a href="<%= url_for(post.path) %>" itemprop="url">
-            <img src="<%= url_for(post.banner) %>" alt="<%= post.title %>" class="article-banner" decoding="async" />
+	            <img src="<%= url_for(post.banner) %>" alt="<%= post.title %>" class="article-banner" decoding="async" loading="lazy" fetchpriority="auto"<% if (post.banner_width) { %> width="<%= post.banner_width %>"<% } %><% if (post.banner_height) { %> height="<%= post.banner_height %>"<% } %> />
         </a>
 	<% } else { %>
-		<img src="<%= url_for(post.banner) %>" alt="<%= post.title %>" class="article-banner" decoding="async" />
+		<img src="<%= url_for(post.banner) %>" alt="<%= post.title %>" class="article-banner" decoding="async" loading="eager" fetchpriority="high"<% if (post.banner_width) { %> width="<%= post.banner_width %>"<% } %><% if (post.banner_height) { %> height="<%= post.banner_height %>"<% } %> />
 	<% } %>
 <% } %>

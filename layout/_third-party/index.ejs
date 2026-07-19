@@ -6,7 +6,7 @@
         <meta name="google-site-verification" content="<%= theme.plugins.google_site_verification %>" />
     <% } %>
 <% } else { %>
-    <% if (theme.plugins && theme.plugins.mathjax) { %>
+    <% if (wikiflow_mathjax_enabled(page)) { %>
         <%- partial('_third-party/math/mathjax') %>
     <% } %>
 <% } %>

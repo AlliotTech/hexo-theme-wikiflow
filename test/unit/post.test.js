@@ -11,14 +11,20 @@ const {
     parseFrontMatter
 } = require('../../scripts/helpers/post');
 
-test('getAutoExcerpt returns the configured number of lines', () => {
-    assert.equal(getAutoExcerpt('one\ntwo\nthree\nfour', 2), 'one\ntwo\n');
-    assert.equal(getAutoExcerpt('one line only', 2), '');
+test('getAutoExcerpt returns safe plain text from complete rendered lines', () => {
+    assert.equal(getAutoExcerpt('<p>one</p>\n<p>two <strong>bold</strong></p>\n<p>three</p>', 2), 'one two bold');
+    assert.equal(getAutoExcerpt('<p>one line only</p>', 2), 'one line only');
 });
 
 test('getPostExcerpt prefers explicit excerpt and description', () => {
-    assert.equal(getPostExcerpt({ excerpt: 'custom', description: 'fallback' }), 'custom');
-    assert.equal(getPostExcerpt({ description: 'summary' }), 'summary');
+    assert.deepEqual(getPostExcerpt({ excerpt: '<p>custom</p>', description: 'fallback' }), {
+        content: '<p>custom</p>',
+        html: true
+    });
+    assert.deepEqual(getPostExcerpt({ description: '<unsafe>' }), {
+        content: '<unsafe>',
+        html: false
+    });
 });
 
 test('getPostExcerpt falls back to auto excerpt when enabled', () => {
@@ -32,7 +38,10 @@ test('getPostExcerpt falls back to auto excerpt when enabled', () => {
         }
     };
 
-    assert.equal(getPostExcerpt(post, theme), 'line 1\nline 2\n');
+    assert.deepEqual(getPostExcerpt(post, theme), {
+        content: 'line 1 line 2',
+        html: false
+    });
 });
 
 test('parseFrontMatter detects explicit non-empty updated values', () => {

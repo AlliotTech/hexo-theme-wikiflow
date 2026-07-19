@@ -5,12 +5,12 @@
 </div>
 
 <picture>
-  <img alt="WikiFlow desktop preview" src="./docs/assets/SitePreview.png">
+  <img alt="WikiFlow desktop preview" src="https://raw.githubusercontent.com/AlliotTech/hexo-theme-wikiflow/master/docs/assets/SitePreview.png">
 </picture>
 
 <p align="center">
-  <img alt="WikiFlow mobile preview 1" width="220" src="./docs/assets/mobile1.png">
-  <img alt="WikiFlow mobile preview 2" width="220" src="./docs/assets/mobile2.png">
+  <img alt="WikiFlow mobile preview 1" width="220" src="https://raw.githubusercontent.com/AlliotTech/hexo-theme-wikiflow/master/docs/assets/mobile1.png">
+  <img alt="WikiFlow mobile preview 2" width="220" src="https://raw.githubusercontent.com/AlliotTech/hexo-theme-wikiflow/master/docs/assets/mobile2.png">
 </p>
 
 # WikiFlow
@@ -151,6 +151,12 @@ recent_posts:
   thumbnail: true
 
 footer:
+  license:
+    enable: false
+    name:
+    url:
+    icon:
+  powered_by: true
   beian:
     enable: false
     icp:
@@ -181,8 +187,8 @@ vendors:
 
 plugins:
   gallery: true
-  mathjax: true
-  google_analytics:
+  mathjax: false
+  google_analytics: # GA4 measurement ID, for example G-XXXXXXXXXX
   google_site_verification:
 
 comment:
@@ -201,7 +207,9 @@ categories:
 ---
 ```
 
-Thumbnails on archive and recent-post views come from `thumbnail` first and then `banner`. Post galleries use Hexo's `photos` front-matter field. The `embed` scaffold creates an iframe page from `iframe_url`, or from an `embed_page/index.html` file in the post asset folder.
+MathJax is disabled by default. Set `mathjax: true` in a post or page's front matter to load it only where formulas are used, or set `plugins.mathjax: true` to enable it site-wide.
+
+Thumbnails on archive and recent-post views come from `thumbnail` first and then `banner`. When the banner's intrinsic size is known, add `banner_width` and `banner_height` to front matter to reserve its layout space and reduce visual shifting. Post galleries use Hexo's `photos` front-matter field. The `embed` scaffold creates an iframe page from `iframe_url`, or from an `embed_page/index.html` file in the post asset folder.
 
 The category widget uses `category.mode: external` by default. WikiFlow emits one hashed `assets/wikiflow/category-tree.*.json` file and renders the sidebar tree in the browser, opening the current article branch first and creating the rest of the DOM only when a branch or the expand-all control is used. Set `category.mode: full` to restore the legacy server-rendered tree on every page.
 
@@ -209,12 +217,14 @@ The category widget uses `category.mode: external` by default. WikiFlow emits on
 
 Optional features are enabled from `_config.wikiflow.yml`.
 
-* `search.insight`: enables the local Insight search overlay.
+* `search.insight`: enables the local Insight search overlay. Its JavaScript and `content.json` index are loaded only when the search UI is first opened.
 * `plugins.gallery`: wraps article images in a built-in lightbox.
-* `plugins.mathjax`: loads MathJax for mathematical notation.
+* `plugins.mathjax`: loads MathJax for mathematical notation on every page; keep it disabled to use per-page `mathjax: true` instead.
+* `plugins.google_analytics`: loads Google Analytics 4 when configured with a `G-...` measurement ID.
 * `comment.disqus`: loads Disqus comments when a shortname is configured.
 * `share: default`: enables the built-in share popover.
 * `post_history.enable`: shows Source, Edit, and History links for content stored in a GitHub/GitLab-style repository.
+* `footer.license`: optionally displays the site's content license; WikiFlow does not declare one by default.
 * `footer.beian`: adds ICP and gongan beian links to the footer for Chinese websites.
 
 ### Configure CDN

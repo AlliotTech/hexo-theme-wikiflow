@@ -5,12 +5,12 @@
 </div>
 
 <picture>
-  <img alt="WikiFlow 桌面端预览" src="./docs/assets/SitePreview.png">
+  <img alt="WikiFlow 桌面端预览" src="https://raw.githubusercontent.com/AlliotTech/hexo-theme-wikiflow/master/docs/assets/SitePreview.png">
 </picture>
 
 <p align="center">
-  <img alt="WikiFlow 移动端预览 1" width="220" src="./docs/assets/mobile1.png">
-  <img alt="WikiFlow 移动端预览 2" width="220" src="./docs/assets/mobile2.png">
+  <img alt="WikiFlow 移动端预览 1" width="220" src="https://raw.githubusercontent.com/AlliotTech/hexo-theme-wikiflow/master/docs/assets/mobile1.png">
+  <img alt="WikiFlow 移动端预览 2" width="220" src="https://raw.githubusercontent.com/AlliotTech/hexo-theme-wikiflow/master/docs/assets/mobile2.png">
 </p>
 
 # WikiFlow
@@ -151,6 +151,12 @@ recent_posts:
   thumbnail: true
 
 footer:
+  license:
+    enable: false
+    name:
+    url:
+    icon:
+  powered_by: true
   beian:
     enable: false
     icp:
@@ -181,8 +187,8 @@ vendors:
 
 plugins:
   gallery: true
-  mathjax: true
-  google_analytics:
+  mathjax: false
+  google_analytics: # GA4 衡量 ID，例如 G-XXXXXXXXXX
   google_site_verification:
 
 comment:
@@ -201,7 +207,9 @@ categories:
 ---
 ```
 
-归档页和最近文章中的缩略图优先读取 `thumbnail`，其次读取 `banner`。文章图库使用 Hexo 的 `photos` front matter 字段。`embed` 脚手架可以通过 `iframe_url` 创建 iframe 页面，也可以读取文章资源目录中的 `embed_page/index.html`。
+MathJax 默认关闭。只需在使用公式的文章或页面 front matter 中设置 `mathjax: true`，即可按页加载；也可以设置 `plugins.mathjax: true` 全站启用。
+
+归档页和最近文章中的缩略图优先读取 `thumbnail`，其次读取 `banner`。如果知道横幅图片的原始尺寸，可以在 front matter 中填写 `banner_width` 和 `banner_height`，提前预留布局空间并减少页面跳动。文章图库使用 Hexo 的 `photos` front matter 字段。`embed` 脚手架可以通过 `iframe_url` 创建 iframe 页面，也可以读取文章资源目录中的 `embed_page/index.html`。
 
 分类 widget 默认使用 `category.mode: external`。WikiFlow 会生成一个带 hash 的 `assets/wikiflow/category-tree.*.json`，再由浏览器渲染侧栏目录树：优先展开当前文章所在分支，其余 DOM 在用户展开目录或点击全部展开时再创建。如需恢复旧版每个页面服务端完整输出目录树的行为，可以设置 `category.mode: full`。
 
@@ -209,12 +217,14 @@ categories:
 
 可选功能统一在 `_config.wikiflow.yml` 中启用。
 
-* `search.insight`：启用本地 Insight 搜索浮层。
+* `search.insight`：启用本地 Insight 搜索浮层；其 JavaScript 与 `content.json` 索引会在首次打开搜索时才加载。
 * `plugins.gallery`：为文章图片启用内置灯箱。
-* `plugins.mathjax`：加载 MathJax，用于数学公式。
+* `plugins.mathjax`：在所有页面加载 MathJax；保持关闭时可使用按页 `mathjax: true`。
+* `plugins.google_analytics`：配置 `G-...` 格式的衡量 ID 后加载 Google Analytics 4。
 * `comment.disqus`：配置 shortname 后加载 Disqus 评论。
 * `share: default`：启用内置分享弹层。
 * `post_history.enable`：为托管在 GitHub/GitLab 风格仓库中的文章显示 Source、Edit 和 History 链接。
+* `footer.license`：按需显示站点内容许可证；WikiFlow 默认不会替站点声明许可证。
 * `footer.beian`：在网站页脚显示 ICP 与公安备案链接。
 
 ### 配置 CDN

@@ -229,6 +229,7 @@
                 var active = tab.getAttribute('data-sidebar-panel') === panelName;
                 tab.classList.toggle('is-active', active);
                 tab.setAttribute('aria-selected', active ? 'true' : 'false');
+                tab.tabIndex = active ? 0 : -1;
             });
 
             widget.querySelectorAll('.sidebar-panel').forEach(function (panel) {
@@ -245,6 +246,29 @@
         tabs.forEach(function (tab) {
             tab.addEventListener('click', function () {
                 activate(closest(tab, '.sidebar-category-panel'), tab.getAttribute('data-sidebar-panel'));
+            });
+            tab.addEventListener('keydown', function (event) {
+                var widget = closest(tab, '.sidebar-category-panel');
+                var widgetTabs = widget ? Array.prototype.slice.call(widget.querySelectorAll('.sidebar-panel-tab')) : [];
+                var currentIndex = widgetTabs.indexOf(tab);
+                var targetIndex;
+
+                if (!widgetTabs.length || currentIndex < 0) return;
+                if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+                    targetIndex = (currentIndex - 1 + widgetTabs.length) % widgetTabs.length;
+                } else if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+                    targetIndex = (currentIndex + 1) % widgetTabs.length;
+                } else if (event.key === 'Home') {
+                    targetIndex = 0;
+                } else if (event.key === 'End') {
+                    targetIndex = widgetTabs.length - 1;
+                } else {
+                    return;
+                }
+
+                event.preventDefault();
+                activate(widget, widgetTabs[targetIndex].getAttribute('data-sidebar-panel'));
+                widgetTabs[targetIndex].focus();
             });
         });
     }
@@ -387,7 +411,8 @@
             update();
         });
         toTop.addEventListener('click', function () {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
         });
     }
 
@@ -411,6 +436,89 @@
             }
             item.insertBefore(checkbox, item.firstChild);
         });
+    }
+
+    function setupInsightSearchLoader() {
+        var config = window.INSIGHT_CONFIG;
+        var main = document.querySelector('.ins-search');
+        var loadingPromise;
+
+        if (!main || !config || !config.SCRIPT_URL) return;
+
+        function detachTriggers() {
+            document.removeEventListener('click', handleClick);
+            document.removeEventListener('focusin', handleFocus);
+        }
+
+        function showLoadError(trigger) {
+            var container = main.querySelector('.ins-section-container');
+            var input = main.querySelector('.ins-search-input');
+            var message = document.createElement('p');
+
+            main.classList.add('show');
+            main.setAttribute('aria-hidden', 'false');
+            message.className = 'ins-empty ins-search-error';
+            message.textContent = config.TRANSLATION && config.TRANSLATION.ERROR || 'Search data is unavailable.';
+            if (container) {
+                container.textContent = '';
+                container.appendChild(message);
+            }
+            if (input) {
+                input.disabled = true;
+                input.focus();
+            }
+            if (trigger) trigger.setAttribute('aria-expanded', 'true');
+        }
+
+        function loadSearch() {
+            if (window.WIKIFLOW_INSIGHT) return Promise.resolve(window.WIKIFLOW_INSIGHT);
+            if (loadingPromise) return loadingPromise;
+
+            loadingPromise = new Promise(function (resolve, reject) {
+                var script = document.createElement('script');
+                script.src = config.SCRIPT_URL;
+                script.async = true;
+                script.addEventListener('load', function () {
+                    if (!window.WIKIFLOW_INSIGHT) {
+                        reject(new Error('Insight search failed to initialize.'));
+                        return;
+                    }
+                    detachTriggers();
+                    resolve(window.WIKIFLOW_INSIGHT);
+                });
+                script.addEventListener('error', function () {
+                    reject(new Error('Insight search script failed to load.'));
+                });
+                document.body.appendChild(script);
+            });
+
+            return loadingPromise;
+        }
+
+        function openSearch(trigger) {
+            loadSearch().then(function (search) {
+                search.open(trigger);
+            }).catch(function () {
+                showLoadError(trigger);
+            });
+        }
+
+        function handleClick(event) {
+            var trigger = event.target.closest('.search-form-input, .search-form-trigger');
+            if (!trigger) return;
+            event.preventDefault();
+            openSearch(trigger);
+        }
+
+        function handleFocus(event) {
+            var trigger = event.target.closest('.search-form-input');
+            if (trigger) openSearch(trigger);
+        }
+
+        document.addEventListener('click', handleClick);
+        document.addEventListener('focusin', handleFocus);
+
+        if (window.location.hash.trim() === '#ins-search') openSearch(null);
     }
 
     function setupCategoryTree() {
@@ -593,11 +701,11 @@
 
         function createDirectory(branch, expanded, renderDescendants) {
             var item = document.createElement('li');
-            var link = document.createElement('a');
+            var link = document.createElement('button');
 
             item.className = 'directory';
             setBranchData(item, branch);
-            link.href = '#';
+            link.type = 'button';
             link.setAttribute('data-role', 'directory');
             link.setAttribute('aria-expanded', 'false');
             link.appendChild(createIcon('fa-solid fa-folder'));
@@ -670,7 +778,7 @@
         }
 
         function setDirectory(directory, expanded) {
-            var link = directory.querySelector(':scope > a[data-role="directory"]');
+            var link = directory.querySelector(':scope > [data-role="directory"]');
             var icon = link && link.querySelector('.fa-solid, .fa-regular, .fa-brands');
 
             directory.classList.toggle('open', expanded);
@@ -693,7 +801,7 @@
         }
 
         categories.addEventListener('click', function (event) {
-            var directoryLink = event.target.closest('a[data-role="directory"]');
+            var directoryLink = event.target.closest('[data-role="directory"]');
             var allExpandLink = event.target.closest('#allExpand');
             var allIcon;
             var shouldExpandAll;
@@ -726,7 +834,7 @@
         });
 
         categories.addEventListener('contextmenu', function (event) {
-            var directoryLink = event.target.closest('a[data-role="directory"]');
+            var directoryLink = event.target.closest('[data-role="directory"]');
 
             if (!directoryLink) return;
             event.preventDefault();
@@ -767,6 +875,7 @@
         setupCodeCopy();
         setupToTop();
         setupTaskLists();
+        setupInsightSearchLoader();
         setupCategoryTree();
     });
 })();

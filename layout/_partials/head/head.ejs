@@ -25,6 +25,11 @@
     %>
     <title><% if (title) { %><%= title %> | <% } %><%= config.title %></title>
     <%
+       var canonicalUrl = full_url_for(page.path || '');
+       var rawDescription = page.description || page.excerpt || config.description || '';
+       var descriptionContent = rawDescription
+           ? strip_html(String(rawDescription)).replace(/\s+/g, ' ').trim()
+           : '';
        var keywords_content = undefined;
        if (page.keywords) {
            keywords_content = page.keywords;
@@ -41,19 +46,53 @@
     <% if (keywords_content) { %>
         <meta name="keywords" content="<%= keywords_content %>" />
     <% } %>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <% if (descriptionContent) { %>
+        <meta name="description" content="<%= descriptionContent %>" />
+    <% } %>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="canonical" href="<%= canonicalUrl %>">
+    <%
+        var prevPath = page.prev_link || (page.prev && page.prev.path);
+        var nextPath = page.next_link || (page.next && page.next.path);
+    %>
+    <% if (prevPath) { %><link rel="prev" href="<%= full_url_for(prevPath) %>"><% } %>
+    <% if (nextPath) { %><link rel="next" href="<%= full_url_for(nextPath) %>"><% } %>
     <%
         var openGraph = theme.open_graph || {};
         var openGraphOptions = openGraph.options || {};
+        var structuredImage = thumbnail(page);
+        var structuredData = {
+            '@context': 'https://schema.org',
+            '@type': is_post() ? 'BlogPosting' : 'WebPage',
+            headline: title || config.title,
+            url: canonicalUrl,
+            mainEntityOfPage: canonicalUrl
+        };
+        if (descriptionContent) structuredData.description = descriptionContent;
+        if (structuredImage) structuredData.image = full_url_for(structuredImage);
+        if (page.date) structuredData.datePublished = date_xml(page.date);
+        if (page.updated) structuredData.dateModified = date_xml(page.updated);
+        if (config.author) structuredData.author = { '@type': 'Person', name: config.author };
+        if (config.title) structuredData.publisher = { '@type': 'Organization', name: config.title };
+        var serializedStructuredData = JSON.stringify(structuredData)
+            .replace(/</g, '\\u003c')
+            .replace(/>/g, '\\u003e')
+            .replace(/&/g, '\\u0026')
+            .replace(/\u2028/g, '\\u2028')
+            .replace(/\u2029/g, '\\u2029');
     %>
     <% if (openGraph.enable !== false) { %>
         <%- open_graph({
-            image:          thumbnail(page),
+            title:          title || config.title,
+            description:    descriptionContent,
+            url:            canonicalUrl,
+            image:          structuredImage,
             fb_app_id:      openGraphOptions.fb_app_id,
             fb_admins:      openGraphOptions.fb_admins,
             twitter_id:     openGraphOptions.twitter_id,
         }) %>
     <% } %>
+    <script type="application/ld+json"><%- serializedStructuredData %></script>
     <%- meta(page) %>
 
     <% if (theme.social && theme.social.rss) { %>

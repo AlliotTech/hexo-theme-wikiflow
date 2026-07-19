@@ -75,6 +75,43 @@ const scenarios = [
     browser: false
   },
   {
+    name: 'mathjax-page-opt-in',
+    configPatch: config => config.replace('    mathjax: true', '    mathjax: false'),
+    prepare: async tmpRoot => {
+      const postPath = path.join(tmpRoot, 'source', '_posts', 'guide', 'first-note.md');
+      const post = await fs.promises.readFile(postPath, 'utf8');
+      await fs.promises.writeFile(postPath, post.replace('comments: true', 'comments: true\nmathjax: true'));
+    },
+    verifyGenerated: async tmpRoot => {
+      const postHtml = await fs.promises.readFile(path.join(tmpRoot, 'public', 'wiki', 'guide', 'first-note', 'index.html'), 'utf8');
+      const aboutHtml = await fs.promises.readFile(path.join(tmpRoot, 'public', 'about', 'index.html'), 'utf8');
+      if (!postHtml.includes('id="MathJax-script"') || aboutHtml.includes('id="MathJax-script"')) {
+        throw new Error('Page-level MathJax opt-in did not isolate the vendor script to the requested page.');
+      }
+    },
+    browser: false
+  },
+  {
+    name: 'third-party-integrations',
+    configPatch: config => config
+      .replace('    disqus:', '    disqus: wikiflow-test')
+      .replace('    google_analytics:', '    google_analytics: G-WIKIFLOW1'),
+    expectHtml: {
+      includes: [
+        'src="/js/analytics.js" data-measurement-id="G-WIKIFLOW1"',
+        'https://www.googletagmanager.com/gtag/js?id=G-WIKIFLOW1',
+        'src="/js/disqus.js"',
+        'data-shortname="wikiflow-test"',
+        'data-page-identifier="guide/first-note"'
+      ],
+      excludes: [
+        'https://www.google-analytics.com/analytics.js',
+        "this.page.identifier = '"
+      ]
+    },
+    browser: false
+  },
+  {
     name: 'custom-archive-dir',
     archiveDir: 'records',
     configPatch: config => config.replace('archive_dir: archives', 'archive_dir: records'),
@@ -247,6 +284,11 @@ const scenarios = [
       [
         '  favicon: /css/images/favicon.ico',
         '  footer:',
+        '    license:',
+        '      enable: true',
+        '      name: Example License',
+        '      url: https://example.com/license',
+        '      icon: /css/images/favicon.ico',
         '    beian:',
         '      enable: true',
         '      icp: 京ICP备12345678号-1',
@@ -263,7 +305,9 @@ const scenarios = [
         'href="https://beian.mps.gov.cn/#/query/webSearch?code=11000002000001" target="_blank" rel="noopener noreferrer nofollow"',
         '京公网安备11000002000001号',
         'class="beian-gongan"',
-        'src="/css/images/favicon.ico"'
+        'src="/css/images/favicon.ico"',
+        'rel="license" href="https://example.com/license"',
+        'Example License'
       ]
     },
     expectCss: {
@@ -524,6 +568,9 @@ async function verifyGeneratedHtml(scenario, tmpRoot) {
   const tocDisabledHtml = await fs.promises.readFile(tocDisabledHtmlPath, 'utf8');
   const categoryMode = scenario.categoryMode || 'external';
   const genericIncludes = [
+    '<link rel="canonical" href="https://example.com/wiki/guide/first-note/">',
+    '<meta name="description" content="',
+    '<script type="application/ld+json">',
     '<button id="profile-anchor" type="button" aria-controls="profile" aria-expanded="false"',
     '<img id="avatar" src="/css/images/logo.png" alt="WikiFlow" />',
     'sidebar-category-panel sidebar-panel-active-categories',
@@ -536,6 +583,7 @@ async function verifyGeneratedHtml(scenario, tmpRoot) {
     'loading="lazy" decoding="async"'
   ];
   const genericExcludes = [
+    'maximum-scale=1',
     'href="javascript:;"',
     'MathJax.Hub.Config',
     'text/x-mathjax-config',
@@ -792,7 +840,8 @@ async function verifyBrowserRuntime(scenario) {
       };
     });
 
-    await page.click('.sidebar-panel-tab[data-sidebar-panel="outline"]');
+    await page.focus('.sidebar-panel-tab[data-sidebar-panel="categories"]');
+    await page.keyboard.press('ArrowRight');
     await page.waitForFunction(() => {
       const outline = document.querySelector('#categories-outline-body');
       if (!outline) return false;
@@ -824,7 +873,7 @@ async function verifyBrowserRuntime(scenario) {
       };
     });
 
-    await page.click('.sidebar-panel-tab[data-sidebar-panel="categories"]');
+    await page.keyboard.press('ArrowLeft');
     await page.waitForFunction(() => {
       const categories = document.querySelector('#categories-body');
       if (!categories) return false;
@@ -931,11 +980,39 @@ async function verifyBrowserRuntime(scenario) {
         message.includes('TypeError');
     });
 
+    let searchSuccess = null;
     let searchFailure = null;
     if (scenario.name === 'default') {
+      const successPage = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+      let successContentRequests = 0;
+      successPage.on('request', request => {
+        if (new URL(request.url()).pathname.endsWith('/content.json')) successContentRequests += 1;
+      });
+      await successPage.goto(`http://127.0.0.1:${port}/wiki/guide/first-note/`, { waitUntil: 'domcontentloaded' });
+      await successPage.waitForTimeout(300);
+      const successRequestsBeforeOpen = successContentRequests;
+      await successPage.click('.search-form-trigger');
+      await successPage.waitForFunction(() => {
+        const search = document.querySelector('.ins-search');
+        return !!window.WIKIFLOW_INSIGHT && search && !search.hasAttribute('aria-busy');
+      });
+      await successPage.fill('.ins-search-input', 'Overview');
+      await successPage.waitForSelector('.ins-search-item');
+      searchSuccess = await successPage.evaluate(() => ({
+        visible: document.querySelector('.ins-search')?.classList.contains('show') || false,
+        resultText: document.querySelector('.ins-search-item')?.textContent.trim() || ''
+      }));
+      searchSuccess.requestsBeforeOpen = successRequestsBeforeOpen;
+      searchSuccess.requestsAfterOpen = successContentRequests;
+      await successPage.close();
+
       const searchPage = await browser.newPage({ viewport: { width: 1280, height: 900 } });
       const searchErrors = [];
+      let contentRequests = 0;
       searchPage.on('pageerror', error => searchErrors.push(error.message));
+      searchPage.on('request', request => {
+        if (new URL(request.url()).pathname.endsWith('/content.json')) contentRequests += 1;
+      });
       await searchPage.route('**/content.json', route => route.fulfill({
         status: 503,
         contentType: 'application/json',
@@ -943,10 +1020,15 @@ async function verifyBrowserRuntime(scenario) {
       }));
       await searchPage.goto(`http://127.0.0.1:${port}/wiki/guide/first-note/`, { waitUntil: 'domcontentloaded' });
       await searchPage.waitForTimeout(300);
+      const requestsBeforeOpen = contentRequests;
+      await searchPage.click('.search-form-trigger');
+      await searchPage.waitForSelector('.ins-search-error');
       searchFailure = await searchPage.evaluate(() => ({
         message: document.querySelector('.ins-search-error')?.textContent.trim() || '',
         inputDisabled: !!document.querySelector('.ins-search-input')?.disabled
       }));
+      searchFailure.requestsBeforeOpen = requestsBeforeOpen;
+      searchFailure.requestsAfterOpen = contentRequests;
       searchFailure.errors = searchErrors;
       await searchPage.close();
     }
@@ -1011,7 +1093,19 @@ async function verifyBrowserRuntime(scenario) {
       embedLayout.hasSidebar ||
       !embedLayout.hasIframe ||
       embedErrors.length ||
-      (searchFailure && (!searchFailure.message || !searchFailure.inputDisabled || searchFailure.errors.length)) ||
+      (searchFailure && (
+        searchFailure.requestsBeforeOpen !== 0 ||
+        searchFailure.requestsAfterOpen !== 1 ||
+        !searchFailure.message ||
+        !searchFailure.inputDisabled ||
+        searchFailure.errors.length
+      )) ||
+      (searchSuccess && (
+        searchSuccess.requestsBeforeOpen !== 0 ||
+        searchSuccess.requestsAfterOpen !== 1 ||
+        !searchSuccess.visible ||
+        !searchSuccess.resultText
+      )) ||
       runtimeErrors.length ||
       failedResponses.length) {
       throw new Error(`Browser fixture verification failed:\n${JSON.stringify({
@@ -1026,6 +1120,7 @@ async function verifyBrowserRuntime(scenario) {
         lightboxFocusReturned,
         embedLayout,
         embedErrors,
+        searchSuccess,
         searchFailure,
         messages,
         failedResponses
