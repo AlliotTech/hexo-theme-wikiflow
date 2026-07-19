@@ -24,9 +24,14 @@
         <% } %>
         <%- partial('_partials/post/gallery', { post: post }) %>
         <% var excerpt = index ? wikiflow_post_excerpt(post) : ''; %>
+        <% var excerptIsDescription = excerpt && !post.excerpt && post.description; %>
         <div class="article-entry" itemprop="articleBody">
         <% if (excerpt) { %>
-            <p><%- excerpt %></p>
+            <% if (excerptIsDescription) { %>
+                <p><%= excerpt %></p>
+            <% } else { %>
+                <%- excerpt %>
+            <% } %>
         <% } else if (!index) { %>
             <%- partial('_partials/post/toc', { post: post, variant: 'mobile' }) %>
         <% } %>
@@ -37,8 +42,10 @@
         <%- wikiflow_inject('postBodyEnd') %>
         </div>
         <% if (excerpt) { %>
+            <% var hasMoreAnchor = String(post.content || '').indexOf('id="more"') !== -1; %>
+            <% var moreUrl = url_for(post.path) + (hasMoreAnchor ? '#more' : ''); %>
             <div class="article-more-link">
-                <a href="<%= url_for(post.path) %>#more"><%= __('article.more') %></a>
+                <a href="<%= moreUrl %>"><%= __('article.more') %></a>
             </div>
         <% } %>
         <% if (typeof showNav !== 'undefined' && showNav) { %>

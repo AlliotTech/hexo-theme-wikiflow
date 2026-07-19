@@ -1,6 +1,7 @@
 <%
     var configuredLanguage = Array.isArray(config.language) ? config.language[0] : config.language;
-    var htmlLanguage = configuredLanguage ? String(configuredLanguage).replace('_', '-') : '';
+    var currentLanguage = page.lang || page.language || configuredLanguage;
+    var htmlLanguage = currentLanguage ? String(currentLanguage).replace(/_/g, '-') : '';
 %>
 <!DOCTYPE html>
 <html<% if (htmlLanguage) { %> lang="<%= htmlLanguage %>"<% } %><%- theme.plugins && theme.plugins.gallery === false ? ' data-gallery-disabled' : '' %>>

@@ -238,7 +238,11 @@
             }
         });
         if (!hasResults && keywordArray.length) {
-            container.appendChild(createElement('p', 'ins-empty', 'No results. Try fewer or different keywords.'));
+            container.appendChild(createElement(
+                'p',
+                'ins-empty',
+                CONFIG.TRANSLATION.EMPTY || 'No results. Try fewer or different keywords.'
+            ));
         }
     }
 
@@ -252,6 +256,16 @@
             }
             searchResultToDOM(keywordArray, search(json, keywordArray));
         }, 160);
+    }
+
+    function showSearchError() {
+        while (container.firstChild) container.removeChild(container.firstChild);
+        container.appendChild(createElement(
+            'p',
+            'ins-empty ins-search-error',
+            CONFIG.TRANSLATION.ERROR || 'Search data is unavailable.'
+        ));
+        input.disabled = true;
     }
 
     function scrollToItem(item) {
@@ -294,13 +308,20 @@
     }
 
     fetch(CONFIG.CONTENT_URL)
-        .then(function (response) { return response.json(); })
+        .then(function (response) {
+            if (!response.ok) throw new Error('Insight search data request failed.');
+            return response.json();
+        })
         .then(function (json) {
             if (window.location.hash.trim() === '#ins-search') openSearch();
             input.addEventListener('input', function () {
                 scheduleSearch(json);
             });
             searchResultToDOM([], {});
+        })
+        .catch(function () {
+            showSearchError();
+            if (window.location.hash.trim() === '#ins-search') openSearch();
         });
 
     document.addEventListener('click', function (event) {

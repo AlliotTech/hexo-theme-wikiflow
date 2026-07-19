@@ -1,4 +1,4 @@
-<a data-url="<%= post.permalink %>" data-id="<%= post._id %>" class="article-share-link"><i class="fa-solid fa-share"></i><%=__('article.share')%></a>
+<button type="button" data-url="<%= post.permalink %>" data-id="<%= post._id %>" class="article-share-link" aria-label="<%= __('article.share') %>" aria-expanded="false"><i class="fa-solid fa-share"></i><%=__('article.share')%></button>
 <script>
     (function () {
         if (window.__SHARE_BUTTON_BINDED__) return;
@@ -8,6 +8,9 @@
             document.querySelectorAll('.article-share-box.on').forEach(function (box) {
                 box.classList.remove('on');
                 box.style.display = '';
+            });
+            document.querySelectorAll('.article-share-link[aria-expanded="true"]').forEach(function (button) {
+                button.setAttribute('aria-expanded', 'false');
             });
         }
 
@@ -29,6 +32,7 @@
 
             box.id = id;
             box.className = 'article-share-box';
+            box.setAttribute('role', 'dialog');
             input.className = 'article-share-input';
             input.value = url;
             links.className = 'article-share-links';
@@ -58,6 +62,7 @@
 
                 if (box && box.classList.contains('on')) {
                     box.classList.remove('on');
+                    shareLink.setAttribute('aria-expanded', 'false');
                     return;
                 }
 
@@ -66,6 +71,8 @@
                 }
 
                 closeShareBoxes();
+                shareLink.setAttribute('aria-controls', id);
+                shareLink.setAttribute('aria-expanded', 'true');
                 box.style.top = window.scrollY + offset.top + 25 + 'px';
                 box.style.left = window.scrollX + offset.left + 'px';
                 box.classList.add('on');

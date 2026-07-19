@@ -42,12 +42,106 @@ const scenarios = [
     ),
     expectHtml: {
       includes: [
-        '<html lang="zh-CN"'
+        '<html lang="zh-CN"',
+        '跳到主要内容',
+        'aria-label="菜单"',
+        'aria-label="关闭搜索"'
       ]
     },
     browser: {
       galleryEnabled: true
     }
+  },
+  {
+    name: 'page-language',
+    configPatch: config => config.replace(
+      'language: en',
+      ['language:', '  - en', '  - zh-CN'].join('\n')
+    ),
+    prepare: async tmpRoot => {
+      const pageDir = path.join(tmpRoot, 'source', 'zh-page');
+      await fs.promises.mkdir(pageDir, { recursive: true });
+      await fs.promises.writeFile(
+        path.join(pageDir, 'index.md'),
+        '---\ntitle: 中文页面\nlang: zh-CN\nlayout: page\n---\n正文。\n'
+      );
+    },
+    verifyGenerated: async tmpRoot => {
+      const html = await fs.promises.readFile(path.join(tmpRoot, 'public', 'zh-page', 'index.html'), 'utf8');
+      if (!html.includes('<html lang="zh-CN"')) {
+        throw new Error('Page-level language was not reflected in the html lang attribute.');
+      }
+    },
+    browser: false
+  },
+  {
+    name: 'custom-archive-dir',
+    archiveDir: 'records',
+    configPatch: config => config.replace('archive_dir: archives', 'archive_dir: records'),
+    verifyGenerated: async tmpRoot => {
+      const html = await fs.promises.readFile(path.join(tmpRoot, 'public', 'records', 'index.html'), 'utf8');
+      if (!html.includes('href="/records/2026/"') || html.includes('href="/archives/2026/"')) {
+        throw new Error('Archive timeline links do not respect archive_dir.');
+      }
+    },
+    browser: false
+  },
+  {
+    name: 'home-index-pagination',
+    skipIndexListAssertions: true,
+    configPatch: config => config.replace('    index_file:', '    index_file: index.md'),
+    prepare: async tmpRoot => {
+      const postsDir = path.join(tmpRoot, 'source', '_posts');
+      await fs.promises.writeFile(
+        path.join(postsDir, 'index.md'),
+        '---\ntitle: Pinned Home Article\ndate: 2026-03-30 00:00:00\n---\nPinned body.\n'
+      );
+      for (let index = 1; index <= 10; index++) {
+        const day = String(index).padStart(2, '0');
+        await fs.promises.writeFile(
+          path.join(postsDir, `extra-${index}.md`),
+          `---\ntitle: Extra Post ${index}\ndate: 2026-03-${day} 00:00:00\n---\nExtra body.\n`
+        );
+      }
+    },
+    verifyGenerated: async tmpRoot => {
+      const html = await fs.promises.readFile(path.join(tmpRoot, 'public', 'page', '2', 'index.html'), 'utf8');
+      const articleIds = Array.from(html.matchAll(/<article id="([^"]+)"/g), match => match[1]);
+      if (articleIds.includes('post-index') || !articleIds.length || !html.includes('id="page-nav"')) {
+        throw new Error(`Pinned home article replaced paginated posts: ${articleIds.join(', ')}`);
+      }
+    },
+    browser: false
+  },
+  {
+    name: 'archive-month-counts',
+    configPatch: config => config.replace(
+      'archive_generator:\n  per_page: 10',
+      'archive_generator:\n  per_page: 5'
+    ),
+    prepare: async tmpRoot => {
+      const postsDir = path.join(tmpRoot, 'source', '_posts');
+      for (let index = 1; index <= 8; index++) {
+        await fs.promises.writeFile(
+          path.join(postsDir, `january-extra-${index}.md`),
+          `---\ntitle: January Extra ${index}\ndate: 2026-01-${String(index + 10).padStart(2, '0')} 00:00:00\n---\nBody.\n`
+        );
+      }
+    },
+    verifyGenerated: async tmpRoot => {
+      const pagePaths = [
+        path.join(tmpRoot, 'public', 'archives', 'index.html'),
+        path.join(tmpRoot, 'public', 'archives', 'page', '2', 'index.html')
+      ];
+      for (const pagePath of pagePaths) {
+        const html = await fs.promises.readFile(pagePath, 'utf8');
+        const match = html.match(/href="\/archives\/2026\/01\/">2026-01<\/a><span class="archive-list-count">(\d+)<\/span>/);
+        if (!match || Number(match[1]) !== 9) {
+          throw new Error(`Archive month count was not site-wide in ${pagePath}: ${match && match[1]}`);
+        }
+      }
+    },
+    browser: false
   },
   {
     name: 'category-full',
@@ -303,14 +397,16 @@ async function verifyScenario(scenario) {
   await hexo.call('generate');
   await hexo.exit();
 
+  const archiveDir = scenario.archiveDir || 'archives';
   const expectedFiles = [
     'index.html',
-    'archives/index.html',
+    `${archiveDir}/index.html`,
     'categories/index.html',
     'tags/index.html',
     'wiki/guide/first-note/index.html',
     'wiki/reference/second-note/index.html',
     'about/index.html',
+    'embed/index.html',
     'content.json',
     'css/style.css'
   ];
@@ -326,6 +422,7 @@ async function verifyScenario(scenario) {
   await verifyAllGeneratedHtml(scenario, tmpRoot);
   await verifySmokeHtml(scenario, tmpRoot);
   await verifyGeneratedCss(scenario, tmpRoot);
+  if (scenario.verifyGenerated) await scenario.verifyGenerated(tmpRoot);
 
   if (browserMode && scenario.browser !== false) {
     await verifyBrowserRuntime(scenario);
@@ -422,6 +519,7 @@ async function verifySmokeHtml(scenario, tmpRoot) {
 async function verifyGeneratedHtml(scenario, tmpRoot) {
   const htmlPath = path.join(tmpRoot, 'public', 'wiki', 'guide', 'first-note', 'index.html');
   const html = await fs.promises.readFile(htmlPath, 'utf8');
+  const indexHtml = await fs.promises.readFile(path.join(tmpRoot, 'public', 'index.html'), 'utf8');
   const tocDisabledHtmlPath = path.join(tmpRoot, 'public', 'wiki', 'reference', 'second-note', 'index.html');
   const tocDisabledHtml = await fs.promises.readFile(tocDisabledHtmlPath, 'utf8');
   const categoryMode = scenario.categoryMode || 'external';
@@ -442,14 +540,16 @@ async function verifyGeneratedHtml(scenario, tmpRoot) {
     'MathJax.Hub.Config',
     'text/x-mathjax-config',
     'fa fa-',
-    '<span style="background-image:url('
+    '<span style="background-image:url(',
+    '<p><h'
   ];
   const tocDisabledExcludes = [
     'id="categories-outline-body"',
     'data-sidebar-panel="outline"',
     'sidebar-category-panel',
     'class="post-toc post-toc-sidebar widget-wrap"',
-    'class="post-toc post-toc-mobile"'
+    'class="post-toc post-toc-mobile"',
+    '<a href="/wiki/reference/second-note/#more">Read More</a>'
   ];
   const categoryModeIncludes = categoryMode === 'full'
     ? [
@@ -473,12 +573,18 @@ async function verifyGeneratedHtml(scenario, tmpRoot) {
   const missing = includes.filter(fragment => !html.includes(fragment));
   const unexpected = excludes.filter(fragment => html.includes(fragment));
   const unexpectedTocDisabled = tocDisabledExcludes.filter(fragment => tocDisabledHtml.includes(fragment));
+  const invalidIndexExcerpt = indexHtml.includes('<p><h');
+  const descriptionMoreLink = indexHtml.match(/<div class="article-more-link">[\s\S]*?<a href="([^"]+)"/);
+  const invalidDescriptionMoreLink = !scenario.skipIndexListAssertions &&
+    (!descriptionMoreLink || descriptionMoreLink[1] !== '/wiki/reference/second-note/');
 
-  if (missing.length || unexpected.length || unexpectedTocDisabled.length) {
+  if (missing.length || unexpected.length || unexpectedTocDisabled.length || invalidIndexExcerpt || invalidDescriptionMoreLink) {
     throw new Error(`HTML expectation failed for ${scenario.name}:\n${JSON.stringify({
       missing,
       unexpected,
-      unexpectedTocDisabled
+      unexpectedTocDisabled,
+      invalidIndexExcerpt,
+      descriptionMoreHref: descriptionMoreLink && descriptionMoreLink[1]
     }, null, 2)}`);
   }
 }
@@ -801,8 +907,49 @@ async function verifyBrowserRuntime(scenario) {
       rootGalleryDisabled: document.documentElement.hasAttribute('data-gallery-disabled'),
       visibleGallery: !!document.querySelector('.wikiflow-lightbox.is-open'),
       closeButton: !!document.querySelector('.wikiflow-lightbox-close'),
-      activeImage: !!document.querySelector('.wikiflow-lightbox-image[src]')
+      activeImage: !!document.querySelector('.wikiflow-lightbox-image[src]'),
+      closeButtonFocused: document.activeElement?.classList.contains('wikiflow-lightbox-close') || false
     }));
+
+    let lightboxFocusReturned = true;
+    if (scenario.browser.galleryEnabled) {
+      await page.keyboard.press('Escape');
+      lightboxFocusReturned = await page.evaluate(() => document.activeElement?.classList.contains('gallery-item') || false);
+    }
+
+    const embedMessageStart = messages.length;
+    await page.goto(`http://127.0.0.1:${port}/embed/`, { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(100);
+    const embedLayout = await page.evaluate(() => ({
+      hasProfile: !!document.querySelector('#profile'),
+      hasSidebar: !!document.querySelector('#sidebar'),
+      hasIframe: !!document.querySelector('#embed_iframe')
+    }));
+    const embedErrors = messages.slice(embedMessageStart).filter(message => {
+      return message.startsWith('pageerror') ||
+        message.includes('ReferenceError') ||
+        message.includes('TypeError');
+    });
+
+    let searchFailure = null;
+    if (scenario.name === 'default') {
+      const searchPage = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+      const searchErrors = [];
+      searchPage.on('pageerror', error => searchErrors.push(error.message));
+      await searchPage.route('**/content.json', route => route.fulfill({
+        status: 503,
+        contentType: 'application/json',
+        body: '{}'
+      }));
+      await searchPage.goto(`http://127.0.0.1:${port}/wiki/guide/first-note/`, { waitUntil: 'domcontentloaded' });
+      await searchPage.waitForTimeout(300);
+      searchFailure = await searchPage.evaluate(() => ({
+        message: document.querySelector('.ins-search-error')?.textContent.trim() || '',
+        inputDisabled: !!document.querySelector('.ins-search-input')?.disabled
+      }));
+      searchFailure.errors = searchErrors;
+      await searchPage.close();
+    }
 
     const runtimeErrors = messages.filter(message => {
       return message.startsWith('pageerror') ||
@@ -858,8 +1005,13 @@ async function verifyBrowserRuntime(scenario) {
       mobileLayout.gapCategoriesToArticle > 80 ||
       !mobileLayout.otherWidgetsAfterArticle ||
       lightbox.rootGalleryDisabled !== !scenario.browser.galleryEnabled ||
-      (scenario.browser.galleryEnabled && (!lightbox.visibleGallery || !lightbox.closeButton || !lightbox.activeImage)) ||
+      (scenario.browser.galleryEnabled && (!lightbox.visibleGallery || !lightbox.closeButton || !lightbox.activeImage || !lightbox.closeButtonFocused || !lightboxFocusReturned)) ||
       (!scenario.browser.galleryEnabled && (lightbox.visibleGallery || lightbox.closeButton || lightbox.activeImage)) ||
+      embedLayout.hasProfile ||
+      embedLayout.hasSidebar ||
+      !embedLayout.hasIframe ||
+      embedErrors.length ||
+      (searchFailure && (!searchFailure.message || !searchFailure.inputDisabled || searchFailure.errors.length)) ||
       runtimeErrors.length ||
       failedResponses.length) {
       throw new Error(`Browser fixture verification failed:\n${JSON.stringify({
@@ -871,6 +1023,10 @@ async function verifyBrowserRuntime(scenario) {
         categoryReturnLayout,
         mobileLayout,
         lightbox,
+        lightboxFocusReturned,
+        embedLayout,
+        embedErrors,
+        searchFailure,
         messages,
         failedResponses
       }, null, 2)}`);

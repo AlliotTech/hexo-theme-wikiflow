@@ -53,6 +53,33 @@ test('configureHighlight uses highlight.js theme CSS without writing generated f
     }
 });
 
+test('configureHighlight does not treat PrismJS as highlight.js', () => {
+    const hexo = {
+        config: {
+            highlight: { enable: true },
+            syntax_highlighter: 'prismjs'
+        },
+        log: {
+            warn() {}
+        },
+        theme: {
+            config: {
+                codeblock: {
+                    theme: {
+                        light: 'github',
+                        dark: ''
+                    }
+                }
+            }
+        }
+    };
+
+    configureHighlight(hexo);
+
+    assert.equal(hexo.theme.config.highlight.enable, false);
+    assert.equal(Object.prototype.hasOwnProperty.call(hexo.config.highlight, 'hljs'), false);
+});
+
 test('parseColor handles hex and rgb colors', () => {
     assert.deepEqual(parseColor('#abc'), { red: 170, green: 187, blue: 204 });
     assert.deepEqual(parseColor('rgb(1, 2, 3)'), { red: 1, green: 2, blue: 3 });

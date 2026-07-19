@@ -40,3 +40,12 @@ test('media templates provide accessible image and iframe text alternatives', ()
     assert.doesNotMatch(thumbnail, /<span[\s\S]*?alt=/u);
     assert.match(iframe, /<iframe[\s\S]*?title=/u);
 });
+
+test('clickable theme actions use native buttons', () => {
+    const share = fs.readFileSync(path.join(layoutRoot, '_third-party/share/default.ejs'), 'utf8');
+    const sidebar = fs.readFileSync(path.join(layoutRoot, '_partials/sidebar.ejs'), 'utf8');
+
+    assert.match(share, /^<button[^\n]*class="article-share-link"/u);
+    assert.doesNotMatch(share, /<a[^>]*class="article-share-link"/u);
+    assert.match(sidebar, /<button[^>]*id="toTop"/u);
+});

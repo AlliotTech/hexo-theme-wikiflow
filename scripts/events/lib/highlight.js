@@ -153,8 +153,13 @@ function resolveHighlightTheme(hexo, name) {
 
 function shouldUseHighlight(hexo) {
     const highlightConfig = hexo.config.highlight || {};
-    return hexo.config.syntax_highlighter === 'highlight.js' ||
-        highlightConfig.enable !== false;
+    const syntaxHighlighter = hexo.config.syntax_highlighter;
+
+    if (syntaxHighlighter !== undefined && syntaxHighlighter !== null && syntaxHighlighter !== '') {
+        return syntaxHighlighter === 'highlight.js';
+    }
+
+    return highlightConfig.enable !== false;
 }
 
 function configureHighlight(hexo) {

@@ -23,7 +23,7 @@
                 <span class="site-title"><%= config.title %></span>
             </a>
             <% if (menuKeys.length) { %>
-                <nav id="main-nav" aria-label="Primary">
+                <nav id="main-nav" aria-label="<%= __('nav.primary') %>">
                     <% menuKeys.forEach(function (name) { %>
                         <a class="<%= navClass(name) %>" href="<%= url_for(menu[name]) %>"><%= name %></a>
                     <% }); %>
@@ -42,22 +42,22 @@
                 <% } %>
                 <%- partial('_partials/search/index') %>
                 <% if (menuKeys.length) { %>
-                    <button id="mobile-menu-trigger" class="mobile-menu-trigger" type="button" aria-controls="mobile-menu-panel" aria-expanded="false" aria-label="Menu" title="Menu"></button>
+                    <button id="mobile-menu-trigger" class="mobile-menu-trigger" type="button" aria-controls="mobile-menu-panel" aria-expanded="false" aria-label="<%= __('nav.menu') %>" title="<%= __('nav.menu') %>"></button>
                 <% } %>
             </div>
         </div>
     </div>
     <% if (menuKeys.length) { %>
         <div id="main-nav-mobile" class="header-sub header-inner">
-            <nav class="outer mobile-menu mobile-menu-primary" aria-label="Mobile primary">
+            <nav class="outer mobile-menu mobile-menu-primary" aria-label="<%= __('nav.mobile_primary') %>">
                 <% mobilePrimaryKeys.forEach(function (name) { %>
                     <a class="<%= navClass(name) %>" href="<%= url_for(menu[name]) %>"><%= name %></a>
                 <% }); %>
             </nav>
         </div>
         <div id="mobile-menu-panel" class="mobile-menu-panel" hidden>
-            <nav class="outer mobile-menu-drawer" aria-label="Mobile menu">
-                <span class="mobile-menu-heading">Topics</span>
+            <nav class="outer mobile-menu-drawer" aria-label="<%= __('nav.mobile_menu') %>">
+                <span class="mobile-menu-heading"><%= __('nav.topics') %></span>
                 <div class="mobile-menu-list">
                     <% menuKeys.forEach(function (name) { %>
                         <a class="<%= navClass(name) %>" href="<%= url_for(menu[name]) %>"><%= name %></a>

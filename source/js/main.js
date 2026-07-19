@@ -1,6 +1,12 @@
 (function () {
     'use strict';
 
+    var ui = window.WIKIFLOW_UI || {};
+
+    function uiText(key, fallback) {
+        return ui[key] || fallback;
+    }
+
     function ready(callback) {
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', callback);
@@ -51,9 +57,11 @@
 
         lightbox.className = 'wikiflow-lightbox';
         lightbox.setAttribute('aria-hidden', 'true');
+        lightbox.setAttribute('role', 'dialog');
+        lightbox.setAttribute('aria-modal', 'true');
         closeButton.type = 'button';
         closeButton.className = 'wikiflow-lightbox-close';
-        closeButton.setAttribute('aria-label', 'Close image');
+        closeButton.setAttribute('aria-label', uiText('CLOSE_IMAGE', 'Close image'));
         closeButton.textContent = String.fromCharCode(215);
         image.className = 'wikiflow-lightbox-image';
         image.alt = '';
@@ -72,12 +80,15 @@
         var lightbox = createLightbox();
         var image = lightbox.querySelector('.wikiflow-lightbox-image');
         var caption = lightbox.querySelector('.wikiflow-lightbox-caption');
+        var closeButton = lightbox.querySelector('.wikiflow-lightbox-close');
+        var lastTrigger = null;
 
         function close() {
             lightbox.classList.remove('is-open');
             lightbox.setAttribute('aria-hidden', 'true');
             image.removeAttribute('src');
             document.body.classList.remove('wikiflow-lightbox-open');
+            if (lastTrigger) lastTrigger.focus();
         }
 
         document.addEventListener('click', function (event) {
@@ -85,6 +96,7 @@
             if (!trigger) return;
             event.preventDefault();
 
+            lastTrigger = trigger;
             var triggerImage = trigger.querySelector('img');
             image.src = trigger.href;
             image.alt = triggerImage ? triggerImage.alt : '';
@@ -93,6 +105,7 @@
             lightbox.classList.add('is-open');
             lightbox.setAttribute('aria-hidden', 'false');
             document.body.classList.add('wikiflow-lightbox-open');
+            closeButton.focus();
         });
 
         lightbox.addEventListener('click', function (event) {
@@ -103,6 +116,10 @@
 
         document.addEventListener('keydown', function (event) {
             if (event.key === 'Escape' && lightbox.classList.contains('is-open')) close();
+            if (event.key === 'Tab' && lightbox.classList.contains('is-open')) {
+                event.preventDefault();
+                closeButton.focus();
+            }
         });
     }
 
@@ -320,7 +337,7 @@
             icon = createCopyIcon('fa-solid fa-copy fa-fw');
             button.type = 'button';
             button.className = 'copy-btn';
-            button.setAttribute('aria-label', 'Copy code');
+            button.setAttribute('aria-label', uiText('COPY_CODE', 'Copy code'));
             button.appendChild(icon);
             status.className = 'code-copy-status';
             status.id = 'code-copy-status-' + index;
@@ -332,14 +349,14 @@
             button.addEventListener('click', function () {
                 copyText(codeTextFromBlock(block)).then(function () {
                     setCopyState(button, 'fa-solid fa-circle-check fa-fw');
-                    status.textContent = 'Code copied';
+                    status.textContent = uiText('CODE_COPIED', 'Code copied');
                     window.setTimeout(function () {
                         setCopyState(button, 'fa-solid fa-copy fa-fw');
                         status.textContent = '';
                     }, 1800);
                 }).catch(function () {
                     setCopyState(button, 'fa-solid fa-circle-xmark fa-fw');
-                    status.textContent = 'Copy failed';
+                    status.textContent = uiText('COPY_FAILED', 'Copy failed');
                     window.setTimeout(function () {
                         setCopyState(button, 'fa-solid fa-copy fa-fw');
                         status.textContent = '';

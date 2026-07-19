@@ -10,9 +10,6 @@ var tags = tagSource.filter(function(tag) { return tag.length; }).sort(function(
     </div>
     <div class="layout-wrap-inner tag-index-inner">
         <% if (tags.length) { %>
-            <% if (tags.length < 3) { %>
-                <p class="layout-empty">Only <%= tags.length %> tag<%= tags.length === 1 ? '' : 's' %> available.</p>
-            <% } %>
             <ul class="tag-index-list">
                 <% tags.forEach(function(tag) { %>
                     <li>
@@ -24,7 +21,7 @@ var tags = tagSource.filter(function(tag) { return tag.length; }).sort(function(
                 <% }); %>
             </ul>
         <% } else { %>
-            <p class="layout-empty">No tags yet.</p>
+            <p class="layout-empty"><%= __('layout.no_tags') %></p>
         <% } %>
     </div>
 </section>

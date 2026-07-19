@@ -3,7 +3,7 @@
     <div class="ins-search-container" role="dialog" aria-modal="true" aria-label="<%= __('index.search') %>">
         <div class="ins-input-wrapper">
             <input type="text" class="ins-search-input" placeholder="<%= __('insight.hint') %>" aria-label="<%= __('index.search') %>" />
-            <button type="button" class="ins-close ins-selectable" aria-label="Close search"><i class="fa-solid fa-circle-xmark"></i></button>
+            <button type="button" class="ins-close ins-selectable" aria-label="<%= __('insight.close') %>"><i class="fa-solid fa-circle-xmark"></i></button>
         </div>
         <div class="ins-section-wrapper">
             <div class="ins-section-container"></div>
@@ -17,7 +17,9 @@
             PAGES: __('insight.pages'),
             CATEGORIES: __('insight.categories'),
             TAGS: __('insight.tags'),
-            UNTITLED: __('insight.untitled')
+            UNTITLED: __('insight.untitled'),
+            EMPTY: __('insight.empty'),
+            ERROR: __('insight.error')
         },
         ROOT_URL: config.root || '/',
         CONTENT_URL: url_for('/content.json')

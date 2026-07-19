@@ -33,7 +33,7 @@
   "scripts": {
     "hexo": "hexo",
     "clean": "hexo clean",
-    "build": "hexo generate",
+    "build": "node tools/verify-hexo8-site.js",
     "server": "hexo server",
     "lint": "npm run lint:js && npm run lint:styles",
     "lint:js": "eslint scripts source/js test tools",
