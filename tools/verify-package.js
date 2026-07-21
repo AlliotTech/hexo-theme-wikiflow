@@ -57,26 +57,41 @@ function assert(condition, message) {
   }
 }
 
-for (const relativePath of forbiddenRepositoryPaths) {
-  assert(!fs.existsSync(path.join(repoRoot, relativePath)), `Forbidden repository path exists: ${relativePath}`);
+function parsePackResult(packOutput) {
+  const result = JSON.parse(packOutput);
+  return Array.isArray(result) ? result[0] : result;
 }
 
-const packOutput = execFileSync('npm', ['pack', '--json', '--dry-run'], {
-  cwd: repoRoot,
-  encoding: 'utf8'
-});
-const [pack] = JSON.parse(packOutput);
-const files = pack.files.map(file => file.path);
-const fileSet = new Set(files);
+function verifyPackage() {
+  for (const relativePath of forbiddenRepositoryPaths) {
+    assert(!fs.existsSync(path.join(repoRoot, relativePath)), `Forbidden repository path exists: ${relativePath}`);
+  }
 
-for (const requiredFile of requiredPackageFiles) {
-  assert(fileSet.has(requiredFile), `Package dry-run is missing required file: ${requiredFile}`);
+  const packOutput = execFileSync('npm', ['pack', '--json', '--dry-run'], {
+    cwd: repoRoot,
+    encoding: 'utf8'
+  });
+  const pack = parsePackResult(packOutput);
+  const files = pack.files.map(file => file.path);
+  const fileSet = new Set(files);
+
+  for (const requiredFile of requiredPackageFiles) {
+    assert(fileSet.has(requiredFile), `Package dry-run is missing required file: ${requiredFile}`);
+  }
+
+  for (const file of files) {
+    assert(!forbiddenPackageFiles.has(file), `Package dry-run includes development file: ${file}`);
+    assert(
+      !forbiddenPackagePrefixes.some(prefix => file.startsWith(prefix)),
+      `Package dry-run includes development path: ${file}`
+    );
+  }
 }
 
-for (const file of files) {
-  assert(!forbiddenPackageFiles.has(file), `Package dry-run includes development file: ${file}`);
-  assert(
-    !forbiddenPackagePrefixes.some(prefix => file.startsWith(prefix)),
-    `Package dry-run includes development path: ${file}`
-  );
+if (require.main === module) {
+  verifyPackage();
 }
+
+module.exports = {
+  parsePackResult
+};
