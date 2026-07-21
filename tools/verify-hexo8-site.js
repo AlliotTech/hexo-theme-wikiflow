@@ -10,6 +10,14 @@ const repoRoot = path.resolve(__dirname, '..');
 const fixtureRoot = path.join(repoRoot, 'test', 'hexo8-site');
 const browserMode = process.argv.includes('--browser');
 const themeName = 'WikiFlow';
+
+function patchArchiveMonthCountsConfig(config) {
+  return config.replace(
+    /(archive_generator:\r?\n  per_page:) 10/,
+    '$1 5'
+  );
+}
+
 const scenarios = [
   {
     name: 'default',
@@ -170,10 +178,7 @@ const scenarios = [
   },
   {
     name: 'archive-month-counts',
-    configPatch: config => config.replace(
-      'archive_generator:\n  per_page: 10',
-      'archive_generator:\n  per_page: 5'
-    ),
+    configPatch: patchArchiveMonthCountsConfig,
     prepare: async tmpRoot => {
       const postsDir = path.join(tmpRoot, 'source', '_posts');
       for (let index = 1; index <= 8; index++) {
@@ -1257,7 +1262,13 @@ async function verifyBrowserRuntime(scenario) {
   }
 }
 
-run().catch(error => {
-  console.error(error);
-  process.exitCode = 1;
-});
+if (require.main === module) {
+  run().catch(error => {
+    console.error(error);
+    process.exitCode = 1;
+  });
+}
+
+module.exports = {
+  patchArchiveMonthCountsConfig
+};
